@@ -1,0 +1,20 @@
+define 200 200
+iad
+by2d p1 p3
+t 1500 r s4 -180 p2
+t 1500 r s4 180 p2
+by2d p0 p2
+t 1500 r s7 -180 p1
+t 1500 r s7 180 p1
+c2d p0 p1
+t 1500 r s9 180 p1 p2
+t 1500 r s9 -180 p1 p2
+c2d p0 p3
+t 1500 r s13 -180 p0 p1 p5
+t 1500 r s13 180 p0 p1 p5
+by2d p0 p2
+by2d p1 p3
+c2d p0 p1
+c2d p1 p2
+t 2500 r s9 -180 p1 r s15 -180 p3 a p6 p2 p7
+t 2500 r s5 -90 p7 r s4 -90 p6 a p2

@@ -1,0 +1,36 @@
+// Origami crane
+define 200 200
+textures
+iad
+// Diagonal (body axis)
+by2d p0 p2
+// Kite-fold both edges to the diagonal
+bisector2d s1 s4
+bisector2d s2 s4
+offset -1 f1
+t 250 r s6 -180 p1
+offset -1 f3
+t 250 r s8 180 p3
+// Neck, tail, and head creases
+split s4 0.28
+perpendicular3d s4 p6
+split s9 0.75
+perpendicular3d s9 p11
+split s4 0.4
+perpendicular3d s4 p14
+// Raise the neck, then fold the head forward
+t 300 r s17 -90 p2 p14 p15 p16 p17 p18
+t 250 r s31 100 p2
+// Raise the tail
+t 250 r s22 80 p0
+// Face the camera: body along x, then a 3/4 view
+t 200 tz -45
+t 200 ty 55
+t 200 tx -18
+t 200 fit
+// Show
+iao
+t 1000 z 0.5 0 0
+t 1000 fit
+iao
+t 1000 ty 360

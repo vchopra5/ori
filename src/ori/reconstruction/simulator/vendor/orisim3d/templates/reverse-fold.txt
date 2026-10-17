@@ -1,0 +1,14 @@
+// Inside and outside reverse folds on a protruding flap
+d 200 200
+by2d p1 p3
+o -1 f1
+t 200 r s4 -180 p2
+split s4 0.5 sp p4
+p3d s0 p4
+b3d s7 s5
+t 500 z 0.99 move 59 43 0
+t 500 r s7 -180 p8 a p1
+t 500 r s7 180 p8 a p1
+t 500 fit
+check
+

@@ -1,0 +1,17 @@
+b3d s21 s3
+snap
+t 1500 r s61 -180 p9
+snap
+b3d s23 s5
+snap
+t 1500 r s68 180 p11
+snap
+t 1500 ty 180
+b3d s79 s8
+snap
+t 1500 r s105 180 p27 p31 p32 p33 p35
+snap
+b3d s68 s8
+snap
+t 1500 r s105 180 p12 p28 p29 p30 p34 p36
+snap

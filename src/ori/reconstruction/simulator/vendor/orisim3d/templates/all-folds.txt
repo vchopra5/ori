@@ -1,0 +1,67 @@
+// Squash fold — open a pocket and flatten it
+d 200 200
+t 100 tx -30
+c2d p1 p2
+o -1 f0
+c2d p0 p1
+t 500 r s6 -180 p3 p8 p2
+c3d p0 p1
+by3d p6 p1
+o -10 f1
+t 500 fit
+t 1000 r s9 -180 p2 a p5
+pause
+// Inside and outside reverse folds
+d 200 200
+t 100 tx -30
+by2d p1 p3
+o -1 f1
+t 200 r s4 -180 p2
+split s4 0.5 sp p4
+p3d s0 p4
+b3d s7 s5
+t 500 z 0.99 move 59 43 0
+t 500 r s7 -180 p8 a p1
+t 500 r s7 180 p8 a p1
+t 500 fit
+pause
+// Rabbit-ear fold — fold a corner point up between two creases
+d 200 200
+t 100 tx -30
+by2d p0 p2 by2d p1 p3
+b2d s6 s1 b2d s7 s2
+p2d s1 p5
+t 1000 r s9 180 p6 a p2
+pause
+// Petal fold — fold both sides of a flap to the center, then flatten
+d 200 200
+by2d p0 p2 by2d p1 p3
+c2d p0 p1 c2d p1 p2
+t 200 r s11 -180 p1 r s15 -180 p3 a p5 p2 p7
+t 200 r s6 -90 p7 r s7 -90 p5 a p2
+t 200 fit
+tz 45 z 0.71
+b3d s2 s4 b3d s0 s4 by3d p9 p11
+t 200 zoom 0.75 0 0 move 0 -75 0
+// Petal fold
+t 1000 r s31 -178 p2 a p5 p7
+pause
+// Square base
+d 200 200
+by2d p0 p2 by2d p1 p3
+c2d p0 p1 c2d p1 p2
+t 500 r s11 -180 p1 r s15 -180 p3 a p5 p2 p7
+t 500 r s6 -90 p7 r s7 -90 p5 a p2
+t 500 fit
+b3d s4 s11
+t 500 r s4 -180 p11 a p7
+pause
+// Triangle base
+d 200 200
+t 100 tx -30
+by2d p0 p2 by2d p1 p3
+c2d p0 p1 c2d p1 p2
+t 1000 r s5 -180 p8 r s6 180 p7 a p2 p3 p5
+t 1000 r s11 90 p2 r s11 -90 p3 a p5
+t 1000 fit
+check

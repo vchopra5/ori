@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Ori · Folding playback</title><link rel="stylesheet" href="playback.css?v=3"></head><body>
+<header><strong>ori</strong><span>Video to folding motion</span></header><main>
+<h1>Watch the paper move.</h1><p id="provenance">Loading…</p>
+<div class="toolbar"><button id="latest">Latest Gemini extraction</button><label class="button">Open instructions<input id="file" type="file" accept=".txt,.json,.fold" hidden></label><button id="download">Download script</button></div>
+<iframe id="geometry-player" title="Folding simulation" hidden style="width:100%;height:1000px;border:0"></iframe>
+<div class="view-tools"><span>View</span><button id="view-front">Front</button><button id="view-back">Back</button><button id="view-3d">3D</button><label><input id="show-creases" type="checkbox"> Show all creases</label><label><input id="separate-layers" type="checkbox"> Separate layers</label></div>
+<p id="layer-note" class="hint" hidden>Layers are spread apart for inspection. This changes the display only; it does not resolve incorrect folds or layer order.</p>
+<section class="player"><div class="viewport"><canvas id="canvas3d"></canvas></div><aside><h2 id="title">Folding sequence</h2><p id="status" role="status"></p><ol id="steps"></ol></aside><div class="action-caption" id="current-action">Ready to fold</div><div class="controls"><button id="reset">Restart</button><button id="play">Play</button><input id="timeline" type="range" min="0" max="0" value="0" aria-label="Folding step"><span id="position"></span></div></section>
+<div class="hint legend"><span>Drag to orbit · scroll to zoom</span><span><i class="swatch rose"></i>Rose face</span><span><i class="swatch ivory"></i>Ivory face</span><span><i class="swatch crease"></i>Active crease</span></div><p id="layer-status" class="hint"></p><p id="warning" role="status"></p>
+<details><summary>Crease pattern and native commands</summary><div class="details"><canvas id="canvas2d"></canvas><pre id="script"></pre></div></details>
+<footer>Folding and animation by <a href="https://github.com/RemiKoutcherawy/OriSim3D">OriSim3D</a> (MIT). Kinematic animation; collisions are not enforced.</footer>
+</main><script type="module" src="playback.mjs?v=4"></script></body></html>

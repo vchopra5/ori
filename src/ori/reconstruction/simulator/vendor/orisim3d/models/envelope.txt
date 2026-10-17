@@ -1,0 +1,24 @@
+// Envelope
+// Fold the four corners of a square onto the center (blintz base),
+// then lift the last flap back up to show it as an open envelope.
+d 200 200
+// Crease both diagonals to locate the center
+by2d p0 p2
+by2d p1 p3
+// Fold each corner onto the center
+across3d p0 p4
+t 600 r s12 180 p0
+across3d p1 p4
+t 600 r s14 180 p1
+across3d p2 p4
+t 600 r s18 180 p2
+across3d p3 p4
+t 600 r s22 180 p3
+// Show
+iao
+t 1000 tz 45
+t 1000 ty 360
+// Lift the last flap to look like an open envelope
+t 800 r s22 -140 p3
+iao
+t 1000 fit

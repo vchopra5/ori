@@ -1,0 +1,428 @@
+[
+  {
+    "kind": "fold",
+    "description": "Fold the top-right corner to the bottom-left corner diagonally.",
+    "moving_point_uv": [
+      1.0,
+      1.0
+    ],
+    "target_point_uv": [
+      0.0,
+      0.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the previous diagonal fold.",
+    "moving_point_uv": [
+      1.0,
+      1.0
+    ],
+    "target_point_uv": [
+      1.0,
+      1.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 1
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the bottom-right corner to the top-left corner diagonally.",
+    "moving_point_uv": [
+      1.0,
+      0.0
+    ],
+    "target_point_uv": [
+      0.0,
+      1.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the previous diagonal fold.",
+    "moving_point_uv": [
+      1.0,
+      0.0
+    ],
+    "target_point_uv": [
+      1.0,
+      0.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 3
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the right edge to the left edge in half.",
+    "moving_point_uv": [
+      1.0,
+      0.5
+    ],
+    "target_point_uv": [
+      0.0,
+      0.5
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the vertical half fold.",
+    "moving_point_uv": [
+      1.0,
+      0.5
+    ],
+    "target_point_uv": [
+      1.0,
+      0.5
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 5
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the top edge down to the bottom edge in half.",
+    "moving_point_uv": [
+      0.5,
+      1.0
+    ],
+    "target_point_uv": [
+      0.5,
+      0.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the previous horizontal fold.",
+    "moving_point_uv": [
+      0.5,
+      1.0
+    ],
+    "target_point_uv": [
+      0.5,
+      1.0
+    ],
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 7
+  },
+  {
+    "kind": "rotate",
+    "description": "Rotate the paper 45 degrees counterclockwise.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 45.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Collapse the paper along the existing creases into a square base.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-right edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-left edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the lower-left edge.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 12
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the lower-right edge.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 11
+  },
+  {
+    "kind": "turn_over",
+    "description": "Turn the paper over.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-left edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-right edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the top corner down along the line connecting the side corners.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the top corner.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 18
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the top corner down again along the same crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the top corner.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 20
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the lower-right flap.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 17
+  },
+  {
+    "kind": "unfold",
+    "description": "Unfold the lower-left flap.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": 16
+  },
+  {
+    "kind": "fold",
+    "description": "Perform a petal fold by lifting the bottom corner upward and folding the sides inward.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "turn_over",
+    "description": "Turn the paper over.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Perform a petal fold on this side by lifting the bottom corner upward and folding the sides inward.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "rotate",
+    "description": "Rotate the paper 45 degrees counterclockwise so the long axis is vertical.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 45.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "turn_over",
+    "description": "Turn the paper over.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-right edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the lower-left edge of the top layer to the center vertical crease.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "rotate",
+    "description": "Rotate the paper 180 degrees so the split flaps point upward.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Turn the right flap over to the left like turning a page.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Turn the corresponding flap on the back to the other side.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_back",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the bottom point of the top layer up to align with the top point.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "turn_over",
+    "description": "Turn the paper over.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the bottom point up to align with the top point.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the right flap over to the left like turning a page.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "turn_over",
+    "description": "Turn the paper over.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": null,
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Fold the right flap over to the left like turning a page.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": 180.0,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Pull the left flap outward to the side and crease its base.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "unknown",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Pull the right flap outward to the side and crease its base.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "unknown",
+    "reverse_step": null
+  },
+  {
+    "kind": "fold",
+    "description": "Inside reverse fold the tip of the right flap downward to form the head.",
+    "moving_point_uv": null,
+    "target_point_uv": null,
+    "angle_degrees": null,
+    "fold_direction": "toward_front",
+    "reverse_step": null
+  }
+]

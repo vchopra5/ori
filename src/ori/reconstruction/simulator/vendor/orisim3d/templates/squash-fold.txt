@@ -1,0 +1,12 @@
+// Squash fold — open a pocket and flatten it
+d 200 200
+c2d p1 p2
+o -1 f0
+c2d p0 p1
+t 500 r s6 -180 p3 p8 p2
+c3d p0 p1
+by3d p6 p1
+o -10 f1
+t 500 fit
+t 1000 r s9 -180 p2 a p5
+

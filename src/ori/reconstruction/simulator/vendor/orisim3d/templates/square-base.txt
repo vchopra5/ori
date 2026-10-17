@@ -1,0 +1,7 @@
+d 200 200
+by2d p0 p2 by2d p1 p3
+c2d p0 p1 c2d p1 p2
+t 1000 r s11 -180 p1 r s15 -180 p3 a p5 p2 p7
+t 1000 r s6 -90 p7 r s7 -90 p5 a p2
+t 1000 fit
+check

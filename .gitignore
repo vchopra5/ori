@@ -18,3 +18,13 @@ dist/
 # Local source videos and webcam recordings
 data/
 recordings/
+.playwright-cli/
+output/playwright/
+.local/
+src/ori/reconstruction/origami plans/**
+!src/ori/reconstruction/origami plans/.gitkeep
+src/ori/reconstruction/simulator/latest-plan.json
+
+src/ori/reconstruction/simulator/latest-animation.json
+
+node_modules/
