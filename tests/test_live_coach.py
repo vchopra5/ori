@@ -1,4 +1,5 @@
 """Progress from streaming video must remain tied to fresh, current camera evidence."""
+from ori.coaching.live_coach import CorrectionCooldown
 import unittest
 import base64
 from ori.coaching.live_coach import ProgressGuard, decode_audio_packet, visual_feedback, stage_instruction, confirmation_instruction, camera_view_continues, CameraEvidence
@@ -82,17 +83,26 @@ class ProgressTests(unittest.TestCase):
         # When paper is held up again, visible evidence can still complete the fold.
         self.assertEqual(self.check(self.guard.capture(1,3,1,b'paper'))['status'],'matched')
 
-    def test_check_in_waits_and_is_not_repeated(self):
-        self.guard.frame_at=self.now
-        self.assertIsNone(self.report('check_in'))
-        self.now+=46;self.guard.frame_at=self.now
-        self.assertIsNotNone(self.report('check_in'))
-        self.assertIsNone(self.report('check_in'))
-        self.now+=61;self.guard.frame_at=self.now
-        self.assertIsNotNone(self.report('check_in'))
-        self.now+=61;self.guard.frame_at=self.now
-        self.report('working')
-        self.assertIsNone(self.report('check_in'))
+    def test_timed_check_ins_stay_silent(self):
+        for elapsed in [0,46,107,500]:
+            self.now=100+elapsed;self.guard.frame_at=self.now
+            self.assertIsNone(self.report('check_in'))
+
+    def test_spoken_corrections_have_25_second_cooldown(self):
+        gate=CorrectionCooldown(lambda:self.now)
+        mistake=dict(verdict='mistake',paper_visible=True)
+        self.assertTrue(gate.allow(mistake))
+        gate.delivered()
+        for elapsed in [0,8,24.99]:
+            self.now=100+elapsed
+            self.assertFalse(gate.allow(mistake))
+            self.assertFalse(gate.allow(dict(verdict='unclear',paper_visible=True)))
+        self.now=125
+        self.assertTrue(gate.allow(mistake))
+        self.assertFalse(gate.allow(dict(verdict='unclear',paper_visible=False)))
+        self.assertTrue(gate.allow(dict(verdict='before_fold',paper_visible=True)))
+        # This gate never handles successful checks; those bypass it entirely.
+        self.assertFalse(gate.allow(dict(verdict='match',paper_visible=True)))
 
     def test_stage_cannot_be_selected_with_a_stale_epoch(self):
         for step,epoch in [(9,4),(1,3),(True,4),(1,True)]:
