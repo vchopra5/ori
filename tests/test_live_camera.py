@@ -203,4 +203,44 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('LESSON COMPLETE',sent[-1]);self.assertIn('No next step',sent[-1])
 
 
+    async def test_checks_continue_during_speech_and_match_bypasses_correction_cooldown(self):
+        import json
+        now=[100.0];responses=asyncio.Queue();events=[];checks=[]
+        checked=[asyncio.Event() for _ in range(4)];tip=asyncio.Event();passed=asyncio.Event()
+        class Session:
+            async def send_realtime_input(self,**kwargs):
+                if 'text' in kwargs:
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
+                    if kwargs['text'].startswith('VISUAL DIAGNOSIS'):tip.set()
+            async def receive(self):
+                while True:yield await responses.get()
+        @asynccontextmanager
+        async def connect(**kwargs):yield Session()
+        client=SimpleNamespace(aio=SimpleNamespace(live=SimpleNamespace(connect=connect),aclose=AsyncMock()))
+        async def check(*args):
+            n=len(checks);checks.append(args);checked[n].set()
+            return dict(verdict='match' if n==3 else 'mistake',paper_visible=True,closest_state='target',
+                before_excluded=True,unfolded_excluded=True,target_feature='New flap',camera_feature='New flap',
+                visible_evidence='New flap',observation='Fold',instruction='Align the corner')
+        class Socket:
+            async def send(self,raw):
+                event=json.loads(raw);events.append(event)
+                if event.get('status')=='matched':passed.set()
+            async def __aiter__(self):
+                yield json.dumps(dict(type='stage',step=1,epoch=1))
+                yield json.dumps(dict(type='playback',step=1,epoch=1,playing=True))
+                for n in range(4):
+                    if n==2:yield json.dumps(dict(type='playback',step=1,epoch=1,playing=False))
+                    now[0]+=1
+                    yield json.dumps(dict(type='frame',step=1,epoch=1,frame_id=n+1,data=base64.b64encode(b'\xff\xd8'+b'a'*120).decode()))
+                    await checked[n].wait()
+                    if n==2:await tip.wait()
+                    elif n==3:await passed.wait()
+                    else:await asyncio.sleep(.15)
+        with patch('google.genai.Client',return_value=client),patch('ori.config.load_settings',return_value=SimpleNamespace(gemini_api_key='test')),patch('ori.coaching.gemini_coach.reference_images',return_value=[]),patch('ori.coaching.gemini_coach.snapshot_check',side_effect=check),patch('ori.coaching.live_coach.time',SimpleNamespace(monotonic=lambda:now[0])):
+            await asyncio.wait_for(relay(Socket(),{'states':[[],[]]},[{'name':'Fold'}]),3)
+        self.assertEqual(len(checks),4)
+        self.assertEqual([e['frame_id'] for e in events if e.get('status')=='matched'],[4])
+
+
 if __name__=='__main__':unittest.main()

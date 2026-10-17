@@ -417,9 +417,9 @@ async def relay(socket, playback, commands):
                         signature=(evidence.step,evidence.epoch,result['verdict'],result['paper_visible'],result.get('instruction','').strip().lower())
                         if signature==last_diagnostic:continue
                         if result['paper_visible'] and last_diagnostic and signature[:2]==last_diagnostic[:2] and last_diagnostic[3] is True and time.monotonic()-diagnostic_at<25:continue
-                        # A visible mistake deserves one tip after existing speech, never an interruption.
-                        while (assistant_speaking or playback_active or model_wait_at is not None or time.monotonic()-last_speech<2) and guard.current_evidence(evidence):
-                            await asyncio.sleep(.1)
+                        # Never stall camera checks behind a spoken tip. Reassess a
+                        # fresh frame once the current explanation has finished.
+                        if assistant_speaking or playback_active or model_wait_at is not None or time.monotonic()-last_speech<2:continue
                         if not guard.current_evidence(evidence):continue
                         message=visual_feedback(result,evidence)
                         if message is None:continue
