@@ -167,7 +167,7 @@ target. Set done:true only when you believe the approximation is complete.
         if kind != 'finished':
             progress.observe(kind, **fields)
     report = run(client, url, MODEL, output, max_calls=previous_calls+allowance, task=task,
-                 transport='generate-content', thinking_level='high', max_output_tokens=32768,
+                 transport='generate-content', thinking_level='low', max_output_tokens=32768,
                  observer=observe, export=False, resume=resume,
                  context_policy=policy, continue_on_blocked=True)
     complete = report['status'] == 'model_claimed_done' and report['accepted_folds'] > 0
