@@ -1,3 +1,4 @@
+import {playbackFinish} from './playback-finish.mjs';
 import {generationState} from './generation-state.mjs';
 import {readAPIJSON} from './api.mjs';
 import {LiveCoach} from './live-coach.mjs';
@@ -17,6 +18,7 @@ const toy = {id:'toy',title:'A study in balance',kind:'toy',engine:'Toy simulati
 let scene, current=toy, steps=toySteps, duration=12, time=0, playing=false, active=-1, library=[], stream=null, cameraSession=0;
 let lessonScene=null,lessonDemoTime=null;
 let paperPoint=null;
+let finishArmed=false,clearFinish=()=>{};
 let toastTimeout, loadSession=0, stopAt=null, liveJob=null, liveSession=0;
 let coachEpoch=0,coachFinished=false;
 function stepTime(i){return i*duration/steps.length;}
@@ -24,7 +26,7 @@ function thumbnailTime(i){return current.kind==='lego'?Math.min(duration,(i+.94)
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').hidden=true,5000);}
 function clock(seconds){return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;}
 function icon(name){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');const use=document.createElementNS(svg.namespaceURI,'use');use.setAttribute('href',`#i-${name}`);svg.append(use);return svg;}
-function setPlaying(value){if(!value)stopAt=null;playing=value;$('play').querySelector('use').setAttribute('href',value?'#i-pause':'#i-play');$('play').querySelector('span').textContent=value?'Pause':'Play';$('play').setAttribute('aria-label',value?'Pause simulation':'Play simulation');if(current.kind==='recording'){if(value)$('recording').play().catch(()=>{setPlaying(false);toast('Playback could not start. Try pressing Play again.');});else $('recording').pause();}}
+function setPlaying(value){if(!value){stopAt=null;finishArmed=false;clearFinish();clearFinish=()=>{};}playing=value;$('play').querySelector('use').setAttribute('href',value?'#i-pause':'#i-play');$('play').querySelector('span').textContent=value?'Pause':'Play';$('play').setAttribute('aria-label',value?'Pause simulation':'Play simulation');if(current.kind==='recording'){if(value)$('recording').play().catch(()=>{setPlaying(false);toast('Playback could not start. Try pressing Play again.');});else $('recording').pause();}}
 function statusRow(title,description,state){const li=document.createElement('li');li.className=state;const dot=document.createElement('span');dot.className='event-dot';dot.textContent=state==='complete'?'✓':state==='rejected'?'×':'';dot.setAttribute('aria-label',state);const copy=document.createElement('div');copy.className='event-copy';const strong=document.createElement('strong');strong.textContent=title;const p=document.createElement('p');p.textContent=description;copy.append(strong,p);li.append(dot,copy);return li;}
 function renderActivity(){
   const list=$('activity-list');list.replaceChildren();list.classList.toggle('lego-inventory',current.kind==='lego');
@@ -338,7 +340,7 @@ $('retry-run').onclick=async()=>{
 };
 $('video-link').addEventListener('input',()=>$('video-link').setCustomValidity(''));
 $('import-explore').onclick=()=>{$('import-dialog').close();loadItem(toy);};
-$('play').onclick=()=>{if(time>=duration)seek(0);setPlaying(!playing);};$('reset').onclick=()=>{setPlaying(false);seek(0);};
+$('play').onclick=()=>{clearFinish();if(time>=duration)seek(0);setPlaying(!playing);finishArmed=playing&&(!liveJob||['model_claimed_done','completed'].includes(liveJob.status));};$('reset').onclick=()=>{setPlaying(false);seek(0);};
 $('contacts').onclick=()=>{const value=$('contacts').getAttribute('aria-pressed')!=='true';$('contacts').setAttribute('aria-pressed',String(value));if(current.kind==='paper'){scene?.setFoldGuide(value);$('fold-guide-key').hidden=!value;}else scene?.setContacts(value);};
 $('scrubber').oninput=e=>{setPlaying(false);seek(Number(e.target.value));};
 $('teach').onclick=()=>{setPlaying(false);seek(0);$('teaching').hidden=false;resetCoachStep();updateStep();
@@ -421,6 +423,7 @@ else if(requestedRun){
   else{showHome();toast('That tutorial is unavailable. Choose one from your library.');}
 }else showHome();
 function showHome(){
+  setPlaying(false);
   $('home-view').hidden=false;$('studio-view').hidden=true;
   $('home-items').replaceChildren(...library.map(makeLibraryItem));
   $('home-status').hidden=libraryAvailable&&library.length>0;
@@ -431,7 +434,7 @@ $('replay-fold').onclick=()=>{if(current.kind!=='paper'||active<1)return;const i
 $('final-view').onclick=()=>{setPlaying(false);seek(duration);};
 document.querySelectorAll('[data-paper-view]').forEach(button=>button.onclick=()=>{scene?.setPaperView(button.dataset.paperView);document.querySelectorAll('[data-paper-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
 document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>{scene?.setPaperColor(button.dataset.paperColor);lessonScene?.setPaperColor(button.dataset.paperColor);$('paper-front-key').style.background=button.style.getPropertyValue('--paper-swatch');document.querySelectorAll('[data-paper-color]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
-let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended)setPlaying(false);}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
+let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended){const celebrate=finishArmed&&stopAt===null;setPlaying(false);if(celebrate)clearFinish=playbackFinish($('scene-stage'));}}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
   const end=Math.min(duration,stepTime(active+1))-.00001;
   lessonDemoTime+=dt;lessonScene.setTime(Math.min(lessonDemoTime,end));
   if(lessonDemoTime>=end+.8)lessonDemoTime=$('lesson-autoloop').checked&&active>0?stepTime(active):null;
