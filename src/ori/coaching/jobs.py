@@ -103,6 +103,8 @@ class Progress:
         elif kind == 'working':
             self.data['calls'] = fields['call']
             self.event(kind, 'Argon is choosing its next folds', call=fields['call'])
+        elif kind == 'reviewing':
+            self.event('reviewing', 'Comparing the final shape with the video before finishing', call=fields['call'])
         elif kind == 'compacted':
             self.event(kind, 'Context refreshed; exact paper geometry, layer contacts, and accepted folds preserved',
                        exchanges=fields['exchanges'], physics_sha256=fields['physics_sha256'])
@@ -113,7 +115,7 @@ class Progress:
             if 'probe_result' in feedback:
                 probe = feedback['probe_result']
                 self.event('tested', 'Candidate motion passed; live paper unchanged' if probe['ok'] else
-                           'Refining candidate: ' + probe['error'], call=fields['call'])
+                           'Refining candidate: ' + probe['error'], call=fields['call'], ok=probe['ok'])
             if not feedback['ok']:
                 self.event('rejected', feedback['error'], call=fields['call'])
         elif kind == 'finished':
@@ -169,7 +171,7 @@ target. Set done:true only when you believe the approximation is complete.
     report = run(client, url, MODEL, output, max_calls=previous_calls+allowance, task=task,
                  transport='generate-content', thinking_level='low', max_output_tokens=32768,
                  observer=observe, export=False, resume=resume,
-                 context_policy=policy, continue_on_blocked=True)
+                 context_policy=policy, continue_on_blocked=True, require_final_review=True)
     complete = report['status'] == 'model_claimed_done' and report['accepted_folds'] > 0
     if not complete:
         report = dict(report, stop_reason=report['status'],

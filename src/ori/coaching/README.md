@@ -415,3 +415,9 @@ offline replay and the anchored MuJoCo assembly export. Webcam coaching remains
 paper-only.
 
 Approval freshness: the relay invalidates in-flight positives when local camera tiles change materially or sharpness drops, and on Live out-of-view reports. A positive also requires a camera frame received within two seconds that remains visually consistent with the checked frame. This conservative motion gate cannot recognize folds and never grants approval; returning paper requires a fresh check. It adds no cloud round trip. Correction narration explains the alignment goal another way rather than simply repeating the last instruction.
+
+## Generation feedback and final shape
+
+The paper character animates while a job is running. Cloud verdicts come only from recorded accepted/rejected harness events or explicit probe outcomes; idle animation never simulates a pass or failure. Reduced-motion preferences stop decorative animation. Coral, wisteria, and sage papers use complementary reverse colors so folded layers remain visible.
+
+The harness supports small flat flaps through off-center creases, selected layers, and open hinges at angles below 180 degrees. Video generation receives explicit guidance distinguishing crease placement from hinge angle. A run cannot finish on the same turn that changes the sheet: Argon must inspect the resulting front and oblique renders and confirm completion on a later turn, using LOW thinking. This is model self-review, not independent proof of video fidelity. Existing saved tutorials are preserved.

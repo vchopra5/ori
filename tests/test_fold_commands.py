@@ -26,6 +26,18 @@ class FoldCommandTests(unittest.TestCase):
         self.assertAlmostEqual(harness.metrics()['material_area'], 2)
         self.assertLess(harness.metrics()['max_seam_gap'], 1e-10)
 
+    def test_small_flap_and_open_hinge_are_different_supported_motions(self):
+        for angle,expected in [(180,[0,.5,0]),(90,[0,.75,.25])]:
+            harness=FoldHarness()
+            command=fold();command.update(crease=[[-.25,.75,0],[.25,.75,0]],angle_degrees=angle)
+            result=harness.execute([command]);self.assertTrue(result['ok'],result)
+            tips=[xyz for panel in harness.panels for uv,xyz in zip(panel.uv,panel.xyz) if np.allclose(uv,[0,1])]
+            self.assertTrue(tips)
+            for tip in tips:np.testing.assert_allclose(tip,expected,atol=1e-10)
+            for panel in harness.panels:
+                for uv,xyz in zip(panel.uv,panel.xyz):
+                    if uv[1]<.75-1e-8:np.testing.assert_allclose(xyz,[*uv,0],atol=1e-10)
+
     def test_fox_ears_are_symmetric_and_above_forehead(self):
         commands = json.loads((ROOT / 'examples/fold_commands/fox.json').read_text())['commands']
         harness = FoldHarness()

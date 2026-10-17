@@ -8,7 +8,7 @@ from PIL import Image
 from .batching import atomic_json
 from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS
 from .fold_render import render
-from .fold_trial import TASK
+from .fold_trial import TASK, FOLD_GEOMETRY_GUIDANCE
 from .fold_context import compact_context, physics_checkpoint
 
 
@@ -42,7 +42,10 @@ def audit(output):
             assert upgrade['instructions'] == MODEL_INSTRUCTIONS
             if int(directory.name.removeprefix('call-')) > upgrade['after_call']:
                 instructions = upgrade['instructions']
-        assert inputs[1] == dict(type='text', text=task + '\nAction contract:\n' + instructions)
+        prompt = task + '\nAction contract:\n' + instructions
+        if 'final_review_after_call' in config and int(directory.name.removeprefix('call-')) > config['final_review_after_call']:
+            prompt += '\n' + FOLD_GEOMETRY_GUIDANCE
+        assert inputs[1] == dict(type='text', text=prompt)
         expected_context = (compact_context(feedback, history, config['context_policy'])
                             if config.get('context_policy') else dict(harness_feedback=feedback,
                                 recent_model_harness_exchanges=history[-3:]))

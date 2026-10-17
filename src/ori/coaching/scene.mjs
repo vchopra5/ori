@@ -27,7 +27,7 @@ export class StudioScene {
     this.root = new T.Group();this.scene.add(this.root);
     this.markers = new T.Group();this.scene.add(this.markers);
     this.foldGuides=new T.Group();this.scene.add(this.foldGuides);this.guideVisible=true;
-    this.mode='toy'; this.time=0; this.contactVisible=true; this.paperColor='lilac';
+    this.mode='toy'; this.time=0; this.contactVisible=true; this.paperColor='apricot';
     this.paperTexture=this.makePaperTexture();
     this.buildToy();
     this.resizeObserver = new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas.parentElement);
@@ -174,7 +174,7 @@ export class StudioScene {
   makePaperTexture(){
     const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
     const ctx=canvas.getContext('2d'), pixels=ctx.createImageData(256,256);let seed=19;
-    for(let i=0;i<pixels.data.length;i+=4){seed=(seed*1664525+1013904223)>>>0;const n=235+(seed%18);pixels.data.set([n,n,n,255],i);}
+    for(let i=0;i<pixels.data.length;i+=4){seed=(seed*1664525+1013904223)>>>0;const n=248+(seed%6);pixels.data.set([n,n,n,255],i);}
     ctx.putImageData(pixels,0,0);ctx.strokeStyle='rgba(120,120,120,.035)';
     for(let i=0;i<90;i++){ctx.beginPath();ctx.moveTo((i*73)%256,(i*37)%256);ctx.lineTo((i*73)%256+12,(i*37)%256+3);ctx.stroke();}
     const texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(2,2);return texture;
@@ -261,7 +261,7 @@ export class StudioScene {
     this.paperFit=Math.max(.6,Math.min(1.25,span/1.9));this.setCamera();
     if(frame.index!==this.lastPaperStep){
       this.lastPaperStep=frame.index;this.buildFoldGuide(frame.motion);this.clear(this.root);this.clear(this.markers);this.paperNodes=[];
-      const palette={lilac:[0x8da4e1,0xeee4d1],apricot:[0xeab28b,0xf6ecda],ivory:[0xf1e8d5,0xb9c8e6]}[this.paperColor];
+      const palette={lilac:[0xa195cf,0xdcd0ed],apricot:[0xe58a74,0xf1c8b7],ivory:[0x91b5a3,0xd5e3d4]}[this.paperColor];
       this.startOffsets=layerOffsets(frame.motion?.panels||frame.panels);
       this.endOffsets=frame.motion?layerOffsets(frame.motion.panels,true):this.startOffsets;
       for(const panel of frame.panels){
@@ -275,7 +275,7 @@ export class StudioScene {
         for(const [color,side]of [[palette[0],T.FrontSide],[palette[1],T.BackSide]]){
           const tint=new T.Color(color).convertGammaToLinear();
           const material=new T.MeshStandardMaterial({color:tint,side,roughness:.92,metalness:0,map:this.paperTexture,
-            bumpMap:this.paperTexture,bumpScale:.003,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1});
+            bumpMap:this.paperTexture,bumpScale:.001,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1});
           const mesh=new T.Mesh(geometry,material);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;group.add(mesh);
         }
         const edgeGeometry=new T.Geometry();panel.vertices.forEach(()=>edgeGeometry.vertices.push(new T.Vector3(),new T.Vector3()));

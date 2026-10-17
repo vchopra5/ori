@@ -64,7 +64,7 @@ class LiveJobTests(unittest.TestCase):
         command = dict(name='Fold', crease=[[-1, 0, 0], [1, 0, 0]],
                        normal=[0, 0, 1], moving_side='left', angle_degrees=180)
         inverse = dict(command, name='Unfold', moving_side='right', angle_degrees=-180, layers=['paper/m'])
-        outputs = [dict(commands=[command], done=False), dict(commands=[inverse], done=True)]
+        outputs = [dict(commands=[command], done=False), dict(commands=[inverse], done=True), dict(commands=[], done=True)]
         def response(*args, **kwargs):
             self.assertEqual(args[3], 'low')  # New and resumed video generation.
             text = json.dumps(outputs.pop(0))
@@ -80,7 +80,8 @@ class LiveJobTests(unittest.TestCase):
             progress = Progress(base, progress.data['url'], resume=True)
             result = run_paper(MagicMock(), progress.data['url'], base, progress, route, max_calls=512, resume=True)
             self.assertEqual(progress.data['max_calls'], 513)
-            self.assertEqual(result['calls'], 2)
+            self.assertEqual(result['calls'], 3)
+            self.assertIn('reviewing', [e['kind'] for e in progress.data['events']])
             self.assertEqual(progress.data['commands'], [command, inverse])
             self.assertEqual(progress.playback['states'], compile_playback([command, inverse])['states'])
             self.assertTrue(audit(base)['passed'])

@@ -1,3 +1,4 @@
+import {generationState} from './generation-state.mjs';
 import {readAPIJSON} from './api.mjs';
 import {LiveCoach} from './live-coach.mjs';
 import {StudioScene} from './scene.mjs';
@@ -99,7 +100,7 @@ function renderSteps(){
   active=-1;seek(0);
 }
 async function loadItem(item, options={}){
-  if(!options.live){liveSession++;liveJob=null;$('activity-list').classList.remove('live-events');}
+  if(!options.live){liveSession++;liveJob=null;$('generation-companion').hidden=true;$('activity-list').classList.remove('live-events');}
   $('home-view').hidden=true;$('studio-view').hidden=false;$('retry-run').hidden=true;$('teach').disabled=false;
   const session=++loadSession;setPlaying(false);let replay=options.replay;
   if(['paper','lego'].includes(item.kind)&&!replay){
@@ -270,16 +271,23 @@ $('link-form').onsubmit=async e=>{e.preventDefault();const input=$('video-link')
     followJob(job.id);
   }catch(error){toast(error.message);}
 };
+function renderGeneration(job){
+  const state=generationState(job),card=$('generation-companion');card.hidden=false;
+  card.dataset.phase=state.phase;card.dataset.verdict=state.verdict;
+  $('generation-label').textContent=state.label;$('generation-detail').textContent=state.detail;
+  $('generation-count').textContent=state.count;
+  card.querySelector('.cloud-symbol').textContent=state.verdict==='pass'?'✓':state.verdict==='fail'?'×':'…';
+}
 async function followJob(id){
   $('home-view').hidden=true;$('studio-view').hidden=false;scene?.resize();
   const session=++liveSession;let accepted=-1,attempt=-1,revision=-1,failures=0;
-  liveJob={events:[]};setPlaying(false);$('paper-loading').hidden=false;$('paper-loading-text').textContent='Argon is watching your video…';
+  liveJob={events:[],status:'classifying'};renderGeneration(liveJob);setPlaying(false);$('paper-loading').hidden=false;$('paper-loading-text').textContent='Argon is watching your video…';
   history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
   while(session===liveSession){
     try{
       const response=await fetch(`/api/jobs/${encodeURIComponent(id)}`,{cache:'no-store'});
       if(!response.ok)throw Error('Could not read the live run');
-      const job=await readAPIJSON(response);if(session!==liveSession)return;liveJob=job;failures=0;
+      const job=await readAPIJSON(response);if(session!==liveSession)return;liveJob=job;failures=0;renderGeneration(job);
       if(job.route?.kind==='lego'&&job.status==='running')$('paper-loading-text').textContent='Identifying pieces and checking snap connections…';
       if(job.route?.kind==='mujoco'&&job.status==='running')$('paper-loading-text').textContent='Building and validating the MuJoCo scene…';
       if(job.route?.kind==='origami'&&(job.accepted!==accepted||(job.attempt||0)!==attempt)){
@@ -312,7 +320,7 @@ async function followJob(id){
         $('retry-run').hidden=complete;$('retry-run').textContent=job.resumable?'Continue this run →':'Try another approach ↻';$('teach').disabled=!complete||job.route?.kind==='lego';
         toast(message);return;
       }
-    }catch(error){if(++failures>=5){$('paper-loading').hidden=true;toast('Live updates disconnected. Reload this page to reconnect to the saved job.');return;}}
+    }catch(error){if(++failures>=5){renderGeneration({...liveJob,status:'paused'});$('paper-loading').hidden=true;toast('Live updates disconnected. Reload this page to reconnect to the saved job.');return;}}
     await new Promise(resolve=>setTimeout(resolve,1200));
   }
 }

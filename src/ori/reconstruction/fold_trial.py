@@ -57,6 +57,22 @@ does not mean you achieved the target shape; use your own visual judgment.
 '''
 
 
+FOLD_GEOMETRY_GUIDANCE = """Geometry reminder: partial folds ARE supported.
+For a SMALL FLAT FLAP, choose a crease close to that corner and usually rotate
+180 degrees. A smaller angle makes an OPEN 3D hinge; it does not make a smaller
+flat flap. Creases can use arbitrary finite coordinates, not just midpoints,
+diagonals or existing edges. Choose the moving side and exposed layers explicitly.
+For a flat 180-degree fold, the crease is the perpendicular bisector between
+the current tip and its intended destination in the paper plane. Check the
+predicted tip position before committing. Preserve intended protrusions: ears,
+wings, and small tips should not disappear into the central silhouette.
+Judge the rendered outline against the video's finished object, not command
+names. A physically legal fold is not automatically the correct fold.
+Completion requires inspecting the resulting final render on a subsequent turn.
+After your last fold, return done:false. Once you see its rendered result, either
+correct it with legal actions, or return {"commands":[],"done":true} if it matches.
+"""
+
 def build_request(url, model, feedback, history, images, task=TASK, max_output_tokens=32768, context_policy=None):
     payload = compact_context(feedback, history, context_policy) if context_policy else dict(
         harness_feedback=feedback, recent_model_harness_exchanges=history[-3:])
@@ -102,7 +118,7 @@ def generate_content(client, request, directory, thinking_level='low'):
 
 def run(client, url, model, output, max_calls=12, resume=False, task=TASK, transport='interactions',
         thinking_level='low', max_output_tokens=32768, observer=None, export=True,
-        context_policy=None, continue_on_blocked=False):
+        context_policy=None, continue_on_blocked=False, require_final_review=False):
     emit = observer or (lambda *args, **kwargs: None)
     harness = FoldHarness()
     history = []
@@ -163,6 +179,11 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
                     physics_checkpoint=physics_checkpoint(harness), committed_calls=[]))
     if resume and context_policy:
         emit('restored', harness=harness)
+    saved_config = json.loads((output / 'config.json').read_text())
+    require_final_review = require_final_review or 'final_review_after_call' in saved_config
+    if require_final_review:
+        saved_config.setdefault('final_review_after_call', calls)
+        atomic_json(output / 'config.json', saved_config)
     for turn in range(calls + 1, max_calls + 1):
         call_dir = output / 'debug' / f'call-{turn:02d}'
         call_dir.mkdir(parents=True)
@@ -172,6 +193,8 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
             render(harness.panels, f'Harness: {len(harness.history)} accepted folds', oblique).save(image_path)
             images.append(dict(view=view, path=str(image_path)))
         request = build_request(url, model, feedback, history, images, task, max_output_tokens, context_policy)
+        if require_final_review:
+            request['input'][1]['text'] += '\n' + FOLD_GEOMETRY_GUIDANCE
         if context_policy:
             continuity = json.loads(request['input'][2]['text'])['continuity']
             atomic_json(call_dir / 'context.json', continuity)
@@ -205,6 +228,7 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
                 accepted_events.append(dict(command=command, poses=poses, harness=copy.deepcopy(state)))
             else:
                 emit('accepted', command=command, poses=poses, harness=state)
+        accepted_before = len(harness.history)
         feedback = harness.submit_text(raw_text, accepted)
         atomic_json(call_dir / 'harness-feedback.json', feedback)
         history.append(dict(model_output=raw_text, harness_feedback=feedback))
@@ -226,6 +250,9 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
             status = 'model_reported_blocked'
             break
         if feedback['ok'] and feedback.get('model_claimed_done'):
+            if require_final_review and len(harness.history)>accepted_before:
+                emit('reviewing', call=turn, accepted=len(harness.history))
+                continue  # The next request includes renders of the actual final pose.
             status = 'model_claimed_done'
             break
     report = dict(status=status, calls=calls, accepted_folds=len(harness.history), model=model,
