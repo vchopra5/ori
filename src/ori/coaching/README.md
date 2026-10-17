@@ -25,7 +25,7 @@ Open http://127.0.0.1:8765. Or run `npm run coaching`.
 
 The default toy scene uses illustrative animation, not a physics solver. The activity panel describes exploration; it never claims sample animation is a validated MuJoCo run. Saved runs show actual stored validation, not fabricated live progress.
 
-New YouTube links use Gemini 4 Argon to classify the video. Paper folding routes to FoldHarness with low reasoning, 32,768 output tokens, and a default allowance of 512 calls (`ORI_LIVE_MAX_CALLS` overrides it). The runner continues on the same sheet after a blocked response; it does not restart the geometry or discard accepted folds. A fixed target and one-fold-at-a-time instructions reduce target drift and stale layer IDs. Other physical demonstrations route to the existing MuJoCo scene compiler and renderer; unsupported videos stop explicitly. The backend needs GEMINI_API_KEY in the root .env. One job runs at a time. Paper lessons use Gemini judging with optional local mask/depth context.
+New YouTube links use Gemini 4 Argon to classify the video. Paper folding routes to FoldHarness with high reasoning, 32,768 output tokens, and a default allowance of 512 calls (`ORI_LIVE_MAX_CALLS` overrides it). The runner continues on the same sheet after a blocked response; it does not restart the geometry or discard accepted folds. A fixed target and one-fold-at-a-time instructions reduce target drift and stale layer IDs. Other physical demonstrations route to the existing MuJoCo scene compiler and renderer; unsupported videos stop explicitly. The backend needs GEMINI_API_KEY in the root .env. One job runs at a time. Paper lessons use Gemini judging with optional local mask/depth context.
 
 Google Fonts is optional: a system font fallback is provided. All functional code and 3D assets load locally. The local Python server binds to loopback and exposes only coaching assets, the renderer bundle, and saved output artifacts. It is a local demo server, not a deployment server.
 
@@ -390,7 +390,7 @@ or a continuous collision certificate. Cutting and stretching remain unsupported
 The feedback includes predicted geometry or an exact failure; the live sheet,
 accepted history and playback remain unchanged. Probe outcomes and failed
 candidates survive dialogue compaction. Gemini must submit successful candidates
-in `commands` to commit them. Live reconstruction uses low reasoning to derive
+in `commands` to commit them. Live reconstruction uses high reasoning to derive
 linkage motion and revise candidates from the constraints.
 
 Playback evaluates the same parsed expressions as the harness, including at
@@ -420,7 +420,7 @@ Approval freshness: the relay invalidates in-flight positives when local camera 
 
 The paper character animates while a job is running. Cloud verdicts come only from recorded accepted/rejected harness events or explicit probe outcomes; idle animation never simulates a pass or failure. Reduced-motion preferences stop decorative animation. Coral, wisteria, and sage papers use complementary reverse colors so folded layers remain visible.
 
-The harness supports small flat flaps through off-center creases, selected layers, and open hinges at angles below 180 degrees. Video generation receives explicit guidance distinguishing crease placement from hinge angle. A run cannot finish on the same turn that changes the sheet: Argon must inspect the resulting front and oblique renders and confirm completion on a later turn, using LOW thinking. This is model self-review, not independent proof of video fidelity. Existing saved tutorials are preserved.
+The harness supports small flat flaps through off-center creases, selected layers, and open hinges at angles below 180 degrees. Video generation receives explicit guidance distinguishing crease placement from hinge angle. A run cannot finish on the same turn that changes the sheet: Argon must inspect the resulting front and oblique renders and confirm completion on a later turn, using HIGH thinking. This is model self-review, not independent proof of video fidelity. Existing saved tutorials are preserved.
 
 Whole-sheet turns use a distinct `reorient` action with `origin`, `axis`, and signed `angle_degrees`. It rotates every panel and contact normal together, preserving panel IDs, material coordinates, relative shape and layer adjacency. It never splits paper or creates a crease. The browser animates it as a rigid turn and omits the fold-here guide. The model contract explicitly forbids expressing view changes as half-plane folds. Older runs can resume with a recorded contract upgrade, retaining their original requests and audit trail. Existing incorrectly generated folds are not silently reinterpreted as turns.
 

@@ -43,7 +43,7 @@ class LiveJobTests(unittest.TestCase):
                        normal=[0, 0, 1], moving_side='left', angle_degrees=180)
         outputs = [dict(commands=[command], done=False)] + [dict(commands=[], blocked='Replanning')] * 26 + [dict(commands=[], done=True)]
         def response(*args, **kwargs):
-            self.assertEqual(args[3], 'low')  # New and resumed video generation.
+            self.assertEqual(args[3], 'high')  # New and resumed video generation.
             text = json.dumps(outputs.pop(0))
             return SimpleNamespace(status='completed', output_text=text, model_dump=lambda **_: dict(output_text=text))
         with TemporaryDirectory() as directory, patch('ori.reconstruction.fold_trial.generate_content', side_effect=response):
@@ -66,7 +66,7 @@ class LiveJobTests(unittest.TestCase):
         inverse = dict(command, name='Unfold', moving_side='right', angle_degrees=-180, layers=['paper/m'])
         outputs = [dict(commands=[command], done=False), dict(commands=[inverse], done=True), dict(commands=[], done=True)]
         def response(*args, **kwargs):
-            self.assertEqual(args[3], 'low')  # New and resumed video generation.
+            self.assertEqual(args[3], 'high')  # New and resumed video generation.
             text = json.dumps(outputs.pop(0))
             return SimpleNamespace(status='completed', output_text=text, model_dump=lambda **_: dict(output_text=text))
         with TemporaryDirectory() as directory, patch('ori.reconstruction.fold_trial.generate_content', side_effect=response), patch.dict('os.environ', {'ORI_LIVE_MAX_CALLS': '1'}):
