@@ -77,6 +77,24 @@ you may simply interpret that view without changing the paper at all.
 """
 
 
+PRE_UNDO_MODEL_INSTRUCTIONS = MODEL_INSTRUCTIONS
+MODEL_INSTRUCTIONS += """
+5. Planning undo (NOT an unfold): {"commands":[],"undo":1,"done":false}.
+undo must be a positive integer no greater than the current accepted action count.
+It removes that many trailing accepted actions and restores the exact earlier
+paper: geometry, panel IDs, layer contacts, and crease subdivisions. These mistaken
+actions disappear from the lesson; the raw proposal/undo log remains for auditing.
+Use undo when your last action was a planning mistake. Inspect the restored state
+and submit a corrected command on the next turn, using its restored panel IDs.
+Do not combine undo with commands, probe, blocked or done:true. A rejected proposal
+already changed nothing except any explicitly accepted prefix; inspect the history
+before deciding what to undo. Unfolding is different: it is a real physical fold
+back that retains crease subdivisions and remains a teaching step. Use it only
+when that physical fold/unfold belongs in the demonstrated procedure. Accepted
+actions remain history EXCEPT when explicitly removed by this planning undo.
+"""
+
+
 # Retain the previous straight-fold contract for verified checkpoint upgrades.
 # Its geometry semantics are unchanged; only the available action vocabulary grows.
 LEGACY_MODEL_INSTRUCTIONS = MODEL_INSTRUCTIONS.split('\nAdditional constructive tools')[0].replace(
@@ -330,8 +348,8 @@ class FoldHarness:
         error = None
         if not isinstance(proposal, dict):
             error = 'Expected an object with commands, done and optional blocked'
-        elif set(proposal) - {'commands', 'done', 'blocked', 'probe'}:
-            error = 'Unknown proposal fields; use commands, done and optional blocked'
+        elif set(proposal) - {'commands', 'done', 'blocked', 'probe', 'undo'}:
+            error = 'Unknown proposal fields; use commands, done, blocked, probe or undo'
         elif not isinstance(proposal.get('commands'), list):
             error = 'commands must be an array of new fold commands'
         elif not isinstance(proposal.get('done', False), bool):
@@ -340,9 +358,22 @@ class FoldHarness:
             error = 'blocked must be a string'
         if error is None and 'probe' in proposal and (not isinstance(proposal['probe'], list) or not proposal['probe'] or len(proposal['probe']) > 16 or proposal['commands'] or proposal.get('done') or proposal.get('blocked')):
             error = 'probe requires 1 to 16 candidate commands, empty commands, done:false and no blocked'
+        if error is None and 'undo' in proposal:
+            count=proposal['undo']
+            if (type(count) is not int or not 1<=count<=len(self.history) or proposal['commands']
+                    or 'probe' in proposal or 'blocked' in proposal or proposal.get('done',False)):
+                error='undo requires an available positive action count, empty commands, done:false and no probe or blocked'
         if error:
             return {'ok': False, 'error': error, 'accepted_commands': copy.deepcopy(self.history),
                     'state': self.state(), 'layers': self.layer_state(), 'metrics': self.metrics()}
+        if 'undo' in proposal:
+            count=proposal['undo'];removed=copy.deepcopy(self.history[-count:])
+            restored=FoldHarness()
+            replayed=restored.execute(self.history[:-count])
+            if not replayed['ok']:raise ValueError('Could not replay the saved prefix for undo')
+            self.panels=restored.panels;self.history=restored.history
+            return dict(self.execute([]),undo_count=count,undone_commands=removed,
+                        model_claimed_done=False,model_reported_blocked='')
         if 'probe' in proposal:
             trial = copy.deepcopy(self)
             tested = trial.execute(proposal['probe'])

@@ -71,14 +71,17 @@ class Progress:
         atomic_json(self.output / 'job.json', self.data)
 
     def observe(self, kind, **fields):
-        if kind == 'restored':
+        if kind in {'restored','undone'}:
             commands = fields['harness'].history
             self.playback = compile_playback(commands)
             self.playback.update(attempt=self.data.get('attempt', 1), command_hash=cache_key(commands))
             self.data.update(commands=list(commands), accepted=len(commands), command_hash=cache_key(commands))
             atomic_json(self.output / 'commands.json', dict(commands=commands))
             atomic_json(self.output / 'playback.json', self.playback)
-            self.event('resuming', 'Saved physics checkpoint independently replayed and verified')
+            if kind=='undone':
+                self.event('undone', f"Removed {fields['count']} mistaken action(s); restored the earlier paper", count=fields['count'])
+            else:
+                self.event('resuming', 'Saved physics checkpoint independently replayed and verified')
         elif kind == 'accepted':
             command, poses, harness = fields['command'], fields['poses'], fields['harness']
             self.playback['motions'].append(motion_from_poses(command, poses))

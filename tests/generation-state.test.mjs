@@ -13,3 +13,7 @@ test('real acceptance, rejection and probes drive the cloud',()=>{
  assert.equal(generationState({status:'partial',events}).phase,'paused');
  assert.equal(generationState({status:'model_claimed_done',events:[]}).verdict,'pending');
 });
+test('undo clears the old verdict without pretending physics failed',()=>{
+ const state=generationState({status:'running',accepted:0,events:[{kind:'accepted',step:1},{kind:'undone',count:1},{kind:'working'}]});
+ assert.equal(state.verdict,'pending');assert.equal(state.detail,'↶ Restored the earlier paper');
+});

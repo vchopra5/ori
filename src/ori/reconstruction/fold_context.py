@@ -79,4 +79,4 @@ def compact_context(feedback, history, policy):
                 continuity=dict(version=1, exchanges=len(history), compacted_exchanges=len(history)-len(recent),
                     history_sha256=digest(history), physics_sha256=digest(physics),
                     accepted_count=len(feedback['accepted_commands']),
-                    note='Current harness_feedback is authoritative and exact. Accepted commands have already executed. Historical command coordinates and panel IDs may be obsolete. Continue from the current sheet; compaction never unfolds or resets it.'))
+                    note=('Current harness_feedback is authoritative and exact. Planning undo removed mistaken actions; only its accepted_commands remain in the lesson. Older exchanges include undone actions and stale panel IDs. Continue from the restored sheet.' if any(h['harness_feedback'].get('undo_count') for h in history) else 'Current harness_feedback is authoritative and exact. Accepted commands have already executed. Historical command coordinates and panel IDs may be obsolete. Continue from the current sheet; compaction never unfolds or resets it.')))

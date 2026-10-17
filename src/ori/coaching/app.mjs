@@ -31,7 +31,7 @@ function renderActivity(){
   if(liveJob&&!(current.kind==='lego'&&liveJob.status==='completed')){
     const events=liveJob.events.slice(-8);
     for(const [index,event] of events.entries()){
-      const titles={classifying:'Watching your video',routed:'Simulator selected',working:'Argon is working',proposal:'Proposed · checking physics',tested:'Testing a fold mechanism',accepted:'Harness accepted',rejected:'Harness rejected',planning:'Planning a simple approach',recovering:'Replanning this fold',compacted:'Context refreshed',resuming:'Continuing saved folds',incomplete:'Incomplete preview',finished:'Ready to explore',error:'Run stopped'};
+      const titles={classifying:'Watching your video',routed:'Simulator selected',working:'Argon is working',proposal:'Proposed · checking physics',tested:'Testing a fold mechanism',accepted:'Harness accepted',rejected:'Harness rejected',planning:'Planning a simple approach',recovering:'Replanning this fold',compacted:'Context refreshed',undone:'Revising the last action',resuming:'Continuing saved folds',incomplete:'Incomplete preview',finished:'Ready to explore',error:'Run stopped'};
       const incompleteEnd=event.kind==='finished'&&!['model_claimed_done','completed'].includes(liveJob.status);
       const message=incompleteEnd?'This run could not complete the video. Its accepted steps remain available as a preview.':event.message;
       list.append(statusRow(incompleteEnd?'Incomplete preview':titles[event.kind]||event.kind,[message,...(event.names||[])].join(' · '),incompleteEnd||event.kind==='rejected'||event.kind==='error'||event.kind==='incomplete'?'rejected':index===events.length-1&&['queued','classifying','running'].includes(liveJob.status)?'active':'complete'));
@@ -283,7 +283,7 @@ function renderGeneration(job){
 }
 async function followJob(id){
   $('home-view').hidden=true;$('studio-view').hidden=false;scene?.resize();
-  const session=++liveSession;let accepted=-1,attempt=-1,revision=-1,failures=0;
+  const session=++liveSession;let accepted=-1,attempt=-1,commandHash=null,revision=-1,failures=0;
   liveJob={events:[],status:'classifying'};renderGeneration(liveJob);setPlaying(false);$('paper-loading').hidden=false;$('paper-loading-text').textContent='Argon is watching your video…';
   history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
   while(session===liveSession){
@@ -293,7 +293,7 @@ async function followJob(id){
       const job=await readAPIJSON(response);if(session!==liveSession)return;liveJob=job;failures=0;renderGeneration(job);
       if(job.route?.kind==='lego'&&job.status==='running')$('paper-loading-text').textContent='Identifying pieces and checking snap connections…';
       if(job.route?.kind==='mujoco'&&job.status==='running')$('paper-loading-text').textContent='Building and validating the MuJoCo scene…';
-      if(job.route?.kind==='origami'&&(job.accepted!==accepted||(job.attempt||0)!==attempt)){
+      if(job.route?.kind==='origami'&&(job.accepted!==accepted||(job.attempt||0)!==attempt||job.command_hash!==commandHash)){
         const result=await fetch(`/api/jobs/${encodeURIComponent(id)}/playback`,{cache:'no-store'});
         if(!result.ok)throw Error('Paper state is not ready');
         const replay=await readAPIJSON(result);if(session!==liveSession)return;
@@ -303,7 +303,7 @@ async function followJob(id){
           commands:job.commands,source_url:job.url,report:{...replay.metrics,ok:true,accepted_folds:job.accepted},
           report_url:`/api/jobs/${id}`,replay_url:`/api/jobs/${id}/playback`},{live:true,replay});
         history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
-        accepted=job.accepted;attempt=job.attempt||0;seek(stepTime(steps.length-1));setPlaying(job.accepted>0);
+        accepted=job.accepted;attempt=job.attempt||0;commandHash=job.command_hash;seek(stepTime(steps.length-1));setPlaying(job.accepted>0);
       }
       if(job.revision!==revision){
         revision=job.revision;$('sample-badge').textContent=['queued','classifying','running'].includes(job.status)?'Live Argon run':['model_claimed_done','completed'].includes(job.status)?'Ready to explore':'Incomplete preview';$('activity-tag').textContent=['queued','classifying','running'].includes(job.status)?'LIVE':['model_claimed_done','completed'].includes(job.status)?'READY':'INCOMPLETE';

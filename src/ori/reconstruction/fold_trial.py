@@ -11,7 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .batching import atomic_json
-from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS
+from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS, PRE_UNDO_MODEL_INSTRUCTIONS
 from .fold_render import render, export_history
 from .outputs import new_run, save_request
 from .fold_context import compact_context, physics_checkpoint
@@ -134,7 +134,7 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
         if config.get('transport', 'interactions') != transport:
             raise ValueError('Resume must use the original API transport')
         original_contract = (output / 'contract.txt').read_text()
-        if original_contract not in tuple(task + '\n' + instructions for instructions in (MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS)):
+        if original_contract not in tuple(task + '\n' + instructions for instructions in (MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS, PRE_UNDO_MODEL_INSTRUCTIONS)):
             raise ValueError('Cannot resume with an unrecognized model contract')
         if config.get('context_policy') != context_policy or config.get('continue_on_blocked', False) != continue_on_blocked:
             raise ValueError('Resume must retain the original context and continuation policy')
@@ -239,6 +239,8 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
         # Publish live folds only after the physics checkpoint is durable.
         for event in accepted_events:
             emit('accepted', **event)
+        if feedback.get('undo_count'):
+            emit('undone', harness=harness, count=feedback['undo_count'], call=turn)
         emit('feedback', feedback=feedback, call=turn)
         print(f'  Harness ok={feedback["ok"]}; accepted={len(harness.history)}; '
               f'error={feedback.get("error", "none")}; done={feedback.get("model_claimed_done", False)}; '
