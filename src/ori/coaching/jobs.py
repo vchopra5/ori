@@ -127,8 +127,10 @@ class Progress:
             self.event(kind, 'Run finished: ' + self.data['status'].replace('_', ' '))
 
 
-def run_paper(client, url, output, progress, route, max_calls=None, resume=False, context_policy=None):
+def run_paper(client, url, output, progress, route, max_calls=None, resume=False, context_policy=None, thinking_level="medium"):
     """One continuous physics history, with lossless state and compacted dialogue."""
+    if thinking_level not in {"low", "medium", "high"}:
+        raise ValueError("Unsupported generation thinking level")
     allowance = int(os.environ.get('ORI_LIVE_MAX_CALLS', '512')) if max_calls is None else max_calls
     if allowance < 1:
         raise ValueError('Call allowance must be positive')
@@ -172,7 +174,7 @@ target. Set done:true only when you believe the approximation is complete.
         if kind != 'finished':
             progress.observe(kind, **fields)
     report = run(client, url, MODEL, output, max_calls=previous_calls+allowance, task=task,
-                 transport='generate-content', thinking_level='high', max_output_tokens=32768,
+                 transport='generate-content', thinking_level=thinking_level, max_output_tokens=32768,
                  observer=observe, export=False, resume=resume,
                  context_policy=policy, continue_on_blocked=True, require_final_review=True)
     complete = report['status'] == 'model_claimed_done' and report['accepted_folds'] > 0

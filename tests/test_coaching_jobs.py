@@ -43,7 +43,7 @@ class LiveJobTests(unittest.TestCase):
                        normal=[0, 0, 1], moving_side='left', angle_degrees=180)
         outputs = [dict(commands=[command], done=False)] + [dict(commands=[], blocked='Replanning')] * 26 + [dict(commands=[], done=True)]
         def response(*args, **kwargs):
-            self.assertEqual(args[3], 'high')  # New and resumed video generation.
+            self.assertEqual(args[3], 'medium')  # New and resumed video generation.
             text = json.dumps(outputs.pop(0))
             return SimpleNamespace(status='completed', output_text=text, model_dump=lambda **_: dict(output_text=text))
         with TemporaryDirectory() as directory, patch('ori.reconstruction.fold_trial.generate_content', side_effect=response):
@@ -66,7 +66,7 @@ class LiveJobTests(unittest.TestCase):
         inverse = dict(command, name='Unfold', moving_side='right', angle_degrees=-180, layers=['paper/m'])
         outputs = [dict(commands=[command], done=False), dict(commands=[inverse], done=True), dict(commands=[], done=True)]
         def response(*args, **kwargs):
-            self.assertEqual(args[3], 'high')  # New and resumed video generation.
+            self.assertEqual(args[3], 'medium')  # New and resumed video generation.
             text = json.dumps(outputs.pop(0))
             return SimpleNamespace(status='completed', output_text=text, model_dump=lambda **_: dict(output_text=text))
         with TemporaryDirectory() as directory, patch('ori.reconstruction.fold_trial.generate_content', side_effect=response), patch.dict('os.environ', {'ORI_LIVE_MAX_CALLS': '1'}):
@@ -86,6 +86,15 @@ class LiveJobTests(unittest.TestCase):
             self.assertEqual(progress.playback['states'], compile_playback([command, inverse])['states'])
             self.assertTrue(audit(base)['passed'])
             self.assertTrue((base / 'result-through-1.json').exists())
+
+    def test_benchmark_thinking_level_reaches_model_without_changing_default(self):
+        response=SimpleNamespace(status='incomplete',output_text='',model_dump=lambda **_: {})
+        for level in ['medium','high']:
+            with self.subTest(level=level),TemporaryDirectory() as directory,patch('ori.reconstruction.fold_trial.generate_content',return_value=response) as generate:
+                base=Path(directory);progress=Progress(base,'https://youtu.be/10KurnMH_6o')
+                run_paper(MagicMock(),progress.data['url'],base,progress,dict(title='Fox',summary='Fox face'),max_calls=1,thinking_level=level)
+                self.assertEqual(generate.call_args.args[3],level)
+                self.assertEqual(json.loads((base/'config.json').read_text())['thinking_level'],level)
 
     def test_transport_failure_does_not_reset_paper_or_loop(self):
         response = SimpleNamespace(status='incomplete', output_text='', model_dump=lambda **_: {})
