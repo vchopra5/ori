@@ -1,0 +1,50 @@
+<mujoco model="Four-panel origami accordion">
+  <compiler angle="degree"/>
+  <option timestep="0.001" integrator="implicitfast" gravity="0 0 -9.81"/>
+  <visual>
+    <global offwidth="960" offheight="720"/>
+    <quality shadowsize="2048"/>
+    <rgba haze="0.12 0.15 0.20 1"/>
+  </visual>
+  <statistic center="0 0 0.09" extent="0.45"/>
+  <default>
+    <geom type="box" size="0.0397 0.10 0.0003" mass="0.0015"
+          friction="0.5 0.005 0.0001" solref="0.005 1"/>
+    <joint type="hinge" axis="0 1 0" limited="true" range="-150 150"
+           damping="0.00002" stiffness="0.00005" armature="0.000001"/>
+    <position kp="0.2" kv="0.003" ctrllimited="true" ctrlrange="-2.62 2.62"
+              forcelimited="true" forcerange="-0.03 0.03"/>
+  </default>
+  <worldbody>
+    <light pos="-0.3 -0.3 0.8" dir="0.3 0.3 -0.8"/>
+    <light pos="0.3 0.3 0.5" dir="-0.3 -0.3 -0.5" diffuse="0.5 0.5 0.5"/>
+    <geom name="table" type="plane" size="0.6 0.6 0.01" mass="0" rgba="0.15 0.18 0.23 1"/>
+    <!-- 32 x 20 cm sheet, three parallel creases. First panel is clamped. -->
+    <body name="panel_0" pos="-0.16 0 0.035">
+      <geom name="paper_0" pos="0.04 0 0" rgba="0.95 0.64 0.25 1"/>
+      <body name="panel_1" pos="0.08 0 0">
+        <joint name="crease_1"/>
+        <geom name="paper_1" pos="0.04 0 0" rgba="1 0.78 0.40 1"/>
+        <body name="panel_2" pos="0.08 0 0">
+          <joint name="crease_2"/>
+          <geom name="paper_2" pos="0.04 0 0" rgba="0.95 0.64 0.25 1"/>
+          <body name="panel_3" pos="0.08 0 0">
+            <joint name="crease_3"/>
+            <geom name="paper_3" pos="0.04 0 0" rgba="1 0.78 0.40 1"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <!-- Shared crease edges must rotate freely; other contacts remain active. -->
+    <exclude body1="panel_0" body2="panel_1"/>
+    <exclude body1="panel_1" body2="panel_2"/>
+    <exclude body1="panel_2" body2="panel_3"/>
+  </contact>
+  <actuator>
+    <position name="fold_1" joint="crease_1"/>
+    <position name="fold_2" joint="crease_2"/>
+    <position name="fold_3" joint="crease_3"/>
+  </actuator>
+</mujoco>

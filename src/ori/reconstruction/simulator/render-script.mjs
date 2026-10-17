@@ -25,6 +25,23 @@ try{
  const scale=await page.evaluate(()=>oriPlayback.view.scale);
  const images=[];
  const displayNote=async()=>await page.evaluate(()=>oriPlayback.view.layerAmbiguities)?' [Display layer order is approximate here; do not treat the visible stacking as proof of physical layer order.]':'';
+ if(doc.review_target){
+  // Show a separately constructed endpoint, never interpolate toward it.
+  // Restore the actual motion below; target positions never enter the solver.
+  await page.evaluate(target=>{
+   oriPlayback.command.goTo(oriPlayback.stepEnds.at(-1));
+   const points=oriPlayback.model.points;
+   if(points.length!==target.points.length)throw Error('Target topology mismatch');
+   target.points.forEach((p,i)=>{
+    if(p.id!==`p${i}`||Math.hypot(points[i].xf-p.material[0],points[i].yf-p.material[1])>.001)throw Error('Target material correspondence mismatch');
+   });
+   oriPlayback.model.restorePositions(target.points.flatMap(p=>p.position));
+   oriPlayback.view.angleX=0;oriPlayback.view.angleY=0;oriPlayback.view.layerOrders=undefined;
+   oriPlayback.view.initBuffers();oriPlayback.view.initModelView();oriPlayback.view.render();
+  },doc.review_target);
+  const path=out+'.target.png';await page.locator('.viewport').screenshot({path});
+  images.push({path,step:0,description:'Independently constructed target endpoint. Layer order unspecified; colors do not establish correct stacking.',view:'front',phase:'target'});
+ }
  const indices=doc.steps.map((_,i)=>i).slice(doc.review_start||0);
  if(indices.length){
   const i=indices[0];
@@ -54,6 +71,36 @@ try{
    oriPlayback.command.changed=true;return true;
   },i);
   if(moved){await page.waitForTimeout(100);const path=out+`.step-${i+1}.motion.png`;await page.locator('.viewport').screenshot({path});images.push({path,step:i+1,description:doc.steps[i].description+await displayNote(),view:'MID-MOTION oblique (not final pose)',phase:'during'});}
+  if(doc.review_target){
+   // Sample each timed instruction separately: a single midpoint can miss a
+   // collapse's second stage or a transient spike.
+   const samples=await page.evaluate(i=>{
+    const begin=i?oriPlayback.stepEnds[i-1]:1,end=oriPlayback.stepEnds[i],out=[];
+    const paths=[];for(let k=begin+1;k<=end;k++)if(oriPlayback.command.paths[k])paths.push([k,oriPlayback.command.paths[k]]);
+    if(paths.length>3){
+     const total=paths.reduce((sum,[,p])=>sum+p.duration,0);
+     for(const fraction of [.1,.2,.3,.4,.5,.6,.7,.8,.9]){
+      let time=total*fraction;
+      for(const [k,p] of paths){if(time<=p.duration){out.push({instruction:k,u:time/p.duration,fraction});break;}time-=p.duration;}
+     }
+    }else{
+     const total=paths.reduce((sum,[,p])=>sum+p.duration,0);let elapsed=0;
+     for(const [k,p] of paths){for(const u of [.25,.5,.75])out.push({instruction:k,u,fraction:(elapsed+u*p.duration)/total});elapsed+=p.duration;}
+    }
+    return out;
+   },i);
+   for(const sample of samples){
+    await page.evaluate(({instruction,u})=>{
+     oriPlayback.command.goTo(instruction);
+     const frames=oriPlayback.command.paths[instruction].frames,frame=frames.reduce((best,f)=>Math.abs(f.tn-u)<Math.abs(best.tn-u)?f:best);
+     oriPlayback.model.restorePositions(frame.coords);oriPlayback.command.changed=true;
+    },sample);
+    await page.waitForTimeout(100);
+    const percent=Math.round(sample.fraction*1000)/10;
+    const path=out+`.step-${i+1}.motion-${percent}.png`;
+    await page.locator('.viewport').screenshot({path});images.push({path,step:i+1,description:doc.steps[i].description+await displayNote(),view:`oblique, ${percent}% of this continuous action`,phase:'during'});
+   }
+  }
  }
  process.stdout.write(JSON.stringify({images}));
 }finally{await browser?.close();await new Promise(r=>server.close(r));}
