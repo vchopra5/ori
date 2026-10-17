@@ -18,7 +18,7 @@ export function layerOffsets(panels, end=false) {
       for(const [next,deps]of pending)if(deps.delete(id))rank.set(next,Math.max(rank.get(next),rank.get(id)+1));}
   }
   const center=Math.max(0,...result.values())/2;
-  return new Map([...result].map(([id,r])=>[id,[0,0,(r-center)*.0018]]));
+  return new Map([...result].map(([id,r])=>[id,[0,0,(r-center)*.005]]));
 }
 export function evaluatePath(node,t) {
   if(typeof node==='number')return node;

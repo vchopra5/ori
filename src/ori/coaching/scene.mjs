@@ -261,7 +261,7 @@ export class StudioScene {
     this.paperFit=Math.max(.6,Math.min(1.25,span/1.9));this.setCamera();
     if(frame.index!==this.lastPaperStep){
       this.lastPaperStep=frame.index;this.buildFoldGuide(frame.motion);this.clear(this.root);this.clear(this.markers);this.paperNodes=[];
-      const palette={lilac:[0xa195cf,0xdcd0ed],apricot:[0xe58a74,0xf1c8b7],ivory:[0x91b5a3,0xd5e3d4]}[this.paperColor];
+      const palette={lilac:[0x8974bd,0xf5e9cf],apricot:[0xd96950,0xf5e9cf],ivory:[0x65977f,0xf5e9cf]}[this.paperColor];
       this.startOffsets=layerOffsets(frame.motion?.panels||frame.panels);
       this.endOffsets=frame.motion?layerOffsets(frame.motion.panels,true):this.startOffsets;
       for(const panel of frame.panels){
@@ -274,12 +274,15 @@ export class StudioScene {
         const group=new T.Group();this.root.add(group);
         for(const [color,side]of [[palette[0],T.FrontSide],[palette[1],T.BackSide]]){
           const tint=new T.Color(color).convertGammaToLinear();
+          // Contact-order depth adds a subtle tonal cue to lower paper layers.
+          const depth=this.startOffsets.get(panel.id)?.[2]||0;
+          tint.multiplyScalar(1-Math.min(.12,Math.max(0,-depth)*5));
           const material=new T.MeshStandardMaterial({color:tint,side,roughness:.92,metalness:0,map:this.paperTexture,
             bumpMap:this.paperTexture,bumpScale:.001,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1});
           const mesh=new T.Mesh(geometry,material);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;group.add(mesh);
         }
         const edgeGeometry=new T.Geometry();panel.vertices.forEach(()=>edgeGeometry.vertices.push(new T.Vector3(),new T.Vector3()));
-        const edge=new T.LineSegments(edgeGeometry,new T.LineBasicMaterial({color:0x767a97,transparent:true,opacity:.12}));group.add(edge);
+        const edge=new T.LineSegments(edgeGeometry,new T.LineBasicMaterial({color:0x806c68,transparent:true,opacity:.4}));group.add(edge);
         const creaseGeometry=edgeGeometry.clone(),crease=new T.LineSegments(creaseGeometry,new T.LineBasicMaterial({color:0x6376a7,transparent:true,opacity:.48}));this.markers.add(crease);
         this.paperNodes.push({geometry,edgeGeometry,creaseGeometry,group,crease,panel});
       }

@@ -343,7 +343,7 @@ $('contacts').onclick=()=>{const value=$('contacts').getAttribute('aria-pressed'
 $('scrubber').oninput=e=>{setPlaying(false);seek(Number(e.target.value));};
 $('teach').onclick=()=>{setPlaying(false);seek(0);$('teaching').hidden=false;resetCoachStep();updateStep();
   $('lesson-demo-wrap').hidden=current.kind!=='paper';
-  if(current.kind==='paper'&&scene){try{if(!lessonScene)lessonScene=new StudioScene($('lesson-demo'));lessonScene.resize();lessonScene.setPaper(scene.replay);lessonScene.distance=6;startLessonDemo();}catch{$('lesson-demo-wrap').hidden=true;}if(steps.length>1)playLessonStep(1);}
+  if(current.kind==='paper'&&scene){try{if(!lessonScene)lessonScene=new StudioScene($('lesson-demo'));lessonScene.resize();lessonScene.setPaper(scene.replay);lessonScene.setPaperColor(scene.paperColor);lessonScene.distance=6;startLessonDemo();}catch{$('lesson-demo-wrap').hidden=true;}if(steps.length>1)playLessonStep(1);}
 $('teaching').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});};
 $('exit-teaching').onclick=()=>{stopCamera();$('teaching').hidden=true;$('teach').focus();};
 $('lesson-back').onclick=()=>playLessonStep(Math.max(0,active-1));
@@ -430,7 +430,7 @@ function showHome(){
 $('replay-fold').onclick=()=>{if(current.kind!=='paper'||active<1)return;const index=active;setPlaying(false);seek(stepTime(index));setPlaying(true);stopAt=Math.min(duration,(index+1)*duration/steps.length-.00001);};
 $('final-view').onclick=()=>{setPlaying(false);seek(duration);};
 document.querySelectorAll('[data-paper-view]').forEach(button=>button.onclick=()=>{scene?.setPaperView(button.dataset.paperView);document.querySelectorAll('[data-paper-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
-document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>{scene?.setPaperColor(button.dataset.paperColor);document.querySelectorAll('[data-paper-color]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
+document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>{scene?.setPaperColor(button.dataset.paperColor);lessonScene?.setPaperColor(button.dataset.paperColor);$('paper-front-key').style.background=button.style.getPropertyValue('--paper-swatch');document.querySelectorAll('[data-paper-color]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
 let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended)setPlaying(false);}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
   const end=Math.min(duration,stepTime(active+1))-.00001;
   lessonDemoTime+=dt;lessonScene.setTime(Math.min(lessonDemoTime,end));
