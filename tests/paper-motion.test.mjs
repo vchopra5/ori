@@ -81,3 +81,13 @@ test('backward direction cues keep pointing into the sheet instead of returning 
   assert.ok(Math.abs(guide.angle)<=Math.abs(degrees*Math.PI/180),'cue must not exceed the fold');
  }
 });
+test('whole-sheet turns move every panel rigidly and never display a crease guide',()=>{
+ const turn={...motion,type:'reorient',moving:motion.panels.map(p=>p.id)};
+ const before=turn.panels.flatMap(p=>p.vertices);
+ for(const t of [0,.2,.35,.5,.7,1]){
+  const after=poseAt(turn,t).flatMap(p=>p.vertices);
+  for(let i=0;i<before.length;i++)for(let j=0;j<i;j++)assert.ok(Math.abs(distance(before[i],before[j])-distance(after[i],after[j]))<1e-10);
+ }
+ assert.equal(foldGuide(turn),null);
+ assert.ok(poseAt(turn,.5)[1].vertices[1][2]<-.999);
+});

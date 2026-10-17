@@ -60,6 +60,23 @@ are permanent history; work from the authoritative state, not a fresh sheet.
 """
 
 
+PRE_ROTATION_MODEL_INSTRUCTIONS = MODEL_INSTRUCTIONS
+MODEL_INSTRUCTIONS += """
+4. Whole-sheet reorientation (NOT a fold):
+{"type":"reorient","name":"Turn the whole model over",
+ "origin":[0,0,0],"axis":[1,0,0],"angle_degrees":180}.
+This applies ONE rigid rotation to ALL paper panels and their contact vectors.
+It adds no crease, changes no layer adjacency, and preserves the folded shape.
+Use axis [0,0,1] for an in-plane turn; [1,0,0] or [0,1,0] for a turnover
+when the paper lies in XY. Use CURRENT world coordinates after every action.
+Do not add crease, moving_side, normal or layers to reorient commands.
+Never encode 'turn the model over', 'rotate upright' or 'change the view' as a
+crease fold. A fold rotates ONLY the selected half-plane and deforms the shape;
+reorient rotates the entire existing model. When only the video camera turns,
+you may simply interpret that view without changing the paper at all.
+"""
+
+
 # Retain the previous straight-fold contract for verified checkpoint upgrades.
 # Its geometry semantics are unchanged; only the available action vocabulary grows.
 LEGACY_MODEL_INSTRUCTIONS = MODEL_INSTRUCTIONS.split('\nAdditional constructive tools')[0].replace(
@@ -156,11 +173,45 @@ class FoldHarness:
                 "max_length_error": float(length_error), "max_seam_gap": float(seam_error),
                 "panel_count": len(panels)}
 
+    def reorient(self, command, frames=30):
+        """Rigid whole-sheet rotation: retain topology, UVs, and relative layers."""
+        if set(command)-{'type','name','origin','axis','angle_degrees'}:
+            raise ValueError('Reorientation moves ALL paper; use origin, axis and angle_degrees, not crease or layers')
+        try:
+            origin=np.asarray(command['origin'],dtype=float)
+            axis=np.asarray(command['axis'],dtype=float)
+            angle=float(command['angle_degrees'])
+        except (KeyError,TypeError,ValueError,OverflowError) as exc:
+            raise ValueError('Expected reorientation origin, axis and angle_degrees') from exc
+        if (origin.shape!=(3,) or axis.shape!=(3,) or not np.isfinite(origin).all()
+                or not np.isfinite(axis).all() or not math.isfinite(angle)
+                or not EPS<abs(angle)<=180):
+            raise ValueError('Reorientation needs finite 3D vectors and a nonzero angle in [-180,180]')
+        length=np.linalg.norm(axis)
+        if not math.isfinite(length) or length<EPS:raise ValueError('Reorientation axis must have nonzero finite length')
+        axis=axis/length
+        poses=[]
+        for fraction in np.linspace(0,1,max(frames,math.ceil(abs(angle)/3))+1):
+            matrix=rotation(axis,math.radians(angle)*fraction)
+            panels=copy.deepcopy(self.panels)
+            for panel in panels:
+                panel.xyz=(panel.xyz-origin)@matrix.T+origin
+                panel.contacts={other:(matrix@np.asarray(vector)).tolist() for other,vector in panel.contacts.items()}
+            if any(not np.isfinite(panel.xyz).all() for panel in panels):
+                raise ValueError('Reorientation produced non-finite coordinates')
+            poses.append(panels)
+        metrics=self.metrics(poses[-1])
+        if metrics['max_length_error']>EPS or metrics['max_seam_gap']>EPS:
+            raise ValueError('Reorientation failed rigid paper constraints')
+        self.panels=poses[-1];self.history.append(copy.deepcopy(command))
+        return poses
+
     def fold(self, command, frames=30):
         """Validate every sampled pose, then commit atomically; return animation."""
         if not isinstance(command, dict):
             raise ValueError('Fold command must be an object')
         kind = command.get('type', 'fold')
+        if kind == 'reorient':return self.reorient(command,frames)
         if kind == 'compound':
             from .fold_compound import compound
             try:
@@ -168,7 +219,7 @@ class FoldHarness:
             except (TypeError, OverflowError, RecursionError) as exc:
                 raise ValueError(f'Invalid compound command: {exc}') from exc
         if kind not in ('fold', 'precrease'):
-            raise ValueError('Unknown action type; use fold, precrease or compound')
+            raise ValueError('Unknown action type; use fold, precrease, compound or reorient')
         precrease = kind == 'precrease'
         allowed = {'type', 'name', 'crease', 'normal', 'moving_side', 'angle_degrees', 'layers'}
         if set(command) - allowed:

@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 from .batching import atomic_json
-from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS
+from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS
 from .fold_render import render
 from .fold_trial import TASK, FOLD_GEOMETRY_GUIDANCE
 from .fold_context import compact_context, physics_checkpoint
@@ -19,7 +19,7 @@ def audit(output):
     original_contract = (output / 'contract.txt').read_text()
     assert original_contract.startswith(task + '\n')
     original_instructions = original_contract[len(task)+1:]
-    assert original_instructions in (MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS)
+    assert original_instructions in (MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS)
     harness = FoldHarness()
     feedback = harness.execute([])
     history = []
@@ -39,7 +39,7 @@ def audit(output):
         assert inputs[0] == dict(type='video', uri=config['video_url'], processing=dict(type='static', fps=2))
         instructions = original_instructions
         for upgrade in config.get('action_contract_upgrades', []):
-            assert upgrade['instructions'] == MODEL_INSTRUCTIONS
+            assert upgrade['instructions'] in (MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS)
             if int(directory.name.removeprefix('call-')) > upgrade['after_call']:
                 instructions = upgrade['instructions']
         prompt = task + '\nAction contract:\n' + instructions

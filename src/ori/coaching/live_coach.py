@@ -208,6 +208,7 @@ def stage_instruction(step,epoch,commands):
     total=len(commands);action=commands[step-1] if step else {'name':'Start with a flat square sheet'}
     return (f'DISPLAY CONFIRMED: stage={step}, epoch={epoch}, total_folds={total}, is_final={step==total}. '
             + ('This is the starting sheet, not a fold. ' if step==0 else f'The demo now shows fold {step} of {total}. ')
+            +('This is a whole-sheet reorientation, NOT a new fold. Tell them to turn the entire model together without bending it or making a crease. ' if action.get('type')=='reorient' else '')
             +f'Action data: {json.dumps(action)}. Explain ONLY this displayed action briefly in plain English. '
             'The user can work on their desk off-camera and show the result later. Do not ask to see the desk. '
             'References are not camera evidence. Wait for independent verification before confirming success.')

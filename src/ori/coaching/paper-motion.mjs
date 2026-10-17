@@ -51,7 +51,7 @@ export function foldProgress(fraction) {
   return t*t*(3-2*t);
 }
 export function foldGuide(motion) {
-  if(!motion||motion.type==='compound')return null;
+  if(!motion||['compound','reorient'].includes(motion.type))return null;
   const origin=motion.crease[0],axis=motion.crease[1].map((x,i)=>x-origin[i]);
   const length=Math.hypot(...axis),n=axis.map(x=>x/length),moving=new Set(motion.moving),intervals=[];
   let anchor=null,score=0;

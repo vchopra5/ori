@@ -11,7 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .batching import atomic_json
-from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS
+from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS
 from .fold_render import render, export_history
 from .outputs import new_run, save_request
 from .fold_context import compact_context, physics_checkpoint
@@ -134,7 +134,7 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
         if config.get('transport', 'interactions') != transport:
             raise ValueError('Resume must use the original API transport')
         original_contract = (output / 'contract.txt').read_text()
-        if original_contract not in (task + '\n' + MODEL_INSTRUCTIONS, task + '\n' + LEGACY_MODEL_INSTRUCTIONS):
+        if original_contract not in tuple(task + '\n' + instructions for instructions in (MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS)):
             raise ValueError('Cannot resume with an unrecognized model contract')
         if config.get('context_policy') != context_policy or config.get('continue_on_blocked', False) != continue_on_blocked:
             raise ValueError('Resume must retain the original context and continuation policy')
@@ -161,8 +161,8 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
             raise ValueError('Resume requires a total call budget above the recorded call count')
         if (output / 'result.json').exists():
             atomic_json(output / f'result-through-{calls}.json', json.loads((output / 'result.json').read_text()))
-        if original_contract != task + '\n' + MODEL_INSTRUCTIONS and not config.get('action_contract_upgrades'):
-            config['action_contract_upgrades'] = [dict(after_call=calls, instructions=MODEL_INSTRUCTIONS)]
+        if (config.get('action_contract_upgrades') or [{'instructions':original_contract[len(task)+1:]}])[-1]['instructions'] != MODEL_INSTRUCTIONS:
+            config.setdefault('action_contract_upgrades', []).append(dict(after_call=calls, instructions=MODEL_INSTRUCTIONS))
         config.setdefault('budget_extensions', []).append(dict(after_call=calls, total_max_calls=max_calls))
         config.setdefault('generation_changes', []).append(dict(after_call=calls,
                     thinking_level=thinking_level, max_output_tokens=max_output_tokens))

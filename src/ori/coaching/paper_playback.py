@@ -12,6 +12,14 @@ def motion_from_poses(command, poses):
     start, middle, end = poses[0], poses[len(poses) // 2], poses[-1]
     moving = [a.id for a, b in zip(start, middle)
           if abs(a.xyz - b.xyz).max() > 1e-9]
+    if command.get('type') == 'reorient':
+        import numpy as np
+        origin=np.asarray(command['origin'],dtype=float);axis=np.asarray(command['axis'],dtype=float)
+        axis=axis/np.linalg.norm(axis)
+        return dict(type='reorient',crease=[origin.tolist(),(origin+axis).tolist()],
+                    angle_degrees=command['angle_degrees'],moving=[p.id for p in start],
+                    panels=[dict(id=p.id,material=p.uv.tolist(),vertices=p.xyz.tolist(),
+                                 contacts=p.contacts,end_contacts=q.contacts) for p,q in zip(start,end)])
     if command.get('type') == 'compound':
         from ..reconstruction.fold_compound import compile_paths
         return dict(type='compound', paths=compile_paths(command, start), moving=moving,
