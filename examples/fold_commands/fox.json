@@ -1,0 +1,9 @@
+{
+  "title": "Four-fold fox face",
+  "commands": [
+    {"name": "Fold the upper half behind the lower half", "crease": [[-1,0,0],[1,0,0]], "normal": [0,0,1], "moving_side": "left", "angle_degrees": -180},
+    {"name": "Fold both layers of the left corner up into an ear", "crease": [[-0.72,0,0],[-0.42,-0.6,0]], "normal": [0,0,1], "moving_side": "right", "angle_degrees": 180},
+    {"name": "Fold both layers of the right corner up into an ear", "crease": [[0.72,0,0],[0.42,-0.6,0]], "normal": [0,0,1], "moving_side": "left", "angle_degrees": -180},
+    {"name": "Fold both layers of the bottom tip up into the muzzle", "crease": [[-0.23,-0.77,0],[0.23,-0.77,0]], "normal": [0,0,1], "moving_side": "right", "angle_degrees": -180}
+  ]
+}

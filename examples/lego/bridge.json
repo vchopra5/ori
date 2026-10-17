@@ -1,0 +1,17 @@
+{
+  "title": "A four-piece LEGO bridge",
+  "uncertainties": [],
+  "unsupported": [],
+  "pieces": [
+    {"id":"base","part":"plate_2x4","color":"green"},
+    {"id":"left","part":"brick_1x2","color":"red"},
+    {"id":"right","part":"brick_1x2","color":"blue"},
+    {"id":"roof","part":"plate_2x4","color":"yellow"}
+  ],
+  "steps": [
+    {"piece":"base","position":[0,0,0],"rotation":0,"instruction":"Start with one green 2×4 plate."},
+    {"piece":"left","position":[0,0,1],"rotation":90,"instruction":"Snap the red 1×2 brick across the near end of the plate."},
+    {"piece":"right","position":[0,3,1],"rotation":90,"instruction":"Snap the blue 1×2 brick across the far end."},
+    {"piece":"roof","position":[0,0,4],"rotation":0,"instruction":"Connect the yellow 2×4 plate across both supports."}
+  ]
+}

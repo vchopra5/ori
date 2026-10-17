@@ -1,0 +1,165 @@
+{
+  "version": 2,
+  "title": "10 Bricks a Day - Day 198 - Tent",
+  "uncertainties": [
+    "Based on video-recognized inventory; placement coordinates corrected by the developer using connector checks.",
+    "Hinge angles are approximated at 44.5 degrees. A small ridge gap is retained rather than forcing intersecting roof plates.",
+    "Detached video subassemblies are reordered into root-outward placements.",
+    "Exact gray shades and curved-slope mold variant remain uncertain."
+  ],
+  "unsupported": [],
+  "pieces": [
+    {
+      "id": "base",
+      "part": "plate_6x8",
+      "color": "green"
+    },
+    {
+      "id": "hinge_base_l",
+      "part": "hinge_base_1x2",
+      "color": "light_bluish_gray"
+    },
+    {
+      "id": "hinge_top_l",
+      "part": "hinge_top_2x2",
+      "color": "light_bluish_gray"
+    },
+    {
+      "id": "hinge_base_r",
+      "part": "hinge_base_1x2",
+      "color": "light_bluish_gray"
+    },
+    {
+      "id": "hinge_top_r",
+      "part": "hinge_top_2x2",
+      "color": "light_bluish_gray"
+    },
+    {
+      "id": "roof_l",
+      "part": "plate_4x6",
+      "color": "tan"
+    },
+    {
+      "id": "trim_l",
+      "part": "tile_1x6",
+      "color": "dark_bluish_gray"
+    },
+    {
+      "id": "roof_r",
+      "part": "plate_4x6",
+      "color": "tan"
+    },
+    {
+      "id": "trim_r",
+      "part": "tile_1x6",
+      "color": "dark_bluish_gray"
+    },
+    {
+      "id": "sleeping_bag",
+      "part": "curved_slope_2x2",
+      "color": "white"
+    }
+  ],
+  "steps": [
+    {
+      "piece": "base",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": 0,
+      "instruction": "Start with the green 6×8 plate. Lay it flat with the eight-stud edge running front to back."
+    },
+    {
+      "piece": "hinge_base_l",
+      "attach": {
+        "to": "base",
+        "connector": "stud:4:3",
+        "self": "socket:0:0",
+        "turn": 90
+      },
+      "instruction": "Take one gray 1×2 hinge base. Align its two underside sockets with the highlighted studs on the right side of the green plate, then press down."
+    },
+    {
+      "piece": "hinge_top_l",
+      "attach": {
+        "to": "hinge_base_l",
+        "connector": "hinge",
+        "self": "hinge",
+        "angle": 44.5
+      },
+      "instruction": "Take one gray 2×2 hinge top. Line up its hinge fingers with the base’s pin openings and snap them together. Then tilt the top inward to about 45°. The hinge stays attached while it turns."
+    },
+    {
+      "piece": "hinge_base_r",
+      "attach": {
+        "to": "base",
+        "connector": "stud:1:4",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place the second gray hinge base opposite the first. Leave the middle open for the sleeping area. Press its two sockets onto the highlighted studs."
+    },
+    {
+      "piece": "hinge_top_r",
+      "attach": {
+        "to": "hinge_base_r",
+        "connector": "hinge",
+        "self": "hinge",
+        "angle": 44.5
+      },
+      "instruction": "Snap the second 2×2 hinge top into the opposite base. Tilt it toward the middle so the two hinge tops lean toward each other."
+    },
+    {
+      "piece": "roof_l",
+      "attach": {
+        "to": "hinge_top_l",
+        "connector": "stud:0:0",
+        "self": "socket:1:2",
+        "turn": 90
+      },
+      "instruction": "Take a tan 4×6 plate. Match its underside sockets to the four studs on the first tilted hinge top. Press straight toward the hinge, following its angle. The six-stud edge runs along the tent."
+    },
+    {
+      "piece": "trim_l",
+      "attach": {
+        "to": "roof_l",
+        "connector": "stud:0:0",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Take a dark gray 1×6 tile. Align its six sockets with the bottom outer row of studs on the first roof panel. Press it onto that row, with the smooth face outward."
+    },
+    {
+      "piece": "roof_r",
+      "attach": {
+        "to": "hinge_top_r",
+        "connector": "stud:0:0",
+        "self": "socket:1:2",
+        "turn": 90
+      },
+      "instruction": "Attach the other tan 4×6 plate to the opposite hinge top. Press along the tilted connection, not vertically. The upper edges form the tent ridge."
+    },
+    {
+      "piece": "trim_r",
+      "attach": {
+        "to": "roof_r",
+        "connector": "stud:0:0",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Add the second dark gray 1×6 tile along the matching bottom edge of the other roof panel. Keep the smooth face outward."
+    },
+    {
+      "piece": "sleeping_bag",
+      "attach": {
+        "to": "base",
+        "connector": "stud:2:2",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place the white curved 2×2 piece on the exposed studs inside the tent opening. Press down to finish the small sleeping area."
+    }
+  ]
+}

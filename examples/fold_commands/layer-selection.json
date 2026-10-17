@@ -1,0 +1,7 @@
+{
+  "title": "Select and fold only the top paper layer",
+  "commands": [
+    {"name":"Fold upper half onto lower half", "crease":[[-1,0,0],[1,0,0]], "normal":[0,0,1], "moving_side":"left", "angle_degrees":180, "layers":"all"},
+    {"name":"Lift only the top layer of the bottom tip", "crease":[[-1,-0.5,0],[1,-0.5,0]], "normal":[0,0,1], "moving_side":"right", "angle_degrees":-180, "layers":"top"}
+  ]
+}

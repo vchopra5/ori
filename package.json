@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "coaching:vision-setup": ".venv/bin/python -m ori.coaching.local_vision --prepare",
+    "coaching": "python3 -m src.ori.coaching.server",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {

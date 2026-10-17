@@ -7,7 +7,11 @@ name = "ori"
 version = "0.1.0"
 description = "Learn physical skills from video"
 requires-python = ">=3.11"
-dependencies = ["google-genai>=2.0.0,<3", "python-dotenv>=1.0,<2", "httpx>=0.28,<1"]
+dependencies = ["google-genai>=2.0.0,<3", "python-dotenv>=1.0,<2", "httpx>=0.28,<1", "websockets>=14,<17"]
+
+[project.optional-dependencies]
+local-vision = ["torch>=2.4,<3", "torchvision>=0.19", "transformers>=4.57,<5", "safetensors>=0.4", "numpy>=1.26", "pillow>=10.1"]
+simulation = ["mujoco>=3.2,<4", "numpy>=1.26", "pillow>=10.1", "imageio>=2.34", "imageio-ffmpeg>=0.5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
