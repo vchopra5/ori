@@ -227,7 +227,6 @@ target. Set done:true only when you believe the approximation is complete.
     def observe(kind, **fields):
         delay = pacing.get(str(fields.get('call'))) if kind == 'proposal' else None
         if delay:
-            progress.event('demo_pause', 'Demo pacing pause', seconds=delay, call=fields['call'])
             time.sleep(delay)
         if kind != 'finished':
             progress.observe(kind, **fields)

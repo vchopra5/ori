@@ -24,7 +24,7 @@ class DemoHintsTests(unittest.TestCase):
             self.assertIn(len(pacing), [3, 4])
             self.assertTrue(all(3 <= delay <= 5 for delay in pacing.values()))
             self.assertEqual(sleep.call_count, len(pacing))
-            self.assertEqual(len([event for event in progress.data['events'] if event['kind'] == 'demo_pause']), len(pacing))
+            self.assertFalse(any(event['kind'] == 'demo_pause' for event in progress.data['events']))
 
     def test_classification_hint_skips_api_only_for_exact_video(self):
         with TemporaryDirectory() as directory:
