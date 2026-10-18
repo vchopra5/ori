@@ -115,10 +115,19 @@ class ProgressTests(unittest.TestCase):
         self.assertIn('Right corner overshoots center.',text)
         self.assertIn('Move the right corner to the center crease.',text)
         self.assertIn('ONE brief reversible correction',text)
+        self.assertIn('specific visible mismatch from observation first',text)
         self.assertIn('does NOT pass',text)
         self.assertFalse(self.guard.completed)
         self.guard.select(2,4,1)
         self.assertFalse(self.guard.current_evidence(frame))
+
+    def test_not_yet_folded_does_not_claim_an_incorrect_fold(self):
+        frame=self.guard.capture(1,3,1,b'paper')
+        text=visual_feedback(dict(verdict='before_fold',paper_visible=True,
+            observation='The corner is still down.',instruction='Lift the corner up.'),frame)
+        self.assertIn('do not claim the learner made an incorrect fold',text)
+        self.assertIn('Lift the corner up.',text)
+        self.assertNotIn('It looks like you folded',text)
 
     def test_absent_and_ambiguous_diagnostics_do_not_nag_or_invent_mistakes(self):
         frame=self.guard.capture(1,3,1,b'camera')

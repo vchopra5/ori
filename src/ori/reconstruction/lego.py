@@ -20,14 +20,22 @@ COLORS = dict(red='#c91a09', blue='#0055bf', yellow='#f2cd37', green='#237841',
 from .lego_connections import CATALOG as CONNECTOR_CATALOG, compile_assembly
 COLORS.update(light_bluish_gray='#a0a5a9', dark_bluish_gray='#6c6e68')
 CONTRACT = """Watch the LEGO tutorial and reconstruct the actual visible build.
+If the tutorial builds several independent models, reconstruct the largest
+connected model. Name that selected model in the title and list the omitted
+models in uncertainties. Detached alternative models are outside this selection,
+not unsupported parts of the selected model. Do not omit unsupported parts from
+the selected model itself.
 Return JSON only: {"version":2,"title":string,"uncertainties":[string],"unsupported":[string],
 "pieces":[{"id":"base","part":"plate_6x8","color":"green"},...],
 "steps":[{"piece":"base","position":[0,0,0],"rotation":0,"instruction":string},
 {"piece":"p2","attach":{"to":"base","connector":"stud:2:1","self":"socket:0:0","turn":0},"instruction":string},...]}.
 Use catalog names below, or listed part IDs. List every physical piece once.
+Piece IDs must match [a-z][a-z0-9_]{0,39}: lowercase letters, digits and underscores,
+starting with a lowercase letter. Use those exact IDs in all steps and attachments.
 All later placements must ATTACH using named connectors; do not guess world poses.
 Local x/y index studs from 0. A w-by-d plate has socket:x:y on its underside and
-stud:x:y on top, x in [0,w-1], y in [0,d-1]. Tiles have sockets only, NO studs.
+stud:x:y on top, x in [0,w-1], y in [0,d-1]. Tiles have sockets only, NO studs. The 48x48 baseplate (4186) has top studs
+only, NO underside sockets, and is half a plate thick. Use it as the root.
 Slopes have all underside sockets but top studs only at y=0. Side-stud brick
 also has side_stud facing local -y. Snap turn is 0/90/180/270 degrees around
 parent connector normal. Snap placement inherits the parent's tilt automatically.
@@ -45,8 +53,10 @@ Root starts on the ground. Build from root outward; reorder detached subassembly
 steps into attached placements if necessary, and disclose the reordered sequence
 in uncertainties. Do not invent parts to evade constraints. Explicitly list only
 truly unsupported parts/connections in unsupported (e.g. Technic pins, clips).
+Do not shrink, simplify, or substitute parts to fit the piece limit. If the
+observed build exceeds the limit, report that in unsupported instead.
 Retain uncertainty about colors, counts, hidden pieces and hinge angles. Geometric
-validation alone never establishes a match to the video. Max 128 pieces, 256 steps.
+validation alone never establishes a match to the video. Max 384 pieces, 768 steps.
 Catalog (name: local x,y,z dimensions; z in plate heights; optional LEGO ID):
 """ + json.dumps({k:dict(size=v['size'],part_id=v['part_id']) for k,v in CONNECTOR_CATALOG.items()}) + "\nColors: " + ', '.join(COLORS)
 
@@ -66,8 +76,8 @@ def compile_plan(plan):
     if plan.get('version') == 2:
         return compile_assembly(plan, COLORS)
     pieces, steps = plan.get('pieces'), plan.get('steps')
-    if not isinstance(pieces, list) or not 1 <= len(pieces) <= 128 or not isinstance(steps, list) or len(steps) != len(pieces):
-        raise ValueError('Require 1–128 pieces and exactly one placement per piece')
+    if not isinstance(pieces, list) or not 1 <= len(pieces) <= 384 or not isinstance(steps, list) or len(steps) != len(pieces):
+        raise ValueError('Require 1–384 pieces and exactly one placement per piece')
     inventory = {}
     for p in pieces:
         if not isinstance(p, dict) or not isinstance(p.get('id'), str) or not re.fullmatch(r'[a-z][a-z0-9_]{0,39}', p['id']) or p['id'] in inventory:
@@ -160,13 +170,23 @@ def generate(client, url, output, model, observer=lambda *a: None):
     from google.genai import types
     from .video import plan_path
     plan_path(url)
-    prompt = CONTRACT
+    contract = CONTRACT
+    if plan_path(url).stem == 'SNSSXXXndMM':
+        contract += ('\nFor this castle only, the user explicitly authorizes substituting a standard '
+                     'baseplate_48x48 (4186) for the green support base whose exact dimensions '
+                     'are uncertain. Use one 48x48 baseplate as root and disclose this substitution '
+                     'in uncertainties. Preserve the full castle walls, four towers, courtyard, '
+                     'entrance and battlements without reducing their height or size. The loose '
+                     'minifigure is a scale reference, not part of the connected castle; omit it '
+                     'and disclose the omission. Do not list the authorized baseplate substitution '
+                     'or detached minifigure as unsupported. Do report other unsupported parts.')
+    prompt = contract
     for attempt in range(3):
         observer('working', f'Identifying standard pieces and placements (attempt {attempt+1}/3)')
         response = client.models.generate_content(model=model, contents=[
             types.Part(file_data=dict(file_uri=url, mime_type='video/mp4')),
             types.Part.from_text(text=prompt)], config=types.GenerateContentConfig(
-                response_mime_type='application/json', max_output_tokens=16384))
+                response_mime_type='application/json', max_output_tokens=65536))
         atomic_json(output / f'lego-response-{attempt+1}.json', dict(text=response.text))
         try:
             plan = json.loads(response.text or '')
@@ -178,7 +198,7 @@ def generate(client, url, output, model, observer=lambda *a: None):
         except (ValueError, KeyError, TypeError) as error:
             observer('rejected', str(error)[:500])
             atomic_json(output / f'lego-error-{attempt+1}.json', dict(error=str(error)))
-            prompt = CONTRACT + '\nPrevious candidate:\n' + (response.text or '') + '\nValidation error: ' + str(error) + '\nCorrect the plan without changing the observed build.'
+            prompt = contract + '\nPrevious candidate:\n' + (response.text or '') + '\nValidation error: ' + str(error) + '\nCorrect the plan without changing the observed build.'
             continue
         observer('accepted', f"Validated {report['pieces']} pieces and {report['connections']} connections")
         return report

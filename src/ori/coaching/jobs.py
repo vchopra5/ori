@@ -11,6 +11,7 @@ from ori.reconstruction.fold_trial import run, APPROXIMATE_TASK
 from ori.reconstruction.fold_commands import FoldHarness
 from ori.reconstruction.fold_context import DEFAULT_POLICY
 from .paper_playback import motion_from_poses, cache_key, compile_playback
+from .demo_hints import load_hints, prompt_for
 
 MODEL = 'gemini-4-argon'
 ROUTING = '''Watch this video and select a simulation engine. Return JSON with
@@ -127,8 +128,10 @@ class Progress:
             self.event(kind, 'Run finished: ' + self.data['status'].replace('_', ' '))
 
 
-def run_paper(client, url, output, progress, route, max_calls=None, resume=False, context_policy=None, thinking_level="medium"):
+def run_paper(client, url, output, progress, route, max_calls=None, resume=False, context_policy=None, thinking_level=None):
     """One continuous physics history, with lossless state and compacted dialogue."""
+    requested_thinking = thinking_level
+    thinking_level = thinking_level or 'medium'
     if thinking_level not in {"low", "medium", "high"}:
         raise ValueError("Unsupported generation thinking level")
     allowance = int(os.environ.get('ORI_LIVE_MAX_CALLS', '512')) if max_calls is None else max_calls
@@ -164,9 +167,21 @@ target. Set done:true only when you believe the approximation is complete.
         if not config.get('context_policy') or not config.get('continue_on_blocked'):
             raise ValueError('This older run cannot be continued by the compacting runner')
         task, policy = config['task'], config['context_policy']
+        if requested_thinking is None:
+            thinking_level = config.get('thinking_level', 'medium')
         previous_calls = max((int(p.name.removeprefix('call-')) for p in (output / 'debug').glob('call-*')), default=0)
     else:
         progress.begin_run()
+        hints = load_hints(url)
+        if hints is not None:
+            if requested_thinking is None:
+                thinking_level = hints.get('thinking_level', thinking_level)
+                if thinking_level not in {'low', 'medium', 'high'}:
+                    raise ValueError('Unsupported demo thinking level')
+            task += prompt_for(hints)
+            atomic_json(output / 'demo-hints.json', hints)
+            progress.data['demo_hints'] = True
+            progress.event('planning', 'Using local rehearsal hints for this video')
     progress.data.update(max_calls=previous_calls+allowance, resumable=True)
     progress.event('planning' if not resume else 'resuming',
                    'Working toward the target while preserving every validated fold')

@@ -132,7 +132,14 @@ def _library():
                           replay_url=f'{relative}/lego-playback.json',
                           report_url=f'{relative}/report.json', source_url=report.get('source_url')))
     from hashlib import sha256
+    from .demo_hints import load_hints
     for item in items:
+        if item['kind'] == 'paper' and item.get('source_url'):
+            try:
+                hints = load_hints(item['source_url'], ROOT / '.local/demo-hints.json')
+                item['prefer_fresh_run'] = bool(hints and hints.get('prefer_fresh_run'))
+            except (OSError, ValueError):
+                item['prefer_fresh_run'] = False
         base=(ROOT/item['report_url'].lstrip('/')).parent
         item['delete_token']=sha256(str(base.relative_to(ROOT)).encode()).hexdigest()
         item['saved_at']=base.stat().st_mtime

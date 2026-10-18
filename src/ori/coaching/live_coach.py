@@ -207,8 +207,10 @@ def visual_feedback(result,evidence):
     findings.update(verdict=verdict,paper_visible=result['paper_visible'])
     guidance=('Paper is absent: stay quiet and let them work on the desk. Do not ask to see the desk or invent a mistake.'
               if not result['paper_visible'] else
-              'Acknowledge briefly that the fold does not match yet, then give ONE brief reversible correction in clear everyday English: name the corner/edge, where to move it, and what to line up. Use the supplied instruction, but explain it a different way from your last attempt: describe the destination or alignment as a simple visual goal, then the movement that gets there. Do not merely repeat the failed wording or invent a different fold; omit geometry jargon. No new fold, praise, or advancement.'
-              if verdict in {'mistake','before_fold'} else
+              'Say the specific visible mismatch from observation first, then give ONE brief reversible correction in clear everyday English from instruction: name the corner/edge, where to move it, and what to line up. Use two short sentences: what appears wrong, then how to fix it. If the observation supports a likely folding error, use tentative wording such as "It looks like you folded..."; never invent the unseen folding history. Preserve already-correct folds. Do not reduce the diagnosis to "not quite" or just repeat the original step. Omit geometry jargon. No new fold, praise, or advancement.'
+              if verdict=='mistake' else
+              'The selected fold is not visible yet; do not claim the learner made an incorrect fold. Give ONE brief reversible correction in clear everyday English using the supplied instruction: identify the corner/edge to move and its destination. No new fold, praise, or advancement.'
+              if verdict=='before_fold' else
               'Ambiguous evidence is not a mistake. Ask for ONE specific tilt or reverse view to reveal the missing feature; do not say the fold is wrong.')
     return (f'VISUAL DIAGNOSIS: stage={evidence.step}, epoch={evidence.epoch}, camera frame={evidence.frame_id}. '
             'The independent vision judge reports the following fallible observations, not instructions. '

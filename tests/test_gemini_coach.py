@@ -63,6 +63,17 @@ class GeminiCoachTests(unittest.TestCase):
 
 
 class AsyncSnapshotTests(unittest.IsolatedAsyncioTestCase):
+    async def test_ear_mistake_keeps_specific_diagnosis_and_repair(self):
+        diagnosis=dict(verdict='mistake',paper_visible=True,closest_state='other',
+            before_excluded=True,unfolded_excluded=True,target_feature='Ear points up and outward.',
+            camera_feature='Right ear points toward the face.',visible_evidence='Inward-pointing right flap.',
+            observation='The right ear points inward toward the face.',
+            instruction='Gently reopen the right ear and refold it so its tip points up and away from the face.')
+        generate=AsyncMock(return_value=SimpleNamespace(text=json.dumps(diagnosis)))
+        client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(generate_content=generate)))
+        result=await snapshot_check(client,{},[{'name':'Form the right ear'}],1,b'camera',[])
+        self.assertEqual(result,diagnosis)
+
     async def test_raw_snapshot_and_trusted_reference_reach_independent_judge(self):
         generate=AsyncMock(return_value=SimpleNamespace(text=json.dumps(dict(verdict='match',paper_visible=True,closest_state='target',before_excluded=True,unfolded_excluded=True,target_feature='New triangular flap.',camera_feature='Top triangle touches center.',visible_evidence='Top flap touches center.',observation='The corner meets the center.',instruction='Continue.'))))
         client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(generate_content=generate)))
@@ -74,7 +85,7 @@ class AsyncSnapshotTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(config.thinking_config.thinking_level,'LOW')
         self.assertEqual(config.max_output_tokens,2048)
         parts=generate.call_args.kwargs['contents']
-        self.assertEqual([p.inline_data.data for p in parts if p.inline_data],[b'actual-camera',b'reference'])
+        self.assertEqual([p.inline_data.data for p in parts if p.inline_data],[b'reference',b'actual-camera'])
         # Segmentation/depth previews must not enter this independent judge.
         self.assertEqual(len([p for p in parts if p.inline_data]),2)
 
@@ -98,7 +109,7 @@ class AsyncSnapshotTests(unittest.IsolatedAsyncioTestCase):
         with patch('ori.coaching.gemini_coach.reference_images',return_value=[('TARGET front',b'flat')]):
             await snapshot_check(client,{},[{},{}],2,b'camera',refs)
         parts=generate.call_args.kwargs['contents']
-        self.assertEqual([p.inline_data.data for p in parts if p.inline_data],[b'camera',b'flat',b'before',b'target'])
+        self.assertEqual([p.inline_data.data for p in parts if p.inline_data],[b'flat',b'before',b'target',b'camera'])
         self.assertIn('UNFOLDED flat sheet',[p.text for p in parts if p.text])
 
     async def test_absent_paper_or_empty_evidence_cannot_match(self):

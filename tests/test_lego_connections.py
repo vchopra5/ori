@@ -25,6 +25,16 @@ def hinged():
 
 
 class ConnectorTests(unittest.TestCase):
+    def test_large_baseplate_supports_far_corner_and_has_no_sockets(self):
+        base=CATALOG['baseplate_48x48']
+        self.assertEqual(base['size'],[48,48,.5])
+        self.assertEqual(len(base['connectors']),48*48)
+        self.assertTrue(all(c['kind']=='stud' for c in base['connectors'].values()))
+        result=compile_plan(plan([('base','4186'),('corner','brick_2x2')],
+                                 [root(),snap('corner','base','stud:46:46')]))
+        self.assertEqual(result['connections'][0]['studs'],4)
+        np.testing.assert_allclose(result['pieces'][1]['origin'],[46,46,.2])
+
     def test_catalog_contains_standard_tent_parts(self):
         ids={p['part_id'] for p in CATALOG.values()}
         self.assertTrue({'3036','3032','6636','3937','6134','47457'}<=ids)

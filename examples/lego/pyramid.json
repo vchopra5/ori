@@ -1,0 +1,702 @@
+{
+  "version": 2,
+  "title": "Large Tan Pyramid",
+  "uncertainties": [
+    "Omitted two smaller independent tan pyramids built later in the video (medium 10x10 pyramid at 01:45 and small 8x8 pyramid at 02:35)."
+  ],
+  "unsupported": [],
+  "pieces": [
+    {
+      "id": "base",
+      "part": "plate_16x16",
+      "color": "tan"
+    },
+    {
+      "id": "l1_w1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_w2",
+      "part": "brick_2x6",
+      "color": "tan"
+    },
+    {
+      "id": "l1_w3",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_n1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_n2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_n3",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_e1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_e2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_s1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_s2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_s3",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l1_s4",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l2_w1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_w2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_w3",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_n1",
+      "part": "brick_2x6",
+      "color": "tan"
+    },
+    {
+      "id": "l2_n2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_e1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_s1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_s2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l2_s3",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l3_w1",
+      "part": "brick_2x8",
+      "color": "tan"
+    },
+    {
+      "id": "l3_w2",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l3_n1",
+      "part": "brick_2x8",
+      "color": "tan"
+    },
+    {
+      "id": "l3_s1",
+      "part": "brick_2x6",
+      "color": "tan"
+    },
+    {
+      "id": "l3_s2",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l3_e1",
+      "part": "brick_2x6",
+      "color": "tan"
+    },
+    {
+      "id": "ent_e1",
+      "part": "brick_1x2",
+      "color": "tan"
+    },
+    {
+      "id": "ent_s1",
+      "part": "brick_1x2",
+      "color": "tan"
+    },
+    {
+      "id": "ent_top",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_n1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_n2",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_w1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_e1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_w2",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l4_s1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l4_s2",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l4_e2",
+      "part": "brick_2x2",
+      "color": "tan"
+    },
+    {
+      "id": "l5_n1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l5_e1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l5_w1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l5_s1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l6_e1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l6_w1",
+      "part": "brick_2x4",
+      "color": "tan"
+    },
+    {
+      "id": "l7_top",
+      "part": "brick_2x2",
+      "color": "tan"
+    }
+  ],
+  "steps": [
+    {
+      "piece": "base",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": 0,
+      "instruction": "Place the 16x16 tan baseplate."
+    },
+    {
+      "piece": "l1_w1",
+      "attach": {
+        "to": "base",
+        "connector": "stud:1:11",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the back-left corner of layer 1."
+    },
+    {
+      "piece": "l1_w2",
+      "attach": {
+        "to": "base",
+        "connector": "stud:1:5",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x6 tan brick along the left wall of layer 1."
+    },
+    {
+      "piece": "l1_w3",
+      "attach": {
+        "to": "base",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick at the front-left corner of layer 1."
+    },
+    {
+      "piece": "l1_n1",
+      "attach": {
+        "to": "base",
+        "connector": "stud:3:14",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a 2x4 tan brick along the back wall of layer 1."
+    },
+    {
+      "piece": "l1_n2",
+      "attach": {
+        "to": "base",
+        "connector": "stud:7:14",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a second 2x4 tan brick along the back wall of layer 1."
+    },
+    {
+      "piece": "l1_n3",
+      "attach": {
+        "to": "base",
+        "connector": "stud:11:14",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a third 2x4 tan brick at the back-right corner of layer 1."
+    },
+    {
+      "piece": "l1_e1",
+      "attach": {
+        "to": "base",
+        "connector": "stud:13:9",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the right wall of layer 1."
+    },
+    {
+      "piece": "l1_e2",
+      "attach": {
+        "to": "base",
+        "connector": "stud:11:8",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a 2x4 tan brick turning inward on the right side for the entrance."
+    },
+    {
+      "piece": "l1_s1",
+      "attach": {
+        "to": "base",
+        "connector": "stud:11:4",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a 2x4 tan brick forming the other side of the entrance passage."
+    },
+    {
+      "piece": "l1_s2",
+      "attach": {
+        "to": "base",
+        "connector": "stud:3:2",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a 2x4 tan brick along the front wall of layer 1."
+    },
+    {
+      "piece": "l1_s3",
+      "attach": {
+        "to": "base",
+        "connector": "stud:7:2",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a second 2x4 tan brick along the front wall of layer 1."
+    },
+    {
+      "piece": "l1_s4",
+      "attach": {
+        "to": "base",
+        "connector": "stud:11:2",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Place a 2x2 tan brick at the front-right corner of layer 1."
+    },
+    {
+      "piece": "l2_w1",
+      "attach": {
+        "to": "l1_w1",
+        "connector": "stud:1:0",
+        "self": "socket:0:1",
+        "turn": 0
+      },
+      "instruction": "Start layer 2 with a 2x4 tan brick at the back-left."
+    },
+    {
+      "piece": "l2_w2",
+      "attach": {
+        "to": "l1_w2",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the left wall of layer 2."
+    },
+    {
+      "piece": "l2_w3",
+      "attach": {
+        "to": "l1_w3",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick at the front-left of layer 2."
+    },
+    {
+      "piece": "l2_n1",
+      "attach": {
+        "to": "l1_n1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x6 tan brick along the back wall of layer 2."
+    },
+    {
+      "piece": "l2_n2",
+      "attach": {
+        "to": "l1_n2",
+        "connector": "stud:1:3",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick at the back-right of layer 2."
+    },
+    {
+      "piece": "l2_e1",
+      "attach": {
+        "to": "l1_e1",
+        "connector": "stud:0:0",
+        "self": "socket:1:1",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the right wall of layer 2."
+    },
+    {
+      "piece": "l2_s1",
+      "attach": {
+        "to": "l1_s2",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the front wall of layer 2."
+    },
+    {
+      "piece": "l2_s2",
+      "attach": {
+        "to": "l1_s3",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a second 2x4 tan brick along the front wall of layer 2."
+    },
+    {
+      "piece": "l2_s3",
+      "attach": {
+        "to": "l1_s4",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the front-right of layer 2."
+    },
+    {
+      "piece": "l3_w1",
+      "attach": {
+        "to": "l2_w2",
+        "connector": "stud:1:0",
+        "self": "socket:0:1",
+        "turn": 0
+      },
+      "instruction": "Start layer 3 with a 2x8 tan brick along the left wall."
+    },
+    {
+      "piece": "l3_w2",
+      "attach": {
+        "to": "l2_w3",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the front-left of layer 3."
+    },
+    {
+      "piece": "l3_n1",
+      "attach": {
+        "to": "l2_n1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x8 tan brick along the back wall of layer 3."
+    },
+    {
+      "piece": "l3_s1",
+      "attach": {
+        "to": "l2_s1",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x6 tan brick along the front wall of layer 3."
+    },
+    {
+      "piece": "l3_s2",
+      "attach": {
+        "to": "l2_s2",
+        "connector": "stud:0:3",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the front-right of layer 3."
+    },
+    {
+      "piece": "l3_e1",
+      "attach": {
+        "to": "l2_e1",
+        "connector": "stud:0:2",
+        "self": "socket:1:5",
+        "turn": 0
+      },
+      "instruction": "Place a 2x6 tan brick along the right side of layer 3, bridging over the entrance."
+    },
+    {
+      "piece": "ent_e1",
+      "attach": {
+        "to": "l1_e2",
+        "connector": "stud:1:2",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 1x2 tan brick on the right side of the entrance doorway."
+    },
+    {
+      "piece": "ent_s1",
+      "attach": {
+        "to": "l1_s1",
+        "connector": "stud:0:2",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 1x2 tan brick on the left side of the entrance doorway."
+    },
+    {
+      "piece": "ent_top",
+      "attach": {
+        "to": "ent_s1",
+        "connector": "stud:0:0",
+        "self": "socket:0:0",
+        "turn": 90
+      },
+      "instruction": "Place a 2x4 tan brick across the top of the entrance doorway."
+    },
+    {
+      "piece": "l4_n1",
+      "attach": {
+        "to": "l3_w1",
+        "connector": "stud:1:6",
+        "self": "socket:0:0",
+        "turn": 270
+      },
+      "instruction": "Start layer 4 with a 2x4 tan brick at the back-left."
+    },
+    {
+      "piece": "l4_n2",
+      "attach": {
+        "to": "l3_n1",
+        "connector": "stud:1:3",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick at the back-right of layer 4."
+    },
+    {
+      "piece": "l4_w1",
+      "attach": {
+        "to": "l3_w1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the left side of layer 4."
+    },
+    {
+      "piece": "l4_e1",
+      "attach": {
+        "to": "l3_e1",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the right side of layer 4."
+    },
+    {
+      "piece": "l4_w2",
+      "attach": {
+        "to": "l3_w2",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the front-left of layer 4."
+    },
+    {
+      "piece": "l4_s1",
+      "attach": {
+        "to": "l3_s1",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick along the front of layer 4."
+    },
+    {
+      "piece": "l4_s2",
+      "attach": {
+        "to": "l3_s1",
+        "connector": "stud:0:5",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the front-right of layer 4."
+    },
+    {
+      "piece": "l4_e2",
+      "attach": {
+        "to": "ent_top",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick stepping inward above the entrance roof."
+    },
+    {
+      "piece": "l5_n1",
+      "attach": {
+        "to": "l4_n1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Start layer 5 with a 2x4 tan brick on the back side."
+    },
+    {
+      "piece": "l5_e1",
+      "attach": {
+        "to": "l4_e1",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the right side of layer 5."
+    },
+    {
+      "piece": "l5_w1",
+      "attach": {
+        "to": "l4_w1",
+        "connector": "stud:1:0",
+        "self": "socket:0:1",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the left side of layer 5."
+    },
+    {
+      "piece": "l5_s1",
+      "attach": {
+        "to": "l4_s1",
+        "connector": "stud:0:1",
+        "self": "socket:1:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the front side of layer 5."
+    },
+    {
+      "piece": "l6_e1",
+      "attach": {
+        "to": "l5_e1",
+        "connector": "stud:0:0",
+        "self": "socket:1:1",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the right half of layer 6."
+    },
+    {
+      "piece": "l6_w1",
+      "attach": {
+        "to": "l5_w1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x4 tan brick on the left half of layer 6."
+    },
+    {
+      "piece": "l7_top",
+      "attach": {
+        "to": "l6_w1",
+        "connector": "stud:1:1",
+        "self": "socket:0:0",
+        "turn": 0
+      },
+      "instruction": "Place a 2x2 tan brick at the very top peak of the pyramid."
+    }
+  ]
+}

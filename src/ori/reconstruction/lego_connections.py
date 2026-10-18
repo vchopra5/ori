@@ -43,12 +43,17 @@ def rectangular(w,d,h,kind='brick',part_id=None):
 CATALOG={}
 for kind,h in [('brick',1.2),('plate',.4),('tile',.4)]:
     sizes=[(1,1),(1,2),(1,3),(1,4),(1,6),(1,8),(2,2),(2,3),(2,4),(2,6),(2,8)]
-    if kind=='plate': sizes += [(4,4),(4,6),(4,8),(6,6),(6,8),(6,10),(6,12),(8,8)]
+    if kind=='plate': sizes += [(4,4),(4,6),(4,8),(6,6),(6,8),(6,10),(6,12),(8,8),(16,16)]
     if kind=='tile': sizes += [(4,4)]
     for w,d in sizes: CATALOG[f'{kind}_{w}x{d}']=rectangular(w,d,h,kind)
 for name,part_id in {'plate_6x8':'3036','plate_4x6':'3032','tile_1x6':'6636',
                       'brick_2x4':'3001','plate_2x4':'3020','brick_1x2':'3004'}.items():
     CATALOG[name]['part_id']=part_id
+# LDraw 4186: 48x48 studs, 4 LDU body thickness (0.2 stud lengths).
+# Baseplates have no ordinary underside socket connections.
+baseplate=rectangular(48,48,.2,part_id='4186')
+baseplate['connectors']={k:v for k,v in baseplate['connectors'].items() if v['kind']=='stud'}
+CATALOG['baseplate_48x48']=baseplate
 # Slopes expose studs only on the high, flat row; curved 47457 has two studs.
 for name,d,h,pid,curved in [('slope_2x2',2,1.2,'3039',False),('slope_2x3',3,1.2,'3298',False),
                            ('slope_2x4',4,1.2,'3037',False),('curved_slope_2x2',2,.8,'47457',True)]:
@@ -155,8 +160,8 @@ def verify(placed,hinges):
 
 def compile_assembly(plan,colors):
     pieces=plan.get('pieces');steps=plan.get('steps')
-    if not isinstance(pieces,list) or not 1<=len(pieces)<=128 or not isinstance(steps,list) or not 1<=len(steps)<=256:
-        raise ValueError('Require 1–128 pieces and 1–256 assembly steps')
+    if not isinstance(pieces,list) or not 1<=len(pieces)<=384 or not isinstance(steps,list) or not 1<=len(steps)<=768:
+        raise ValueError('Require 1–384 pieces and 1–768 assembly steps')
     import re
     inventory={}
     for source in pieces:

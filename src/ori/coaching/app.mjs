@@ -1,3 +1,4 @@
+import {finalStateThumbnail} from './library-thumbnails.mjs';
 import {playbackFinish} from './playback-finish.mjs';
 import {generationState} from './generation-state.mjs';
 import {readAPIJSON} from './api.mjs';
@@ -8,7 +9,7 @@ import {createHomeScene} from './home-scene.mjs';
 const $ = id => document.getElementById(id);
 const toySteps = [
   ['A moment of balance','Set the scene: a beam rests on its pivot, with a ball on the left and a block on the right.'],
-  ['A little nudge','Notice the slope of the beam. Which way would you expect the ball to move?'],
+  ['A nudge','Notice the slope of the beam. Which way would you expect the ball to move?'],
   ['Following the contact','Watch where the ball touches the beam. The blue marker follows that contact.'],
   ['A change in balance','As the ball changes position, the beam tilts. Explore the scene from another angle.'],
   ['One motion meets another','Follow the ball as it approaches the block. Think about what happens at contact.'],
@@ -17,6 +18,14 @@ const toySteps = [
 const toy = {id:'toy',title:'A study in balance',kind:'toy',engine:'Toy simulation',duration:12,steps:toySteps};
 let scene, current=toy, steps=toySteps, duration=12, time=0, playing=false, active=-1, library=[], stream=null, cameraSession=0;
 let lessonScene=null,lessonDemoTime=null;
+let playbackSpeed=1;
+try{const saved=Number(localStorage.getItem('ori-playback-speed'));if([.5,1,2,4,8].includes(saved))playbackSpeed=saved;}catch{}
+$('playback-speed').value=String(playbackSpeed);
+$('playback-speed').onchange=()=>{
+  playbackSpeed=Number($('playback-speed').value);
+  $('recording').playbackRate=playbackSpeed;
+  try{localStorage.setItem('ori-playback-speed',String(playbackSpeed));}catch{}
+};
 let paperPoint=null;
 let finishArmed=false,clearFinish=()=>{};
 let toastTimeout, loadSession=0, stopAt=null, liveJob=null, liveSession=0;
@@ -33,37 +42,23 @@ function renderActivity(){
   if(liveJob&&!(current.kind==='lego'&&liveJob.status==='completed')){
     const events=liveJob.events.slice(-8);
     for(const [index,event] of events.entries()){
-      const titles={classifying:'Watching your video',routed:'Simulator selected',working:'Argon is working',proposal:'Proposed · checking physics',tested:'Testing a fold mechanism',accepted:'Harness accepted',rejected:'Harness rejected',planning:'Planning a simple approach',recovering:'Replanning this fold',compacted:'Context refreshed',undone:'Revising the last action',resuming:'Continuing saved folds',incomplete:'Incomplete preview',finished:'Ready to explore',error:'Run stopped'};
+      const titles={classifying:'Watching your video',routed:'Preparing your tutorial',working:'Creating the steps',proposal:'Checking this step',tested:'Trying a fold',accepted:'Step added',rejected:'Trying a different fold',planning:'Planning a simple approach',recovering:'Replanning this fold',compacted:'Continuing your tutorial',undone:'Revising the last action',resuming:'Continuing saved folds',incomplete:'Incomplete preview',finished:'Ready to explore',error:'Tutorial paused'};
       const incompleteEnd=event.kind==='finished'&&!['model_claimed_done','completed'].includes(liveJob.status);
-      const message=incompleteEnd?'This run could not complete the video. Its accepted steps remain available as a preview.':event.message;
+      const message=incompleteEnd?'This tutorial is unfinished. You can preview the steps so far.':'';
       list.append(statusRow(incompleteEnd?'Incomplete preview':titles[event.kind]||event.kind,[message,...(event.names||[])].join(' · '),incompleteEnd||event.kind==='rejected'||event.kind==='error'||event.kind==='incomplete'?'rejected':index===events.length-1&&['queued','classifying','running'].includes(liveJob.status)?'active':'complete'));
     }
     return;
   }
   if(current.kind==='toy'){
     const progress=Math.max(0,active);
-    [['Meet the system','A beam, a pivot, and two objects.',0],['Follow the motion','Explore the illustrated trajectory.',1],['Look a little closer','Inspect the contact markers.',2],['Connect the steps','See the whole sequence unfold.',5]].forEach(([title,description,step])=>list.append(statusRow(title,description,progress>step?'complete':progress===step?'active':'pending')));
+    [['Meet the system','A beam, a pivot, and two objects.',0],['Follow the motion','Explore the illustrated trajectory.',1],['Look closer','Inspect the contact markers.',2],['Connect the steps','See the whole sequence unfold.',5]].forEach(([title,description,step])=>list.append(statusRow(title,description,progress>step?'complete':progress===step?'active':'pending')));
   }else{
     const report=current.report||{};
     if(current.kind==='lego'){
-      list.append(statusRow('Assembly validated',`${report.pieces} pieces · ${report.connections} connections · no body overlaps.`, 'complete'));
-      for(const p of report.inventory||[])list.append(statusRow(`${p.count} × ${p.color.replaceAll('_',' ')} ${p.part.replaceAll('_',' ')}`,'Required pieces','complete'));
-      for(const text of report.uncertainties||[])list.append(statusRow(report.origin==='original_design'?'Design limitation':'Video uncertainty',text,'pending'));
-      if(report.origin==='original_design'){
-        list.append(statusRow('Original Gemini design',`${report.step_validation?.checks?.length||steps.length} steps checked · hinge motion sampled every 2°.`, 'complete'));
-      }else list.append(statusRow('Video match not verified','Geometry checks do not confirm every piece matches the source.','pending'));
-    }else if(current.kind==='paper'){
-      list.append(statusRow('Harness run saved',`${report.commands_executed??report.accepted_folds??steps.length-1} accepted folding actions.`, 'complete'));
-      list.append(statusRow('Material preserved','The sheet keeps its original dimensions.',report.ok?'complete':'pending'));
-      list.append(statusRow('Seams checked','Connected paper stays connected through each fold.',report.ok?'complete':'pending'));
-      list.append(statusRow(current.audit?.passed?'Feedback independently replayed':'Layer order recorded',current.audit?.passed?'Every model response and render was checked against the harness.':'Explore the front, reverse, and overlapping layers.', 'complete'));
+      for(const p of report.inventory||[])list.append(statusRow(`${p.count} × ${p.color.replaceAll('_',' ')} ${p.part.replaceAll('_',' ')}`,'','complete'));
     }else{
-      const passed=report.passed===true;
-      list.append(statusRow('MuJoCo recording','Playback of a real dynamics run.','complete'));
-      list.append(statusRow('Dynamics evaluated',report.mujoco_version?`MuJoCo ${report.mujoco_version}`:'See the report for engine details.','complete'));
-      list.append(statusRow('Validation report',passed?'Saved run passed its checks.':'Open the report for validation results.',passed?'complete':'pending'));
+      steps.forEach(([title,description],i)=>list.append(statusRow(title,description,i<active?'complete':i===active?'active':'pending')));
     }
-    const link=document.createElement('a');link.className='report-link';link.href=current.report_url;link.target='_blank';link.rel='noopener';link.textContent='Open the full harness report ↗';list.append(link);
   }
 }
 function updateStep(){
@@ -78,7 +73,7 @@ function updateStep(){
   if(current.kind==='lego'){$('lego-step-number').textContent=`STEP ${active+1} OF ${steps.length}`;$('lego-back').disabled=active===0;$('lego-next').disabled=active===steps.length-1;}
   $('event-title').textContent=steps[active][0];$('event-description').textContent=steps[active][1];
   $('progress-label').textContent=`${String(active+1).padStart(2,'0')} / ${String(steps.length).padStart(2,'0')}`;
-  $('event-status').lastChild.textContent=current.kind==='toy'?'Illustrative sample motion':current.kind==='paper'?(current.commands?.[active-1]?.type==='reorient'?'Whole-sheet turn · no new crease':'Recorded fold · drag to explore'):'Saved harness result';
+  $('event-status').lastChild.textContent=current.kind==='toy'?'Sample motion':current.kind==='paper'?(current.commands?.[active-1]?.type==='reorient'?'Whole-sheet turn · no new crease':'Drag to explore the fold'):'Drag to explore';
   const card=$('steps').children[active];if(card&&$('steps').dataset.long==='true')$('steps').scrollTo({left:Math.max(0,card.offsetLeft-$('steps').offsetLeft-80),behavior:'instant'});
   $('lesson-step').textContent=current.kind==='paper'?(active===0?'STARTING SHEET':`${current.commands?.[active-1]?.type==='reorient'?'TURN':'FOLD'} ${active} OF ${steps.length-1}`):`STEP ${active+1} OF ${steps.length}`;$('lesson-title').textContent=steps[active][0];$('lesson-instruction').textContent=steps[active][1];
   $('lesson-back').disabled=active===0;$('lesson-next').textContent=active===steps.length-1?'Finish lesson ✓':'Next step →';
@@ -109,12 +104,17 @@ async function loadItem(item, options={}){
   $('home-view').hidden=true;$('studio-view').hidden=false;$('retry-run').hidden=true;$('teach').disabled=false;
   const session=++loadSession;setPlaying(false);let replay=options.replay;
   if(['paper','lego'].includes(item.kind)&&!replay){
-    $('paper-loading').hidden=false;$('paper-loading-text').textContent='Unfolding the saved motion…';
+    $('paper-loading').hidden=false;$('paper-loading-text').textContent='Loading tutorial…';
     try{const response=await fetch(item.replay_url);if(!response.ok)throw Error();replay=await readAPIJSON(response);}
-    catch{if(session===loadSession){$('paper-loading').hidden=true;toast('This saved replay could not be prepared. Check the run artifacts.');}return;}
+    catch{if(session===loadSession){$('paper-loading').hidden=true;toast('This tutorial could not be loaded. Please try again.');}return;}
   }
   if(session!==loadSession)return;$('paper-loading').hidden=true;
   stopCamera();$('teaching').hidden=true;current=item;active=-1;time=0;
+  if(item.kind==='lego'&&!item.report?.inventory?.length){
+    const inventory=new Map();
+    for(const piece of replay.pieces){const key=JSON.stringify([piece.part,piece.color]);const entry=inventory.get(key)||{part:piece.part,color:piece.color,count:0};entry.count++;inventory.set(key,entry);}
+    current={...item,report:{...item.report,inventory:[...inventory.values()]}};
+  }
   $('lego-tools').hidden=item.kind!=='lego'||replay?.version!==2;document.querySelector('.studio-grid').classList.toggle('lego-mode',item.kind==='lego');$('lego-xray').setAttribute('aria-pressed','false');if(scene)scene.legoXray=false;
   $('paper-tools').hidden=item.kind!=='paper';document.querySelector('.simulation').classList.toggle('is-paper',item.kind==='paper');
   $('scene').setAttribute('aria-label',item.kind==='paper'?'Interactive folded paper. Drag to orbit; scroll to zoom.':'Interactive three dimensional seesaw. Drag to rotate; scroll to zoom.');
@@ -124,23 +124,23 @@ async function loadItem(item, options={}){
   $('source-link').hidden=!item.source_url;if(item.source_url)$('source-link').href=item.source_url;
   $('final-view').hidden=item.kind!=='paper';
   history.replaceState(null,'',`?run=${encodeURIComponent(item.id)}`);
-  const video=$('recording');video.pause();video.removeAttribute('src');video.load();video.hidden=item.kind!=='recording';$('scene').hidden=item.kind==='recording';
+  const video=$('recording');video.pause();video.removeAttribute('src');video.load();video.playbackRate=playbackSpeed;video.hidden=item.kind!=='recording';$('scene').hidden=item.kind==='recording';
   $('contacts').hidden=item.kind==='recording';$('orbit-hint').hidden=item.kind==='recording';
-  $('session-name').textContent=item.title;$('sample-badge').textContent=item.kind==='toy'?'Interactive sample':item.id.startsWith('trial-')?'Argon approximation':'Saved harness run';
-  $('engine-badge').replaceChildren(icon('cube'),document.createTextNode(` ${item.engine}`));
+  $('session-name').textContent=item.title;$('sample-badge').textContent=item.kind==='toy'?'Interactive sample':'Tutorial';
+  $('engine-badge').replaceChildren(icon('cube'),document.createTextNode(` ${{paper:'Origami',lego:'LEGO',toy:'Sample',recording:'Video'}[item.kind]||'Tutorial'}`));
   $('canvas-title').textContent=item.kind==='toy'?'Learning how it moves.':item.title;
-  $('canvas-eyebrow').textContent=item.kind==='toy'?'SMALL ACTIONS. INTERESTING PHYSICS.':'FROM THE PHYSICS HARNESS';
-  $('canvas-subtitle').textContent=item.kind==='toy'?'A little motion. A whole chain of possibilities.':item.kind==='paper'?'One sheet. Every crease, a little possibility.':'Real dynamics, recorded directly from MuJoCo.';
-  $('activity-tag').textContent=item.kind==='toy'?'SAMPLE':'RECORDED';$('activity-title').textContent=item.kind==='toy'?'A world in the making.':'Grounded in a harness.';
-  $('activity-description').textContent=item.kind==='toy'?'Explore the motions that make this little system work.':'Validation from the saved run. These checks are not running live.';
-  $('footer-note').textContent=item.kind==='toy'?'Toy playback · illustrative motion, not a MuJoCo solve':item.kind==='paper'?'Rigid paper · recorded hinge motion · display layer spacing':'Recorded MuJoCo run · inspect the report for assumptions';
+  $('canvas-eyebrow').textContent=item.kind==='toy'?'EXPLORE':'STEP BY STEP';
+  $('canvas-subtitle').textContent=item.kind==='toy'?'Watch the ball change the balance.':item.kind==='paper'?'Follow each fold at your own pace.':'Watch each step at your own pace.';
+  $('activity-tag').textContent=item.kind==='toy'?'SAMPLE':'RECORDED';$('activity-title').textContent=item.kind==='lego'?'Pieces you’ll need':'Follow along';
+  $('activity-description').textContent=item.kind==='lego'?'Gather these pieces before you start.':'Choose a step to watch it again.';
+  $('footer-note').textContent='';
   if(item.kind==='toy'){steps=toySteps;duration=12;scene?.buildToy();}
-  else if(item.kind==='lego'){steps=replay.version===2?replay.steps.map((step,i)=>[`${step.action==='rotate_hinge'?'Adjust':'Place'} ${replay.pieces.find(p=>p.id===step.piece)?.part.replaceAll('_',' ')||'piece'}`,step.instruction]):replay.pieces.map((p,i)=>[`Place piece ${i+1}: ${p.color} ${p.part.replaceAll('_',' ')}`,p.instruction]);duration=steps.length*replay.seconds_per_step;scene?.setLego(replay);$('teach').disabled=true;$('contacts').hidden=true;$('fold-guide-key').hidden=true;$('scene').setAttribute('aria-label','LEGO assembly. Drag to orbit; scroll to zoom.');$('canvas-subtitle').textContent=`${replay.pieces.length} pieces · validated snap connections`;$('footer-note').textContent='Illustrative assembly motion · validated end positions · simplified hinge geometry';}
-  else if(item.kind==='paper'){steps=[['The starting sheet','Begin with the flat sheet, ready for its first fold.'],...item.commands.map(command=>[command.name||'Accepted fold',command.type==='reorient'?'Turn the whole sheet together. Keep every fold in place; do not make a new crease.':`Follow this accepted harness action: ${(command.name||'Fold').toLowerCase()}.`])];if(steps.length!==replay.states.length)steps=replay.states.map((_,i)=>[i===0?'The starting sheet':`Accepted fold ${i}`,i===0?'Start with the flat sheet.':item.commands[i-1]?.name||'Inspect this saved state.']);duration=steps.length*(replay.seconds_per_step||2.6);scene?.setPaper(replay);}
-  else{duration=Number(item.report.simulation_seconds)||14;steps=[['The starting state','Observe the mechanism before the actuators move.'],['The motion begins','Watch the pre-existing joints start to move.'],['Following the motion','Compare the changing shape and contact.'],['The final state','Inspect the final state and the saved validation report.']];video.src=item.video;video.onerror=()=>toast('This recording could not be loaded. Try another library item.');video.onloadedmetadata=()=>{if(current.id!==item.id)return;duration=video.duration;$('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${steps.length} steps · ${Math.round(duration)} seconds`;renderSteps();};}
+  else if(item.kind==='lego'){steps=replay.version===2?replay.steps.map((step,i)=>[`${step.action==='rotate_hinge'?'Adjust':'Place'} ${replay.pieces.find(p=>p.id===step.piece)?.part.replaceAll('_',' ')||'piece'}`,step.instruction]):replay.pieces.map((p,i)=>[`Place piece ${i+1}: ${p.color} ${p.part.replaceAll('_',' ')}`,p.instruction]);duration=steps.length*replay.seconds_per_step;scene?.setLego(replay);$('teach').disabled=true;$('contacts').hidden=true;$('fold-guide-key').hidden=true;$('scene').setAttribute('aria-label','LEGO assembly. Drag to orbit; scroll to zoom.');$('canvas-subtitle').textContent=`${replay.pieces.length} pieces · ${steps.length} steps`;$('footer-note').textContent='';}
+  else if(item.kind==='paper'){steps=[['The starting sheet','Begin with the flat sheet, ready for its first fold.'],...item.commands.map(command=>[command.name||'Fold',command.type==='reorient'?'Turn the whole sheet together. Keep every fold in place; do not make a new crease.':command.name||'Follow the fold shown above.'])];if(steps.length!==replay.states.length)steps=replay.states.map((_,i)=>[i===0?'The starting sheet':`Fold ${i}`,i===0?'Start with the flat sheet.':item.commands[i-1]?.name||'Look at the fold from another angle.']);duration=steps.length*(replay.seconds_per_step||2.6);scene?.setPaper(replay);}
+  else{duration=Number(item.report.simulation_seconds)||14;steps=[['The starting state','Observe the mechanism before the actuators move.'],['The motion begins','Watch the pre-existing joints start to move.'],['Following the motion','Compare the changing shape and contact.'],['The final state','Look at the finished project from another angle.']];video.src=item.video;video.onerror=()=>toast('This recording could not be loaded. Try another library item.');video.onloadedmetadata=()=>{if(current.id!==item.id)return;duration=video.duration;$('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${steps.length} steps · ${Math.round(duration)} seconds`;renderSteps();};}
   $('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${steps.length} steps · ${Math.round(duration)} seconds`;scene?.resize();renderSteps();seek(0);
 }
-function makeLibraryItem(item){const row=document.createElement('div');row.className='library-row';row.dataset.token=item.delete_token||'';const button=document.createElement('button');button.className='library-item';if(item.thumbnail){const thumbnail=document.createElement('img');thumbnail.className='library-thumbnail';thumbnail.src=item.thumbnail;thumbnail.alt='';thumbnail.onerror=()=>thumbnail.remove();button.append(thumbnail);}else button.append(icon(item.kind==='recording'?'play':'cube'));const copy=document.createElement('div');const title=document.createElement('strong');title.textContent=item.title;const description=document.createElement('p');description.textContent=item.kind==='toy'?'Interactive sample · 6 moments to explore':`${item.engine} · saved ${item.kind==='recording'?'recording and validation':item.kind==='lego'?'assembly and inventory':'folding motion and validation'}`;if(item.saved_at)description.textContent+=` · ${new Date(item.saved_at*1000).toLocaleString()}`;copy.append(title,description);const arrow=icon('arrow');arrow.classList.add('item-arrow');button.append(copy,arrow);button.onclick=()=>{$('library-dialog').close();loadItem(item).catch(()=>toast('This saved run could not be opened.'));};row.append(button);if(item.delete_token){const remove=document.createElement('button');remove.className='delete-run-button';remove.textContent='Delete';remove.setAttribute('aria-label',`Delete ${item.title}`);remove.onclick=()=>confirmDeleteRun(item);row.append(remove);}return row;}
+function makeLibraryItem(item){const row=document.createElement('div');row.className='library-row';row.dataset.token=item.delete_token||'';const button=document.createElement('button');button.className='library-item';if(item.thumbnail){const thumbnail=document.createElement('img');thumbnail.className='library-thumbnail';thumbnail.src=item.thumbnail;thumbnail.alt='';thumbnail.onerror=()=>thumbnail.remove();button.append(thumbnail);}else button.append(icon(item.kind==='recording'?'play':'cube'));finalStateThumbnail(item).then(url=>{if(!url)return;const preview=document.createElement('img');preview.className='library-thumbnail';preview.alt='Finished '+item.title;preview.src=url;preview.onload=()=>{const old=button.querySelector('.library-thumbnail')||button.querySelector(':scope > svg');if(old)old.replaceWith(preview);else button.prepend(preview);};});const copy=document.createElement('div');const title=document.createElement('strong');title.textContent=item.title;const description=document.createElement('p');description.textContent=item.kind==='toy'?'Interactive sample · 6 moments to explore':({paper:'Origami tutorial',lego:'LEGO building instructions',recording:'Video tutorial'}[item.kind]||'Tutorial');if(item.saved_at)description.textContent+=` · ${new Date(item.saved_at*1000).toLocaleString()}`;copy.append(title,description);const arrow=icon('arrow');arrow.classList.add('item-arrow');button.append(copy,arrow);button.onclick=()=>{$('library-dialog').close();loadItem(item).catch(()=>toast('This tutorial could not be opened.'));};row.append(button);if(item.delete_token){const remove=document.createElement('button');remove.className='delete-run-button';remove.textContent='Delete';remove.setAttribute('aria-label',`Delete ${item.title}`);remove.onclick=()=>confirmDeleteRun(item);row.append(remove);}return row;}
 let pendingDelete=null;
 function confirmDeleteRun(item){pendingDelete=item;$('delete-run-title').textContent=`Delete “${item.title}”?`;$('delete-run-error').hidden=true;$('delete-run-confirm').disabled=false;$('delete-run-dialog').showModal();}
 $('delete-run-cancel').onclick=()=>$('delete-run-dialog').close();
@@ -161,9 +161,9 @@ $('delete-run-confirm').onclick=async()=>{
 
 async function openLibrary(){
   const items=$('library-items');items.replaceChildren(makeLibraryItem(toy));$('library-dialog').showModal();
-  try{const response=await fetch('/api/library',{cache:'no-store'});if(!response.ok)throw Error();library=await readAPIJSON(response);for(const item of library)items.append(makeLibraryItem(item));if(!library.length){const p=document.createElement('p');p.className='library-empty';p.textContent='No saved harness runs yet. Generated runs will appear here when available.';items.append(p);}}
-  catch{const p=document.createElement('p');p.className='library-empty';p.textContent='Start the coaching Python server to browse local harness runs.';items.append(p);}
-  try{const drafts=JSON.parse(localStorage.getItem('ori-video-drafts')||'[]');if(drafts.length){const heading=document.createElement('p');heading.className='draft-label';heading.textContent='VIDEO DRAFTS · NOT YET RECONSTRUCTED';items.append(heading);for(const draft of drafts.slice(-3).reverse()){const p=document.createElement('p');p.className='import-url';p.textContent=draft.url;items.append(p);}}}catch{/* Browsing remains available when storage is disabled. */}
+  try{const response=await fetch('/api/library',{cache:'no-store'});if(!response.ok)throw Error();library=await readAPIJSON(response);for(const item of library)items.append(makeLibraryItem(item));if(!library.length){const p=document.createElement('p');p.className='library-empty';p.textContent='No tutorials yet. Add a video to get started.';items.append(p);}}
+  catch{const p=document.createElement('p');p.className='library-empty';p.textContent='Your library is unavailable. Please try again.';items.append(p);}
+  try{const drafts=JSON.parse(localStorage.getItem('ori-video-drafts')||'[]');if(drafts.length){const heading=document.createElement('p');heading.className='draft-label';heading.textContent='VIDEO DRAFTS';items.append(heading);for(const draft of drafts.slice(-3).reverse()){const p=document.createElement('p');p.className='import-url';p.textContent=draft.url;items.append(p);}}}catch{/* Browsing remains available when storage is disabled. */}
 }
 function stopCamera(){setIntroVisible(false);liveCoach.stop();cameraSession++;resetCoachStep();$('stop-camera').hidden=true;$('camera-guide').hidden=true;paperPoint=null;$('paper-point').hidden=true;stream?.getTracks().forEach(track=>track.stop());stream=null;$('webcam').srcObject=null;$('webcam').hidden=true;$('camera-placeholder').hidden=false;$('camera-label').hidden=true;$('enable-camera').disabled=false;$('enable-camera').textContent='Turn on camera';$('use-desk-view').disabled=false;$('camera-source').disabled=false;}
 function setIntroVisible(intro){
@@ -269,7 +269,7 @@ document.querySelectorAll('[data-close]').forEach(button=>button.onclick=()=>but
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}}));
 $('link-form').onsubmit=async e=>{e.preventDefault();const input=$('video-link');let url;try{url=new URL(input.value);if(!['http:','https:'].includes(url.protocol))throw Error();}catch{input.setCustomValidity('Use a complete http or https video URL.');input.reportValidity();return;}input.setCustomValidity('');
   const videoId=value=>{try{const u=new URL(value);if(u.hostname==='youtu.be')return u.pathname.slice(1);if(!['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname))return null;return u.searchParams.get('v')||u.pathname.split('/').filter(Boolean).pop();}catch{return null;}};
-  try{const response=await fetch('/api/library');if(response.ok){const savedRuns=await readAPIJSON(response);const matching=savedRuns.find(item=>item.source_url&&videoId(url.href)&&videoId(item.source_url)===videoId(url.href));if(matching){await loadItem(matching);toast('Opened the saved tutorial.');return;}}}catch{/* Unsaved links can still be stored as drafts. */}
+  try{const response=await fetch('/api/library');if(response.ok){const savedRuns=await readAPIJSON(response);const matching=savedRuns.find(item=>item.source_url&&videoId(url.href)&&videoId(item.source_url)===videoId(url.href));if(matching&&!matching.prefer_fresh_run){await loadItem(matching);toast('Opened the saved tutorial.');return;}}}catch{/* Unsaved links can still be stored as drafts. */}
   try{
     const response=await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url.href})});
     const job=await readAPIJSON(response);if(!response.ok)throw Error(job.error||'Could not start this video.');
@@ -286,7 +286,7 @@ function renderGeneration(job){
 async function followJob(id){
   $('home-view').hidden=true;$('studio-view').hidden=false;scene?.resize();
   const session=++liveSession;let accepted=-1,attempt=-1,commandHash=null,revision=-1,failures=0;
-  liveJob={events:[],status:'classifying'};renderGeneration(liveJob);setPlaying(false);$('paper-loading').hidden=false;$('paper-loading-text').textContent='Argon is watching your video…';
+  liveJob={events:[],status:'classifying'};renderGeneration(liveJob);setPlaying(false);$('paper-loading').hidden=false;$('paper-loading-text').textContent='Watching your video…';
   history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
   while(session===liveSession){
     try{
@@ -294,24 +294,24 @@ async function followJob(id){
       if(!response.ok)throw Error('Could not read the live run');
       const job=await readAPIJSON(response);if(session!==liveSession)return;liveJob=job;failures=0;renderGeneration(job);
       if(job.route?.kind==='lego'&&job.status==='running')$('paper-loading-text').textContent='Identifying pieces and checking snap connections…';
-      if(job.route?.kind==='mujoco'&&job.status==='running')$('paper-loading-text').textContent='Building and validating the MuJoCo scene…';
+      if(job.route?.kind==='mujoco'&&job.status==='running')$('paper-loading-text').textContent='Preparing the animation…';
       if(job.route?.kind==='origami'&&(job.accepted!==accepted||(job.attempt||0)!==attempt||job.command_hash!==commandHash)){
         const result=await fetch(`/api/jobs/${encodeURIComponent(id)}/playback`,{cache:'no-store'});
         if(!result.ok)throw Error('Paper state is not ready');
         const replay=await readAPIJSON(result);if(session!==liveSession)return;
         // Each atomic snapshot can be newer than the status poll. Wait until they agree.
         if(replay.states.length!==job.commands.length+1||(replay.attempt||0)!==(job.attempt||0)||(job.command_hash&&replay.command_hash!==job.command_hash)){await new Promise(resolve=>setTimeout(resolve,1200));continue;}
-        await loadItem({id:job.id,title:job.route.title||'Paper, imagined by Argon',kind:'paper',engine:'Argon · paper harness',
+        await loadItem({id:job.id,title:job.route.title||'Origami tutorial',kind:'paper',engine:'Argon · paper harness',
           commands:job.commands,source_url:job.url,report:{...replay.metrics,ok:true,accepted_folds:job.accepted},
           report_url:`/api/jobs/${id}`,replay_url:`/api/jobs/${id}/playback`},{live:true,replay});
         history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
         accepted=job.accepted;attempt=job.attempt||0;commandHash=job.command_hash;seek(stepTime(steps.length-1));setPlaying(job.accepted>0);
       }
       if(job.revision!==revision){
-        revision=job.revision;$('sample-badge').textContent=['queued','classifying','running'].includes(job.status)?'Live Argon run':['model_claimed_done','completed'].includes(job.status)?'Ready to explore':'Incomplete preview';$('activity-tag').textContent=['queued','classifying','running'].includes(job.status)?'LIVE':['model_claimed_done','completed'].includes(job.status)?'READY':'INCOMPLETE';
-        $('activity-title').textContent=job.route?.title||'Choosing the right physics.';
+        revision=job.revision;$('sample-badge').textContent=['queued','classifying','running'].includes(job.status)?'Creating tutorial':['model_claimed_done','completed'].includes(job.status)?'Ready to explore':'Incomplete preview';$('activity-tag').textContent=['queued','classifying','running'].includes(job.status)?'LIVE':['model_claimed_done','completed'].includes(job.status)?'READY':'INCOMPLETE';
+        $('activity-title').textContent=job.route?.title||'Preparing your tutorial';
         $('activity-list').classList.add('live-events');
-        $('activity-description').textContent='Argon proposals and harness results · only accepted folds enter the paper view.';
+        $('activity-description').textContent='Your steps will appear as they’re ready.';
         renderActivity();
       }
       if(!['queued','classifying','running'].includes(job.status)){
@@ -320,9 +320,9 @@ async function followJob(id){
           const items=await readAPIJSON(await fetch('/api/library'));const item=items.find(value=>value.id===job.id);if(item)await loadItem(item,{live:true});
         }
         const complete=['model_claimed_done','completed'].includes(job.status);
-        const message=job.message||(complete?'Your approximation is ready.':'This run could not complete the video. Any saved steps are an incomplete preview.');
+        const message=complete?'Your tutorial is ready.':'This tutorial is unfinished. You can preview the steps so far or try again.';
         $('activity-description').textContent=message;
-        $('retry-run').hidden=complete;$('retry-run').textContent=job.resumable?'Continue this run →':'Try another approach ↻';$('teach').disabled=!complete||job.route?.kind==='lego';
+        $('retry-run').hidden=complete;$('retry-run').textContent=job.resumable?'Continue tutorial →':'Try another approach ↻';$('teach').disabled=!complete||job.route?.kind==='lego';
         toast(message);return;
       }
     }catch(error){if(++failures>=5){renderGeneration({...liveJob,status:'paused'});$('paper-loading').hidden=true;toast('Live updates disconnected. Reload this page to reconnect to the saved job.');return;}}
@@ -355,7 +355,7 @@ $('lesson-autoloop').onchange=()=>{
     setPlaying(false);startLessonDemo();
   }
 };
-$('lesson-next').onclick=()=>{if(active===steps.length-1){stopCamera();$('teaching').hidden=true;toast('A little more understood. Nicely explored.');$('teach').focus();}else playLessonStep(active+1);};
+$('lesson-next').onclick=()=>{if(active===steps.length-1){stopCamera();$('teaching').hidden=true;toast('Lesson complete!');$('teach').focus();}else playLessonStep(active+1);};
 async function refreshCameraSources(){
   if(!navigator.mediaDevices?.enumerateDevices)return;
   try{
@@ -393,7 +393,7 @@ async function startCapture(kind='camera',deviceId=''){
     stream=result;$('webcam').srcObject=stream;$('webcam').hidden=false;
     $('camera-placeholder').hidden=true;$('camera-label').hidden=false;$('camera-guide').hidden=true;
     updateCameraGuide();
-    $('camera-label').textContent=kind==='desk'?'DESK VIEW WINDOW · GEMINI COACH':current.kind==='paper'?'YOUR WORKSPACE · GEMINI COACH':'YOUR WORKSPACE · LOCAL CAMERA';
+    $('camera-label').textContent=kind==='desk'?'DESK VIEW':current.kind==='paper'?'YOUR CAMERA':'YOUR CAMERA';
     result.getVideoTracks()[0]?.addEventListener('ended',()=>{if(stream===result){stopCamera();toast(kind==='desk'?'Desk View sharing ended.':'Camera disconnected.');}});
     startCoach();await refreshCameraSources();
   }catch(error){
@@ -411,7 +411,7 @@ $('camera-source').onchange=()=>startCapture('camera',$('camera-source').value);
 $('use-desk-view').onclick=()=>startCapture('desk');
 navigator.mediaDevices?.addEventListener?.('devicechange',refreshCameraSources);
 window.addEventListener('pagehide',stopCamera);
-try{scene=new StudioScene($('scene'));scene.resize();}catch(error){$('scene-error').hidden=false;$('scene-error').textContent='The 3D view needs WebGL. Try another browser, or open a recorded MuJoCo run from the library.';$('play').disabled=true;$('contacts').disabled=true;console.error(error);}
+try{scene=new StudioScene($('scene'));scene.resize();}catch(error){$('scene-error').hidden=false;$('scene-error').textContent='The 3D view is unavailable. Try another browser or open a video from your library.';$('play').disabled=true;$('contacts').disabled=true;console.error(error);}
 createHomeScene($('home-canvas'),$('home-animation-pause'),$('home-animation-replay'),$('home-animation-caption'));
 const params=new URLSearchParams(location.search),requestedJob=params.get('job'),requestedRun=params.get('run');
 let libraryAvailable=false;
@@ -434,7 +434,7 @@ $('replay-fold').onclick=()=>{if(current.kind!=='paper'||active<1)return;const i
 $('final-view').onclick=()=>{setPlaying(false);seek(duration);};
 document.querySelectorAll('[data-paper-view]').forEach(button=>button.onclick=()=>{scene?.setPaperView(button.dataset.paperView);document.querySelectorAll('[data-paper-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
 document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>{scene?.setPaperColor(button.dataset.paperColor);lessonScene?.setPaperColor(button.dataset.paperColor);$('paper-front-key').style.background=button.style.getPropertyValue('--paper-swatch');document.querySelectorAll('[data-paper-color]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
-let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended){const celebrate=finishArmed&&stopAt===null;setPlaying(false);if(celebrate)clearFinish=playbackFinish($('scene-stage'));}}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
+let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt*playbackSpeed,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended){const celebrate=finishArmed&&stopAt===null;setPlaying(false);if(celebrate)clearFinish=playbackFinish($('scene-stage'));}}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
   const end=Math.min(duration,stepTime(active+1))-.00001;
   lessonDemoTime+=dt;lessonScene.setTime(Math.min(lessonDemoTime,end));
   if(lessonDemoTime>=end+.8)lessonDemoTime=$('lesson-autoloop').checked&&active>0?stepTime(active):null;

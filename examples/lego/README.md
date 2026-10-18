@@ -7,8 +7,8 @@ explicitly. A valid plan is not a guarantee of matching the source video.
 
 ## Catalog and geometry
 
-The version 2 catalog has 50 entries: rectangular bricks, plates (including 4×6
-and 6×8), tiles, straight and curved slopes, classic hinge bases and tops, and a
+The version 2 catalog includes rectangular bricks, plates (including 4×6,
+6×8 and 16×16), tiles, straight and curved slopes, classic hinge bases and tops, and a
 1×1 side-stud brick. The tent's catalog IDs are 3036, 3032, 6636, 3937, 6134 and
 47457; 3938 is also supported. Names and known part IDs are accepted as input.
 Tiles have no top studs. Slopes expose studs only on the high flat row. Hinge
@@ -64,6 +64,22 @@ flexible parts and arbitrary catalog imports are not yet supported.
 Legacy version 1 rectangular-grid plans and recordings remain readable.
 
 ## Examples and validation
+
+The larger demo is BrickHow's [pyramid tutorial](https://www.youtube.com/watch?v=Giar95AQ_U4).
+`pyramid.json` reconstructs the largest connected model: 46 pieces on a 16×16
+tan plate, seven stepped tiers and an entrance. Gemini produced the plan after
+three proposals; all 46 placement states pass the connector/collision harness
+(85 final connections). The two smaller detached pyramids are explicitly omitted.
+The silhouette was visually reviewed, but exact source inventory is not independently
+verified. The saved local library item is `lego_pyramid_demo`.
+
+```sh
+.venv/bin/python -m ori.reconstruction.lego \
+  --plan examples/lego/pyramid.json --output output/lego_pyramid_demo
+```
+
+For videos with several independent builds, generation selects the largest
+connected model and records the omitted alternatives in uncertainties.
 
 ```sh
 .venv/bin/python -m ori.reconstruction.lego \

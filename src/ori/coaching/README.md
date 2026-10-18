@@ -31,6 +31,17 @@ Google Fonts is optional: a system font fallback is provided. All functional cod
 
 ## Continuous paper replay
 
+For local rehearsals, `.local/demo-hints.json` (gitignored) may contain
+`{"version":1,"videos":{"YOUTUBE_ID":{"guidance":["..."],"prefer_fresh_run":true}}}`.
+Only an exact canonical video-ID match adds those hints to a new paper job's
+prompt. Each job snapshots its hints; resumed jobs retain their saved prompt.
+Hints never bypass model generation or harness validation. Deliberately rehearsed
+mistakes are operator guidance, not evidence of spontaneous model recovery.
+An optional `thinking_level` (`low`, `medium`, `high`) applies only to that video;
+explicit caller overrides take precedence, and resumes keep the saved level.
+`prefer_fresh_run` makes pasting that video's link start a new job; saved library
+cards still replay normally. Remove the entry/file to disable it.
+
 `GET /api/library` discovers accepted runs. `GET /api/paper/<id>` returns a
 compact replay compiled from `commands.json` by `paper_playback.py`. The compiler
 replays each command through `FoldHarness`, keeping the resulting subdivisions,
@@ -183,10 +194,14 @@ and local segmentation/depth. Live continues handling voice, tips, and questions
 
 The vision judge's nonmatching findings also reach Live as `VISUAL DIAGNOSIS`, including
 stage/epoch/frame ID, paper visibility, visible evidence, observation, and suggested
-correction. A visible mistake requests one short spoken correction after existing
-speech. Visible before-fold results also receive a plain-English correction, while
+correction. A visible mistake requests two short spoken sentences after existing
+speech: the specific observed mismatch, then one reversible repair with a visible
+destination/alignment. Likely folding history is phrased tentatively, and already
+correct folds are preserved. Ear-forming stages check the ear direction against
+the current target without presuming an error or demanding two ears prematurely.
+Before-fold results explain the missing action without claiming an incorrect fold, while
 ambiguous visible results request one specific view. Absent-paper findings update
-context silently. Identical feedback is suppressed; changed advice has an eight-second
+context silently. Identical feedback is suppressed; changed advice has a 25-second
 cooldown within a stage, so paper returning after absence can still get immediate help. Stale diagnoses are discarded just like
 stale passes; diagnostics never authorize advancement.
 
