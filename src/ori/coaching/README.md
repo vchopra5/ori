@@ -209,8 +209,10 @@ correct folds are preserved. Ear-forming stages check the ear direction against
 the current target without presuming an error or demanding two ears prematurely.
 Before-fold results explain the missing action without claiming an incorrect fold, while
 ambiguous visible results request one specific view. Absent-paper findings update
-context silently. Identical feedback is suppressed; changed advice has a 25-second
-cooldown within a stage, so paper returning after absence can still get immediate help. Stale diagnoses are discarded just like
+context silently. Correction timing resets on every stage. Changed advice can speak
+after 3 seconds; identical advice waits 12 seconds to avoid repetition. Step
+explanations and confirmations bypass this timer. Required spoken responses that
+return no audio are retried once, then reconnect with a visible error. Stale diagnoses are discarded just like
 stale passes; diagnostics never authorize advancement.
 
 A Live `matched` report alone never advances. The independent result must identify

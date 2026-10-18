@@ -21,6 +21,7 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
                 if kwargs.get('video') and kwargs['video'].data==first:
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(
                         model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
                     await response_done.wait()
             async def receive(self):
@@ -57,6 +58,7 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
                 text=' '.join(p.text for p in turns.parts if p.text)
                 sent.append((text,turn_complete))
                 if turn_complete:
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
                 if 'VISUAL DIAGNOSIS' in text:
                     if '"paper_visible": false' in text:absent_context.set()
@@ -108,6 +110,7 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
         class Session:
             async def send_realtime_input(self,**kwargs):
                 if 'text' in kwargs:
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
             async def receive(self):
                 while True:yield await responses.get()
@@ -150,6 +153,7 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
             async def record_turn(self,turns,turn_complete):
                 text=' '.join(p.text for p in turns.parts if p.text);sent.append(text)
                 if turn_complete:
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(turn_complete=True)))
                 if text.startswith('INTRO:'):intro.set()
@@ -210,6 +214,7 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
         class Session:
             async def send_realtime_input(self,**kwargs):
                 if 'text' in kwargs:
+                    await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
                     await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
                     if kwargs['text'].startswith('VISUAL DIAGNOSIS'):tip.set()
             async def receive(self):
@@ -241,6 +246,41 @@ class CameraTests(unittest.IsolatedAsyncioTestCase):
             await asyncio.wait_for(relay(Socket(),{'states':[[],[]]},[{'name':'Fold'}]),3)
         self.assertEqual(len(checks),4)
         self.assertEqual([e['frame_id'] for e in events if e.get('status')=='matched'],[4])
+
+    async def test_silent_intro_retries_before_completion_and_reports_repeated_silence(self):
+        import json
+        for second_has_audio in [True,False]:
+            with self.subTest(second_has_audio=second_has_audio):
+                responses=asyncio.Queue();events=[];requests=[];done=asyncio.Event()
+                class Session:
+                    async def send_realtime_input(self,**kwargs):
+                        if 'text' not in kwargs:return
+                        requests.append(kwargs['text'])
+                        if len(requests)==2 and second_has_audio:
+                            await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(
+                                model_turn=types.Content(parts=[types.Part.from_bytes(data=b'\x00\x00'*100,mime_type='audio/pcm;rate=24000')]))))
+                        await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(generation_complete=True)))
+                        await responses.put(types.LiveServerMessage(server_content=types.LiveServerContent(turn_complete=True)))
+                    async def receive(self):
+                        while True:yield await responses.get()
+                @asynccontextmanager
+                async def connect(**kwargs):yield Session()
+                client=SimpleNamespace(aio=SimpleNamespace(live=SimpleNamespace(connect=connect),aclose=AsyncMock()))
+                class Socket:
+                    async def send(self,raw):
+                        event=json.loads(raw);events.append(event)
+                        if event['type'] in ['response_complete','error']:
+                            assert len(requests)==2, 'Silent first response must not complete the intro'
+                            done.set()
+                    async def __aiter__(self):
+                        yield json.dumps(dict(type='stage',step=0,epoch=1,intro=True))
+                        yield json.dumps(dict(type='microphone',enabled=True))
+                        await done.wait()
+                with patch('google.genai.Client',return_value=client),patch('ori.config.load_settings',return_value=SimpleNamespace(gemini_api_key='test')),patch('ori.coaching.gemini_coach.reference_images',return_value=[]):
+                    await asyncio.wait_for(relay(Socket(),{'states':[[],[]]},[{'name':'Fold'}]),2)
+                self.assertEqual(len(requests),2)
+                self.assertEqual(any(e['type']=='response_complete' for e in events),second_has_audio)
+                self.assertEqual(any(e['type']=='error' for e in events),not second_has_audio)
 
 
 if __name__=='__main__':unittest.main()

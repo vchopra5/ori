@@ -41,19 +41,27 @@ def camera_view_continues(checked, latest):
     except (OSError,ValueError):return False
 
 PROMPT = '''You are Ori, a calm practical coach watching a paper-folding project over time.
+Speak English throughout this lesson, including introductions, corrections, answers,
+and confirmations. Keep your spoken words and captions in English. Do not switch
+languages because of background speech, uncertain microphone transcription, text
+on the paper, source titles, names, or visual-check output. Translate visual
+findings into natural English before explaining them.
 The user can speak through a microphone as well as type. Answer their spoken
 questions naturally using the live paper view and current fold references.
 When they interrupt, stop speaking and listen. Prioritize their question over
 routine camera commentary. If they say they are still working, acknowledge
 briefly and give them time. Spoken requests alone cannot prove a visual match.
-Camera frames arrive once per second and ALWAYS show the user. The independent
+Camera frames arrive once per second and show the user’s camera, which may or may not contain paper.
+Silence is normal while folding. Never announce "no speech detected" or ask them to speak to activate checking. The independent
 vision judge sees harness reference images; you receive its observations and the
 current stage action as text. Track the actual hands, fold location, crease direction,
 and change in paper shape across frames. Identify the corner/edge being moved in
 plain language. Use the displayed action and the independent visual diagnosis. Be tolerant of
 perspective, colors, busy backgrounds, fingers and imperfect creases. A recognizable
 target is enough. Never demand a continuous background or hands off the paper.
-Call report_fold to update the UI when something useful changes. Report matched
+The independent checker owns paper visibility, corrections, and completion in the UI.
+Do not override its diagnosis with your own out_of_view, mistake, or need_view report.
+Call report_fold only for a quiet working update or a suspected match. Report matched
 only from recent CAMERA evidence, never from reference images or narration alone.
 Your matched report is ONLY a request for an independent visual check. It is
 not permission to advance. NEVER say a fold passed, 'looks great', or is finished
@@ -78,7 +86,8 @@ to show the result when ready. The camera need not see the desk or the folding
 process. NEVER ask to see the desk, aim the camera down, show the workspace, keep
 hands visible, or continuously hold the paper up. Desk View is optional and is
 never required for coaching. Do not interpret an empty view as being stuck.
-If paper leaves the frame, report out_of_view with paper_visible=false silently. Stay quiet
+Only the independent visual checker determines whether paper is absent. Do not report
+out_of_view or announce "no paper detected" from your own streaming impressions. Stay quiet
 until it returns or the user asks a question. Do not repeat this reminder, ask
 for a better angle while paper is absent, or check in merely because time passed
 off-camera. A view request is allowed ONLY while paper is actually held up for
@@ -184,19 +193,46 @@ class ProgressGuard:
                     **{key:str(args.get(key,''))[:400] for key in ['observation','instruction','fold_location']})
 
 
+def narration_report(guard, args):
+    """Streaming narration cannot overwrite or invalidate a snapshot verdict."""
+    if args.get('status') != 'working' or args.get('paper_visible') is not True:
+        return None
+    return guard.report(args)
+
+
+async def check_camera(check, send, evidence, timeout=12):
+    """Expose failed checks without misreporting them as absent paper."""
+    context=dict(type='check_status',step=evidence.step,epoch=evidence.epoch,frame_id=evidence.frame_id)
+    await send(json.dumps(dict(context,status='checking')))
+    try:
+        return await asyncio.wait_for(check(),timeout)
+    except asyncio.TimeoutError:
+        await send(json.dumps(dict(context,status='slow',message='The paper check timed out. Retrying a fresh camera image.')))
+    except Exception:
+        await send(json.dumps(dict(context,status='failed',message='The paper check failed. Retrying; this does not mean your fold is wrong.')))
+    return None
+
+
 class CorrectionCooldown:
-    """Throttle spoken tips, never camera checks or verified success."""
+    """Suppress repeated tips, without carrying silence into the next stage."""
     def __init__(self, clock=time.monotonic):
         self.clock=clock
-        self.last_spoken=-float('inf')
+        self.reset()
+
+    def reset(self):
+        self.last_spoken=-float('inf');self.signature=None
+
+    def key(self,result):
+        return (result.get('verdict'),result.get('instruction','').strip().lower())
 
     def allow(self, result):
+        delay=12 if self.key(result)==self.signature else 3
         return (result.get('paper_visible') is True
                 and result.get('verdict') in {'mistake','before_fold','unclear'}
-                and self.clock()-self.last_spoken>=25)
+                and self.clock()-self.last_spoken>=delay)
 
-    def delivered(self):
-        self.last_spoken=self.clock()
+    def delivered(self,result):
+        self.last_spoken=self.clock();self.signature=self.key(result)
 
 
 def visual_feedback(result,evidence):
@@ -258,17 +294,22 @@ async def relay(socket, playback, commands):
             latest_camera=None;checked_frame_id=0;stage_references=();verification_task=None;last_diagnostic=None;diagnostic_at=-float("inf")
             intro_pending=False;intro_started=False;stage_parts=[];generation_finished=False
             speech_allowed=False;feedback_turn=CorrectionCooldown(time.monotonic)
+            required_speech=None;response_audio=False;speech_retries=0;silent_retry=False
             def expect_response():
                 nonlocal model_wait_at,speech_allowed
                 speech_allowed=True
                 if model_wait_at is None:model_wait_at=time.monotonic()
+            async def request_speech(text):
+                nonlocal required_speech,response_audio,speech_retries,silent_retry
+                required_speech=text;response_audio=False;speech_retries=0;silent_retry=False
+                expect_response()
+                await session.send_realtime_input(text=text+' Speak in English.')
             async def introduce():
                 nonlocal intro_started
                 if not intro_pending or intro_started or not mic_enabled:return
                 intro_started=True
                 await socket.send(json.dumps(dict(type='intro_pending',epoch=guard.epoch)))
-                expect_response()
-                await session.send_realtime_input(text=
+                await request_speech(
                     f'INTRO: total_folds={len(commands)}, selected_stage={guard.step}, epoch={guard.epoch}. '
                     'Introduce yourself as Ori in two short sentences. Explain: watch the demo, fold on the desk, then hold the result up for checking; they can talk to you anytime. '
                     'Do not teach a fold, judge paper, ask to see the desk, or make a joke. The UI will display the selected fold after this introduction plays.')
@@ -286,6 +327,7 @@ async def relay(socket, playback, commands):
                         if verification_task is not None:verification_task.cancel()
                         guard.select(msg.get('step'),msg.get('epoch'),msg.get('after_frame_id',0)); frame_count=0
                         step=guard.step
+                        feedback_turn.reset()
                         intro_pending=msg.get('intro') is True;intro_started=False
                         parts=[types.Part.from_text(text=stage_instruction(step,guard.epoch,commands))]
                         refs=await asyncio.to_thread(lambda:list(reference_images(playback,step)))
@@ -296,13 +338,11 @@ async def relay(socket, playback, commands):
                         stage_parts=parts;display_ready=True
                         if intro_pending:await introduce()
                         else:
-                            expect_response()
-                            await session.send_realtime_input(text=' '.join(part.text for part in parts if part.text))
+                            await request_speech(' '.join(part.text for part in parts if part.text))
                     elif msg.get('type')=='intro_done' and intro_pending and intro_started and msg.get('epoch')==guard.epoch:
                         intro_pending=False
                         guard.after_frame_id=guard.last_frame_id;latest_camera=None
-                        expect_response()
-                        await session.send_realtime_input(text=' '.join(part.text for part in stage_parts if part.text))
+                        await request_speech(' '.join(part.text for part in stage_parts if part.text))
                     elif msg.get('type')=='frame' and guard.step is not None and not intro_pending:
                         if msg.get('epoch') != guard.epoch or msg.get('step') != guard.step:continue
                         now=time.monotonic()
@@ -340,7 +380,7 @@ async def relay(socket, playback, commands):
                             expect_response()
                             await session.send_realtime_input(text=f'User asks about current step={guard.step}, epoch={guard.epoch}: {text}')
             async def outgoing():
-                nonlocal assistant_speaking,last_speech,model_wait_at,model_output_at,generation_finished,speech_allowed
+                nonlocal assistant_speaking,last_speech,model_wait_at,model_output_at,generation_finished,speech_allowed,required_speech,response_audio,speech_retries,silent_retry
                 input_new_turn=True
                 while True:
                     received=False
@@ -352,7 +392,7 @@ async def relay(socket, playback, commands):
                             for call in msg.tool_call.function_calls:
                                 args=call.args or {}
                                 candidate=call.name=='report_fold' and args.get('status')=='matched' and (args.get('step'),args.get('epoch'))==(guard.step,guard.epoch)
-                                event=guard.report(args) if call.name=='report_fold' else None
+                                event=narration_report(guard,args) if call.name=='report_fold' else None
                                 if event:events.append(event)
                                 responses.append(types.FunctionResponse(id=call.id,name=call.name,response={'accepted':bool(event),'current_step':guard.step,'current_epoch':guard.epoch,
                                     'verification_pending':candidate,'instruction':'A matched report only requests a camera check. Do not praise or advance until VISUAL VERIFIED. Remain silent and wait for the learner. This tool response does not request speech; off-camera work is allowed.'}))
@@ -374,16 +414,26 @@ async def relay(socket, playback, commands):
                                 await socket.send(json.dumps(dict(type='caption',text=content.output_transcription.text,epoch=guard.epoch)))
                             for part in (content.model_turn.parts if content.model_turn else []):
                                 if speech_allowed and display_ready and part.inline_data and part.inline_data.mime_type.startswith('audio/'):
-                                    assistant_speaking=True
+                                    assistant_speaking=True;response_audio=True
                                     await socket.send(json.dumps(dict(type='audio',data=base64.b64encode(part.inline_data.data).decode(),epoch=guard.epoch)))
                             if content.generation_complete or (content.turn_complete and not generation_finished):
                                 generation_finished=True
-                                assistant_speaking=False;model_wait_at=None
-                                await socket.send(json.dumps(dict(type='response_complete',epoch=guard.epoch)))
+                                assistant_speaking=False
+                                silent_retry=required_speech is not None and not response_audio
+                                if not silent_retry:
+                                    required_speech=None;model_wait_at=None;speech_allowed=False
+                                    await socket.send(json.dumps(dict(type='response_complete',epoch=guard.epoch)))
                             if content.turn_complete:
                                 assistant_speaking=False;input_new_turn=True
-                                speech_allowed=False
-                                await socket.send(json.dumps(dict(type='turn_complete',epoch=guard.epoch)))
+                                if silent_retry:
+                                    if speech_retries>=1:
+                                        await socket.send(json.dumps(dict(type='error',retryable=True,message='The coach returned no spoken explanation. Reconnecting to try again.')))
+                                        return
+                                    speech_retries+=1;silent_retry=False
+                                    expect_response()
+                                    await session.send_realtime_input(text=required_speech+' Speak this explanation aloud now in English in one or two short sentences. Do not respond only with a tool call.')
+                                elif required_speech is None:
+                                    await socket.send(json.dumps(dict(type='turn_complete',epoch=guard.epoch)))
                         if msg.go_away:
                             await socket.send(json.dumps(dict(type='error',retryable=True,message='Refreshing the live connection.')))
                             return
@@ -405,20 +455,23 @@ async def relay(socket, playback, commands):
                     if intro_pending or not display_ready or latest_camera is None or guard.completed or latest_camera.frame_id<=checked_frame_id:continue
                     evidence=latest_camera;checked_frame_id=evidence.frame_id
                     if time.monotonic()-evidence.captured>3:continue
-                    pending=verification_task=asyncio.create_task(snapshot_check(client,playback,commands,evidence.step,evidence.jpeg,stage_references))
-                    try:result=await asyncio.wait_for(pending,12)
+                    pending=verification_task=asyncio.create_task(check_camera(
+                        lambda:snapshot_check(client,playback,commands,evidence.step,evidence.jpeg,stage_references),socket.send,evidence))
+                    try:result=await pending
                     except asyncio.CancelledError:
                         if asyncio.current_task().cancelling():raise
                         continue  # A stage change cancelled just this old camera check.
-                    except Exception:continue
                     finally:
                         if verification_task is pending:verification_task=None
-                    if not guard.current_evidence(evidence):continue
+                    if result is None or not guard.current_evidence(evidence):continue
+                    if latest_camera is None or not camera_view_continues(evidence,latest_camera):continue
                     if result['verdict']!='match':
+                        status='out_of_view' if not result['paper_visible'] else 'need_view' if result['verdict']=='unclear' else 'mistake'
+                        await socket.send(json.dumps(dict(type='progress',step=evidence.step,epoch=evidence.epoch,status=status,
+                            observation=result['observation'],instruction=result['instruction'],fold_location='')))
                         if result['paper_visible'] and not feedback_turn.allow(result):continue
                         signature=(evidence.step,evidence.epoch,result['verdict'],result['paper_visible'],result.get('instruction','').strip().lower())
-                        if signature==last_diagnostic:continue
-                        if result['paper_visible'] and last_diagnostic and signature[:2]==last_diagnostic[:2] and last_diagnostic[3] is True and time.monotonic()-diagnostic_at<25:continue
+                        if not result['paper_visible'] and signature==last_diagnostic:continue
                         # Never stall camera checks behind a spoken tip. Reassess a
                         # fresh frame once the current explanation has finished.
                         if assistant_speaking or playback_active or model_wait_at is not None or time.monotonic()-last_speech<2:continue
@@ -427,16 +480,15 @@ async def relay(socket, playback, commands):
                         if message is None:continue
                         last_diagnostic=signature;diagnostic_at=time.monotonic()
                         speak=result['paper_visible'] is True
-                        status='out_of_view' if not speak else 'need_view' if result['verdict']=='unclear' else 'mistake'
-                        await socket.send(json.dumps(dict(type='progress',step=evidence.step,epoch=evidence.epoch,status=status,observation=result['observation'],instruction=result['instruction'],fold_location='')))
                         if speak:
-                            feedback_turn.delivered()
-                            expect_response()
-                        await session.send_realtime_input(text=message)
+                            feedback_turn.delivered(result)
+                            await request_speech(message)
+                        else:
+                            await session.send_realtime_input(text=message)
                         continue
                     if result.get('paper_visible') is not True:continue
-                    while (assistant_speaking or playback_active or model_wait_at is not None) and time.monotonic()-evidence.captured<12:
-                        await asyncio.sleep(.1)
+                    # Capture success while evidence is fresh. The browser already waits
+                    # for queued speech before advancing; waiting here expires good checks.
                     # A delayed positive must still describe the view on screen now.
                     if latest_camera is None or time.monotonic()-latest_camera.captured>2:continue
                     if not camera_view_continues(evidence,latest_camera):continue
@@ -444,8 +496,7 @@ async def relay(socket, playback, commands):
                     if event:
                         event['final']=evidence.step==len(commands)
                         await socket.send(json.dumps(event))
-                        expect_response()
-                        await session.send_realtime_input(text=confirmation_instruction(evidence,result,len(commands)))
+                        await request_speech(confirmation_instruction(evidence,result,len(commands)))
             tasks=[asyncio.create_task(incoming()),asyncio.create_task(outgoing()),asyncio.create_task(heartbeat()),asyncio.create_task(visual_verifier())]
             try:
                 done,_=await asyncio.wait(tasks,return_when=asyncio.FIRST_COMPLETED,timeout=1800)

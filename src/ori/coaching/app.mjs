@@ -247,6 +247,11 @@ const liveCoach=new LiveCoach({
     if(msg.type==='microphone_ended'){stopCamera();coachMessage('Microphone disconnected. Turn on the camera to reconnect.');return;}
     if(msg.type==='turn_complete'){liveCaptionNew=true;return;}
     if(!stream||$('teaching').hidden||msg.epoch!==coachEpoch)return;
+    if(msg.type==='check_status'&&msg.step===active&&!coachFinished){
+      coachMessage(msg.status==='checking'?'Checking your paper…':msg.message);
+      $('coach-observation').hidden=true;$('coach-instruction').hidden=true;
+      return;
+    }
     if(msg.type==='match_pending'){coachMessage('Step matched · Ori is finishing the explanation.');return;}
     if(msg.type==='user_caption'){const caption=$('coach-heard');if(msg.new_turn)caption.textContent='You: ';caption.textContent=(caption.textContent+msg.text).slice(-650);caption.hidden=false;return;}
     if(msg.type==='caption'){
@@ -255,7 +260,7 @@ const liveCoach=new LiveCoach({
     if(msg.type!=='progress'||msg.step!==active||coachFinished)return;
     $('coach-observation').textContent=[msg.fold_location,msg.observation].filter(Boolean).join(' · ');$('coach-observation').hidden=false;
     $('coach-instruction').textContent=msg.status==='out_of_view'?'Work on your desk; hold it up whenever you’re ready.':msg.instruction;$('coach-instruction').hidden=!$('coach-instruction').textContent;
-    const labels={working:'Following your fold…',out_of_view:'Paper out of view · take your time.',need_view:'One more angle would help.',mistake:'A small adjustment to try.',check_in:'Want a hand with this step?',matched:'That shape matches.'};
+    const labels={working:'Following your fold…',out_of_view:'Paper was not clear in the checked image.',need_view:'One more angle would help.',mistake:'A small adjustment to try.',check_in:'Want a hand with this step?',matched:'That shape matches.'};
     coachMessage(labels[msg.status]||'Watching your folds…');
     if(msg.status==='matched'){
       if(active===steps.length-1){coachFinished=true;coachMessage('Finished! Your paper matches the final stage.');}

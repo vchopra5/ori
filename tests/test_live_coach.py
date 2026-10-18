@@ -88,20 +88,20 @@ class ProgressTests(unittest.TestCase):
             self.now=100+elapsed;self.guard.frame_at=self.now
             self.assertIsNone(self.report('check_in'))
 
-    def test_spoken_corrections_have_25_second_cooldown(self):
+    def test_correction_timing_resets_between_stages_and_allows_new_feedback(self):
         gate=CorrectionCooldown(lambda:self.now)
-        mistake=dict(verdict='mistake',paper_visible=True)
-        self.assertTrue(gate.allow(mistake))
-        gate.delivered()
-        for elapsed in [0,8,24.99]:
-            self.now=100+elapsed
-            self.assertFalse(gate.allow(mistake))
-            self.assertFalse(gate.allow(dict(verdict='unclear',paper_visible=True)))
-        self.now=125
-        self.assertTrue(gate.allow(mistake))
+        mistake=dict(verdict='mistake',paper_visible=True,instruction='Move the left corner')
+        self.assertTrue(gate.allow(mistake));gate.delivered(mistake)
+        self.now+=3
+        self.assertFalse(gate.allow(mistake))
+        changed={**mistake,'instruction':'Move the right corner'}
+        self.assertTrue(gate.allow(changed))
+        gate.delivered(changed)
+        self.now+=12
+        self.assertTrue(gate.allow(changed))
+        gate.delivered(changed);gate.reset()
+        self.assertTrue(gate.allow(changed))
         self.assertFalse(gate.allow(dict(verdict='unclear',paper_visible=False)))
-        self.assertTrue(gate.allow(dict(verdict='before_fold',paper_visible=True)))
-        # This gate never handles successful checks; those bypass it entirely.
         self.assertFalse(gate.allow(dict(verdict='match',paper_visible=True)))
 
     def test_stage_cannot_be_selected_with_a_stale_epoch(self):
@@ -179,6 +179,42 @@ class ProgressTests(unittest.TestCase):
         self.assertEqual(decode_audio_packet(base64.b64encode(packet).decode()),packet)
         for value in [None,'not-base64!',base64.b64encode(b'x').decode(),base64.b64encode(b'x'*6402).decode()]:
             with self.assertRaises(ValueError):decode_audio_packet(value)
+
+class CheckFailureTests(unittest.IsolatedAsyncioTestCase):
+    async def test_timeout_is_visible_and_never_reports_absent_paper(self):
+        import asyncio,json
+        from ori.coaching.live_coach import check_camera
+        messages=[]
+        async def send(raw):messages.append(json.loads(raw))
+        async def slow():await asyncio.sleep(1)
+        result=await check_camera(slow,send,CameraEvidence(1,3,7,100,b'paper'),timeout=.001)
+        self.assertIsNone(result)
+        self.assertEqual([m['status'] for m in messages],['checking','slow'])
+        self.assertTrue(all(m['type']=='check_status' and m['epoch']==3 for m in messages))
+
+    async def test_api_failure_is_visible_and_cancellation_propagates(self):
+        import asyncio,json
+        from ori.coaching.live_coach import check_camera
+        messages=[]
+        async def send(raw):messages.append(json.loads(raw))
+        async def fail():raise RuntimeError('private upstream detail')
+        evidence=CameraEvidence(1,3,7,100,b'paper')
+        self.assertIsNone(await check_camera(fail,send,evidence))
+        self.assertEqual(messages[-1]['status'],'failed')
+        self.assertNotIn('private upstream',messages[-1]['message'])
+        async def cancel():raise asyncio.CancelledError()
+        with self.assertRaises(asyncio.CancelledError):await check_camera(cancel,send,evidence)
+
+    async def test_live_absence_cannot_invalidate_independent_match(self):
+        from ori.coaching.live_coach import narration_report
+        guard=ProgressGuard(2,lambda:100);guard.select(1,3)
+        evidence=guard.capture(1,3,7,b'paper')
+        for status in ['out_of_view','need_view','mistake','matched']:
+            self.assertIsNone(narration_report(guard,dict(step=1,epoch=3,status=status,paper_visible=False)))
+        self.assertEqual(guard.invalid_through,0)
+        result=dict(verdict='match',paper_visible=True,closest_state='target',before_excluded=True,
+                    unfolded_excluded=True,target_feature='flap',camera_feature='flap',visible_evidence='flap')
+        self.assertIsNotNone(guard.accept_check(result,evidence))
 
 
 if __name__=='__main__':unittest.main()
