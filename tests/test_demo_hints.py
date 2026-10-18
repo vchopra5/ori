@@ -5,11 +5,44 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from ori.coaching.demo_hints import load_hints
-from ori.coaching.jobs import Progress, run_paper
+from ori.coaching.jobs import Progress, run_paper, classify
 from ori.coaching import server
 
 
 class DemoHintsTests(unittest.TestCase):
+    def test_demo_pacing_selects_three_or_four_steps_and_sleeps_only_there(self):
+        hints = dict(random_step_pauses=True, rehearsal_sequence=[{} for _ in range(7)])
+        def run_fake(*args, **kwargs):
+            for call in range(1, 8):
+                kwargs['observer']('proposal', call=call, text='{}')
+            return dict(status='max_calls', accepted_folds=0)
+        with TemporaryDirectory() as directory, patch('ori.coaching.jobs.load_hints', return_value=hints), patch('ori.coaching.jobs.run', side_effect=run_fake), patch('ori.coaching.jobs.time.sleep') as sleep:
+            base = Path(directory)
+            progress = Progress(base, 'https://youtu.be/10KurnMH_6o')
+            run_paper(MagicMock(), progress.data['url'], base, progress, dict(title='Fox', summary='Fox face'))
+            pacing = json.loads((base / 'demo-pacing.json').read_text())
+            self.assertIn(len(pacing), [3, 4])
+            self.assertTrue(all(3 <= delay <= 5 for delay in pacing.values()))
+            self.assertEqual(sleep.call_count, len(pacing))
+            self.assertEqual(len([event for event in progress.data['events'] if event['kind'] == 'demo_pause']), len(pacing))
+
+    def test_classification_hint_skips_api_only_for_exact_video(self):
+        with TemporaryDirectory() as directory:
+            base = Path(directory)
+            route = dict(kind='origami', title='Paper Fox Face', summary='Fold a fox face')
+            path = base / 'hints.json'
+            path.write_text(json.dumps(dict(version=1, videos={'10KurnMH_6o': {'classification': route}})))
+            client = MagicMock()
+            client.models.generate_content.return_value.text = json.dumps(route)
+            client.models.generate_content.return_value.model_dump_json.return_value = '{}'
+            with patch('ori.coaching.jobs.load_hints', side_effect=lambda url: load_hints(url, path)):
+                self.assertEqual(classify(client, 'https://youtu.be/10KurnMH_6o?t=5', base), route)
+                client.models.generate_content.assert_not_called()
+                classify(client, 'https://youtu.be/abcdefghijk', base)
+                call = client.models.generate_content.call_args.kwargs
+                self.assertEqual(call['model'], 'gemini-4-argon')
+                self.assertEqual(call['contents'][0].video_metadata.fps, 2)
+
     def test_model_override_is_scoped_and_resume_keeps_saved_model(self):
         with TemporaryDirectory() as directory:
             hints_path = Path(directory) / 'hints.json'

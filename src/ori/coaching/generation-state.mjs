@@ -1,6 +1,6 @@
 // Presentation follows recorded events; animation never invents a physics verdict.
 export function generationState(job){
-  const events=job.events||[],last=events.at(-1)||{};
+  const events=(job.events||[]).filter(event=>event.kind!=='demo_pause'),last=events.at(-1)||{};
   const result=[...events].reverse().find(e=>e.kind==='undone'||e.kind==='accepted'||e.kind==='rejected'||e.kind==='tested'&&typeof e.ok==='boolean');
   const complete=['model_claimed_done','completed'].includes(job.status);
   const running=['queued','classifying','running'].includes(job.status);

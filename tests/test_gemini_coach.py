@@ -80,9 +80,10 @@ class AsyncSnapshotTests(unittest.IsolatedAsyncioTestCase):
         with patch('ori.coaching.gemini_coach.reference_images',return_value=[('TARGET front',b'reference')]):
             result=await snapshot_check(client,{'states':[[]]},[],0,b'actual-camera')
         self.assertEqual(result['verdict'],'match')
-        self.assertEqual(generate.call_args.kwargs['model'],'gemini-3.8-flash')
+        self.assertEqual(generate.call_args.kwargs['model'],'gemini-3.5-flash-lite')
         config=generate.call_args.kwargs['config']
-        self.assertEqual(config.thinking_config.thinking_level,'LOW')
+        self.assertIsNone(config.thinking_config.thinking_budget)
+        self.assertEqual(config.thinking_config.thinking_level,'MINIMAL')
         self.assertEqual(config.max_output_tokens,2048)
         parts=generate.call_args.kwargs['contents']
         self.assertEqual([p.inline_data.data for p in parts if p.inline_data],[b'reference',b'actual-camera'])

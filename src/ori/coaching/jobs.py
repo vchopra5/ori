@@ -2,6 +2,8 @@
 import argparse
 import json
 import os
+import random
+import time
 from pathlib import Path
 from google import genai
 from google.genai import types
@@ -26,6 +28,15 @@ the summary. This is classification only.'''
 
 
 def classify(client, url, output):
+    hints = load_hints(url)
+    route = hints.get('classification') if hints else None
+    if route is not None:
+        if not isinstance(route, dict) or route.get('kind') not in {'origami', 'lego', 'mujoco', 'unsupported'}:
+            raise ValueError('Invalid local demo classification')
+        route = {key: str(route.get(key, ''))[:300] for key in ('kind', 'title', 'summary')}
+        atomic_json(output / 'routing-request.json', dict(source='local-demo-hints', url=url))
+        atomic_json(output / 'routing-response.json', dict(source='local-demo-hints', route=route))
+        return route
     atomic_json(output / 'routing-request.json', dict(model=MODEL, url=url, prompt=ROUTING))
     response = client.models.generate_content(model=MODEL, contents=[
         types.Part(file_data=dict(file_uri=url, mime_type='video/mp4'), video_metadata=dict(fps=2)),
@@ -134,6 +145,7 @@ def run_paper(client, url, output, progress, route, max_calls=None, resume=False
     model = MODEL
     video_sampling_fps = 2
     rehearsal_sequence = None
+    include_video = True
     thinking_level = thinking_level or 'medium'
     if thinking_level not in {"low", "medium", "high"}:
         raise ValueError("Unsupported generation thinking level")
@@ -173,6 +185,7 @@ target. Set done:true only when you believe the approximation is complete.
         model = config['model']
         video_sampling_fps = config.get('video_sampling_fps', 2)
         rehearsal_sequence = config.get('rehearsal_sequence')
+        include_video = config.get('include_video', True)
         if requested_thinking is None:
             thinking_level = config.get('thinking_level', 'medium')
         previous_calls = max((int(p.name.removeprefix('call-')) for p in (output / 'debug').glob('call-*')), default=0)
@@ -183,6 +196,9 @@ target. Set done:true only when you believe the approximation is complete.
             model = hints.get('model', MODEL)
             video_sampling_fps = hints.get('video_sampling_fps', 2)
             rehearsal_sequence = hints.get('rehearsal_sequence')
+            include_video = hints.get('include_video', True)
+            if type(include_video) is not bool:
+                raise ValueError('include_video must be a boolean')
             if isinstance(video_sampling_fps, bool) or not isinstance(video_sampling_fps, (int, float)) or not 0 < video_sampling_fps <= 24:
                 raise ValueError('Demo video sampling rate must be in (0, 24] fps')
             if not isinstance(model, str) or not model.strip():
@@ -198,14 +214,28 @@ target. Set done:true only when you believe the approximation is complete.
     progress.data.update(max_calls=previous_calls+allowance, resumable=True, model=model)
     progress.event('planning' if not resume else 'resuming',
                    'Working toward the target while preserving every validated fold')
+    pacing_path = output / 'demo-pacing.json'
+    pacing = {}
+    if resume and pacing_path.exists():
+        pacing = json.loads(pacing_path.read_text())
+    elif not resume and hints and hints.get('random_step_pauses') is True and rehearsal_sequence:
+        # Local demo pacing only; never represented as model or physics latency.
+        count = min(len(rehearsal_sequence), random.randint(3, 4))
+        pacing = {str(step): round(random.uniform(3, 5), 2)
+                  for step in random.sample(range(1, len(rehearsal_sequence) + 1), count)}
+        atomic_json(pacing_path, pacing)
     def observe(kind, **fields):
+        delay = pacing.get(str(fields.get('call'))) if kind == 'proposal' else None
+        if delay:
+            progress.event('demo_pause', 'Demo pacing pause', seconds=delay, call=fields['call'])
+            time.sleep(delay)
         if kind != 'finished':
             progress.observe(kind, **fields)
     report = run(client, url, model, output, max_calls=previous_calls+allowance, task=task,
                  transport='generate-content', thinking_level=thinking_level, max_output_tokens=32768,
                  observer=observe, export=False, resume=resume,
                  context_policy=policy, continue_on_blocked=True, require_final_review=True,
-                 video_sampling_fps=video_sampling_fps, rehearsal_sequence=rehearsal_sequence)
+                 video_sampling_fps=video_sampling_fps, rehearsal_sequence=rehearsal_sequence, include_video=include_video)
     complete = report['status'] == 'model_claimed_done' and report['accepted_folds'] > 0
     if not complete:
         report = dict(report, stop_reason=report['status'],

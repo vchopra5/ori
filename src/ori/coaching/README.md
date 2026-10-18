@@ -191,9 +191,10 @@ judging turn is injected. All runtime text uses `send_realtime_input(text=...)`
 alongside audio/video; it does not mix turn-based `send_client_content` calls into
 the stream. Harness reference images go exclusively to the independent verifier;
 Live receives the current action, fold count, and verifier findings as text. A separate fast vision judge is the sole authority for automatic
-completion: `gemini-3.8-flash` (`ORI_STEP_CHECK_MODEL`), with thinking set to
-`LOW`, up to 2048 output tokens, and no conversation history. The available Gemini 3
-models do not support a guaranteed full thinking-off setting. The judge starts
+completion: `gemini-3.5-flash-lite` (`ORI_STEP_CHECK_MODEL`), with `MINIMAL` thinking,
+up to 2048 output tokens, and no conversation history. This minimizes reasoning
+but does not guarantee zero thinking. Gemini 3.8 overrides use `LOW`.
+Gemini 2.5 Flash is unavailable to new users on the configured API. The judge starts
 on the first fresh frame and keeps checking the newest frame, one request at a
 time, with no request queue or sequential Live approval. Camera capture stays at
 one frame per second. UNFOLDED/BEFORE/TARGET references are rendered once per selected

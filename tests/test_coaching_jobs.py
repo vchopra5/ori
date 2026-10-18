@@ -96,6 +96,18 @@ class LiveJobTests(unittest.TestCase):
                 self.assertEqual(generate.call_args.args[3],level)
                 self.assertEqual(json.loads((base/'config.json').read_text())['thinking_level'],level)
 
+    def test_text_rehearsal_omits_video_but_keeps_harness_images(self):
+        response = SimpleNamespace(status='incomplete', output_text='', model_dump=lambda **_: {})
+        for include_video in [False, True]:
+            with self.subTest(include_video=include_video), TemporaryDirectory() as directory, patch('ori.coaching.jobs.load_hints', return_value={'include_video': include_video}), patch('ori.reconstruction.fold_trial.generate_content', return_value=response) as generate:
+                base = Path(directory)
+                progress = Progress(base, 'https://youtu.be/10KurnMH_6o')
+                run_paper(MagicMock(), progress.data['url'], base, progress, dict(title='Fox', summary='Fox face'), max_calls=1)
+                inputs = generate.call_args.args[1]['input']
+                self.assertEqual(any(item['type'] == 'video' for item in inputs), include_video)
+                self.assertEqual(sum(item['type'] == 'image' for item in inputs), 2)
+                self.assertEqual(json.loads((base / 'config.json').read_text())['include_video'], include_video)
+
     def test_transport_failure_does_not_reset_paper_or_loop(self):
         response = SimpleNamespace(status='incomplete', output_text='', model_dump=lambda **_: {})
         with TemporaryDirectory() as directory, patch('ori.reconstruction.fold_trial.generate_content', return_value=response) as generate, patch.dict('os.environ', {}, clear=True):

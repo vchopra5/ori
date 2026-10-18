@@ -142,7 +142,7 @@ def rehearsal_guidance(rehearsal_sequence, history):
 def run(client, url, model, output, max_calls=12, resume=False, task=TASK, transport='interactions',
         thinking_level='low', max_output_tokens=32768, observer=None, export=True,
         context_policy=None, continue_on_blocked=False, require_final_review=False, video_sampling_fps=2,
-        rehearsal_sequence=None):
+        rehearsal_sequence=None, include_video=True):
     emit = observer or (lambda *args, **kwargs: None)
     harness = FoldHarness()
     history = []
@@ -154,6 +154,7 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
     if resume:
         config = json.loads((output / 'config.json').read_text())
         video_sampling_fps = config.get('video_sampling_fps', 2)
+        include_video = config.get('include_video', True)
         rehearsal_sequence = config.get('rehearsal_sequence')
         if config['video_url'] != url or config['model'] != model:
             raise ValueError('Resume must use the original model and video')
@@ -199,7 +200,7 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
                     video_sampling_fps=video_sampling_fps, api_retry_attempts=1, json_validation='harness_only', task=task,
                     transport=transport, thinking_level=thinking_level, max_output_tokens=max_output_tokens,
                     context_policy=context_policy, continue_on_blocked=continue_on_blocked,
-                    rehearsal_sequence=rehearsal_sequence))
+                    rehearsal_sequence=rehearsal_sequence, include_video=include_video))
         (output / 'contract.txt').write_text(task + '\n' + MODEL_INSTRUCTIONS)
     if context_policy and not resume:
         atomic_json(output / 'checkpoint.json', dict(history=history, feedback=feedback,
@@ -232,6 +233,8 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
             if compacted and (not last_compacted or compacted-last_compacted >= context_policy['recent_exchanges']):
                 emit('compacted', exchanges=compacted, accepted=len(harness.history), physics_sha256=continuity['physics_sha256'])
                 last_compacted = compacted
+        if not include_video:
+            request['input'] = [item for item in request['input'] if item['type'] != 'video']
         save_request(call_dir / 'request.json', request, images)
         print(f'Call {turn}/{max_calls}: {model}, {len(harness.history)} accepted folds', flush=True)
         calls = turn

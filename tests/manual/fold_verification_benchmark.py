@@ -37,7 +37,7 @@ def jpg(im):
 async def main():
  item=next(i for i in library() if i['kind']=='paper');base=paper_source(item['id'])[0];p=replay(base)
  c=read_json(base/'commands.json');commands=c.get('commands',[]) if isinstance(c,dict) else c
- print('MODEL',os.getenv('ORI_STEP_CHECK_MODEL','gemini-3.8-flash'),'ACTIONS',json.dumps([c.get('name') for c in commands[:2]]),flush=True)
+ print('MODEL',os.getenv('ORI_STEP_CHECK_MODEL','gemini-3.5-flash'),'ACTIONS',json.dumps([c.get('name') for c in commands[:2]]),flush=True)
  stage=len(p['states'])-1;refs={i:list(reference_images(p,i)) for i in range(stage+1)}
  pixels={i:next(pix for label,pix in refs[i] if label=='TARGET front') for i in refs}
  for i in range(1,stage+1):
@@ -65,6 +65,6 @@ async def main():
  false_rejections=sum(r.get('expected_match') is True and r.get('result',{}).get('verdict')!='match' for r in results)
  print('SUMMARY',sum(r.get('correct',False) for r in results),'/',len(results),'FALSE_APPROVALS',false_approvals,'FALSE_REJECTIONS',false_rejections,flush=True)
  report=Path('output/verification-eval');report.mkdir(parents=True,exist_ok=True)
- (report/'latest.json').write_text(json.dumps(dict(model=os.getenv('ORI_STEP_CHECK_MODEL','gemini-3.8-flash'),run_id=item['id'],false_approvals=false_approvals,false_rejections=false_rejections,results=results),indent=2))
+ (report/'latest.json').write_text(json.dumps(dict(model=os.getenv('ORI_STEP_CHECK_MODEL','gemini-3.5-flash'),run_id=item['id'],false_approvals=false_approvals,false_rejections=false_rejections,results=results),indent=2))
  return all(r.get('correct',False) for r in results)
 if __name__=='__main__':sys.exit(0 if asyncio.run(main()) else 1)

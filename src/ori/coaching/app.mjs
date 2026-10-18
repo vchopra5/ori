@@ -41,7 +41,7 @@ function statusRow(title,description,state){const li=document.createElement('li'
 function renderActivity(){
   const list=$('activity-list');list.replaceChildren();list.classList.toggle('lego-inventory',current.kind==='lego');
   if(liveJob&&!(current.kind==='lego'&&liveJob.status==='completed')){
-    const events=liveJob.events.slice(-8);
+    const events=liveJob.events.filter(event=>event.kind!=='demo_pause').slice(-8);
     for(const [index,event] of events.entries()){
       const titles={classifying:'Watching your video',routed:'Preparing your tutorial',working:'Creating the steps',proposal:'Checking this step',tested:'Trying a fold',accepted:'Step added',rejected:'Trying a different fold',planning:'Planning a simple approach',recovering:'Replanning this fold',compacted:'Continuing your tutorial',undone:'Revising the last action',resuming:'Continuing saved folds',incomplete:'Incomplete preview',finished:'Ready to explore',error:'Tutorial paused'};
       const incompleteEnd=event.kind==='finished'&&!['model_claimed_done','completed'].includes(liveJob.status);
