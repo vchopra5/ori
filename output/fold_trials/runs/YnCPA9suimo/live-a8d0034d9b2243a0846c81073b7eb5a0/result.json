@@ -1,0 +1,307 @@
+{
+  "status": "model_claimed_done",
+  "calls": 7,
+  "accepted_folds": 7,
+  "model": "gemini-4-argon",
+  "video_url": "https://www.youtube.com/shorts/YnCPA9suimo",
+  "feedback_source": "harness_only",
+  "metrics": {
+    "material_area": 2.0,
+    "max_length_error": 3.3306690738754696e-16,
+    "max_seam_gap": 1.412578686869e-16,
+    "panel_count": 13
+  },
+  "transport": "generate-content",
+  "context_policy": {
+    "version": 1,
+    "recent_exchanges": 8,
+    "recent_chars": 24000,
+    "failure_entries": 24,
+    "failure_chars": 12000
+  },
+  "thinking_level": "high",
+  "max_output_tokens": 32768,
+  "layer_state": {
+    "contacts": [
+      {
+        "panel": "paper/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m",
+        "other": "paper/s/m/s/s",
+        "toward_panel": [
+          0.0,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          0.0,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m",
+        "other": "paper/s/m/m",
+        "toward_panel": [
+          0.0,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m",
+        "other": "paper/s/s/s/m/s/s",
+        "toward_panel": [
+          0.0,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m",
+        "other": "paper/s/m/s/m",
+        "toward_panel": [
+          0.0,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/s",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/s",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          0.0,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/s",
+        "other": "paper/s/s/s/m/s/s",
+        "toward_panel": [
+          0.0,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/s/s",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/s/s",
+        "other": "paper/s/s/s/s/m",
+        "toward_panel": [
+          8.659560562354929e-17,
+          -8.65956056235493e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m",
+        "other": "paper/s/m/s/s",
+        "toward_panel": [
+          -0.0,
+          -1.2246467991473532e-16,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          -8.659560562354934e-17,
+          8.659560562354934e-17,
+          -1.0000000000000004
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/s/s",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/s/s",
+        "other": "paper/s/s/s/s/s/m",
+        "toward_panel": [
+          -8.659560562354928e-17,
+          -8.659560562354929e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m",
+        "other": "paper/s/m/s/s",
+        "toward_panel": [
+          -0.0,
+          -1.2246467991473532e-16,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m",
+        "other": "paper/s/s/s/m/s/s",
+        "toward_panel": [
+          8.659560562354934e-17,
+          8.659560562354934e-17,
+          -1.0000000000000004
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/m",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          -8.659560562354929e-17,
+          8.65956056235493e-17,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/m",
+        "other": "paper/s/s/s/m/s/s",
+        "toward_panel": [
+          8.659560562354929e-17,
+          8.65956056235493e-17,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/s/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          -0.0,
+          -0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/s/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          -0.0,
+          -0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/s/m",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          -8.659560562354929e-17,
+          8.65956056235493e-17,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/s/m",
+        "other": "paper/s/s/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/s/s/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          -0.0,
+          -0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/s/m",
+        "other": "paper/s/s/s/s/s/s",
+        "toward_panel": [
+          -0.0,
+          -0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/s/m",
+        "other": "paper/s/s/s/m/s/s",
+        "toward_panel": [
+          8.659560562354928e-17,
+          8.659560562354929e-17,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/s/m/s/m",
+        "other": "paper/s/s/s/s/s/m",
+        "toward_panel": [
+          -1.2246467991473532e-16,
+          -0.0,
+          -1.0
+        ]
+      }
+    ],
+    "back_to_front_z": [
+      "paper/s/s/m/m",
+      "paper/s/s/s/m/m",
+      "paper/s/s/s/m/s/m",
+      "paper/s/s/m/s/m",
+      "paper/s/s/s/s/m",
+      "paper/s/s/s/s/s/m",
+      "paper/s/s/s/s/s/s",
+      "paper/m",
+      "paper/s/m/s/s",
+      "paper/s/m/s/m",
+      "paper/s/m/m",
+      "paper/s/s/m/s/s",
+      "paper/s/s/s/m/s/s"
+    ]
+  },
+  "rejected_proposals": 0,
+  "model_reported_blocked": "",
+  "video_match": "Not independently verified; completion is a model claim, not a harness measurement"
+}

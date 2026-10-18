@@ -1,0 +1,560 @@
+{
+  "commands": [
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -1.0,
+          0.35,
+          0.0
+        ],
+        [
+          1.0,
+          0.35,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold top corner down for head and beak",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.55,
+          0.35,
+          0.0
+        ],
+        [
+          -0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold left wing inward to front",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -0.55,
+          0.35,
+          0.0
+        ],
+        [
+          -0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/s/m",
+        "paper/m/m"
+      ],
+      "moving_side": "right",
+      "name": "unfold accidental body fold",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.55,
+          0.35,
+          0.0
+        ],
+        [
+          -0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold left side inward",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          0.55,
+          0.35,
+          0.0
+        ],
+        [
+          0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold right side inward",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -1.0,
+          -0.55,
+          0.0
+        ],
+        [
+          1.0,
+          -0.55,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold bottom tip behind to flatten base",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -1.0,
+          -0.55,
+          0.0
+        ],
+        [
+          1.0,
+          -0.55,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/s/m/s/m",
+        "paper/s/s/m",
+        "paper/s/m/m/m"
+      ],
+      "moving_side": "left",
+      "name": "unfold bottom tip from front",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -1.0,
+          -0.55,
+          0.0
+        ],
+        [
+          1.0,
+          -0.55,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold bottom tip to back",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -1.0,
+          -0.55,
+          0.0
+        ],
+        [
+          1.0,
+          -0.55,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/s/m/s/m",
+        "paper/s/s/m",
+        "paper/s/m/m/m"
+      ],
+      "moving_side": "left",
+      "name": "unfold bottom tip from back",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -0.55,
+          0.35,
+          0.0
+        ],
+        [
+          -0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/s/s/s",
+        "paper/m/s",
+        "paper/s/s/m"
+      ],
+      "moving_side": "left",
+      "name": "unfold left side",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.55,
+          0.35,
+          0.0
+        ],
+        [
+          0.35,
+          -0.65,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/s/m/m/s",
+        "paper/m/m/m",
+        "paper/s/m/m/m"
+      ],
+      "moving_side": "right",
+      "name": "unfold right side",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -1.0,
+          0.35,
+          0.0
+        ],
+        [
+          1.0,
+          0.35,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/m/m/s",
+        "paper/m/s",
+        "paper/m/m/m"
+      ],
+      "moving_side": "right",
+      "name": "unfold top corner",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -1.0,
+          -0.5,
+          0.0
+        ],
+        [
+          1.0,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold bottom tip to back",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.45,
+          0.4,
+          0.0
+        ],
+        [
+          -0.45,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold left wing inward",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          0.45,
+          0.4,
+          0.0
+        ],
+        [
+          0.45,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold right wing inward",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -1.0,
+          0.3,
+          0.0
+        ],
+        [
+          1.0,
+          0.3,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold top head and ear tufts down",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -1.0,
+          0.3,
+          0.0
+        ],
+        [
+          1.0,
+          0.3,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/m/m/s/s/s",
+        "paper/m/m/s/m",
+        "paper/m/s",
+        "paper/m/m/s/s/m",
+        "paper/m/m/m",
+        "paper/s/m/s/s/s/s/s/m",
+        "paper/s/m/s/s/s/m/m",
+        "paper/s/s/s/s/m/m",
+        "paper/s/m/s/s/s/s/m/m",
+        "paper/s/m/m/s/s/m/m"
+      ],
+      "moving_side": "right",
+      "name": "unfold top down fold",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.45,
+          0.4,
+          0.0
+        ],
+        [
+          0.45,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/m/m/s/s/m",
+        "paper/m/m/m",
+        "paper/s/m/s/s/s/s/m/m",
+        "paper/s/m/m/s/s/m/m",
+        "paper/s/m/s/s/s/s/m/s",
+        "paper/s/m/m/s/s/m/s",
+        "paper/s/m/m/s/m/m"
+      ],
+      "moving_side": "right",
+      "name": "unfold right wing",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          -0.45,
+          0.4,
+          0.0
+        ],
+        [
+          -0.45,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": [
+        "paper/m/m/s/m",
+        "paper/m/s",
+        "paper/s/m/s/s/s/m/m",
+        "paper/s/s/s/s/m/m",
+        "paper/s/m/s/s/s/m/s",
+        "paper/s/s/s/s/m/s",
+        "paper/s/s/s/m/m"
+      ],
+      "moving_side": "left",
+      "name": "unfold left wing",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -1.0,
+          0.28,
+          0.0
+        ],
+        [
+          1.0,
+          0.28,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold top corner down for head and beak",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.45,
+          0.28,
+          0.0
+        ],
+        [
+          -0.32,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "fold left wing behind",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          0.45,
+          0.28,
+          0.0
+        ],
+        [
+          0.32,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "fold right wing behind",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ]
+}

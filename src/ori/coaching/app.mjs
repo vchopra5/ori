@@ -1,6 +1,7 @@
 import {finalStateThumbnail} from './library-thumbnails.mjs';
 import {playbackFinish} from './playback-finish.mjs';
 import {generationState} from './generation-state.mjs';
+import {paperRevision,animatePaperUndo} from './paper-undo.mjs';
 import {readAPIJSON} from './api.mjs';
 import {LiveCoach} from './live-coach.mjs';
 import {StudioScene} from './scene.mjs';
@@ -17,7 +18,7 @@ const toySteps = [
 ];
 const toy = {id:'toy',title:'A study in balance',kind:'toy',engine:'Toy simulation',duration:12,steps:toySteps};
 let scene, current=toy, steps=toySteps, duration=12, time=0, playing=false, active=-1, library=[], stream=null, cameraSession=0;
-let lessonScene=null,lessonDemoTime=null;
+let lessonScene=null,lessonDemoTime=null,undoInProgress=false;
 let playbackSpeed=1;
 try{const saved=Number(localStorage.getItem('ori-playback-speed'));if([.5,1,2,4,8].includes(saved))playbackSpeed=saved;}catch{}
 $('playback-speed').value=String(playbackSpeed);
@@ -69,10 +70,10 @@ function updateStep(){
   const isTurn=current.commands?.[active-1]?.type==='reorient';
   $('replay-fold').textContent=isTurn?'Replay turn ↻':'Replay fold ↻';
   $('fold-guide-key').querySelectorAll(':scope > span').forEach(label=>label.hidden=isTurn);
-  $('event-step').textContent=`STEP ${active+1} / ${steps.length}`;
+  $('event-step').textContent=current.kind==='paper'?(active===0?'STARTING SHEET':`STEP ${active} / ${steps.length-1}`):`STEP ${active+1} / ${steps.length}`;
   if(current.kind==='lego'){$('lego-step-number').textContent=`STEP ${active+1} OF ${steps.length}`;$('lego-back').disabled=active===0;$('lego-next').disabled=active===steps.length-1;}
   $('event-title').textContent=steps[active][0];$('event-description').textContent=steps[active][1];
-  $('progress-label').textContent=`${String(active+1).padStart(2,'0')} / ${String(steps.length).padStart(2,'0')}`;
+  $('progress-label').textContent=`${String(current.kind==='paper'?active:active+1).padStart(2,'0')} / ${String(current.kind==='paper'?steps.length-1:steps.length).padStart(2,'0')}`;
   $('event-status').lastChild.textContent=current.kind==='toy'?'Sample motion':current.kind==='paper'?(current.commands?.[active-1]?.type==='reorient'?'Whole-sheet turn · no new crease':'Drag to explore the fold'):'Drag to explore';
   const card=$('steps').children[active];if(card&&$('steps').dataset.long==='true')$('steps').scrollTo({left:Math.max(0,card.offsetLeft-$('steps').offsetLeft-80),behavior:'instant'});
   $('lesson-step').textContent=current.kind==='paper'?(active===0?'STARTING SHEET':`${current.commands?.[active-1]?.type==='reorient'?'TURN':'FOLD'} ${active} OF ${steps.length-1}`):`STEP ${active+1} OF ${steps.length}`;$('lesson-title').textContent=steps[active][0];$('lesson-instruction').textContent=steps[active][1];
@@ -92,12 +93,18 @@ $('lego-focus').onclick=()=>scene?.focusLego();
 $('lego-xray').onclick=()=>{scene.legoXray=!scene.legoXray;$('lego-xray').setAttribute('aria-pressed',String(scene.legoXray));scene.setTime(time);};
 function renderSteps(){
   $('steps').replaceChildren();$('steps').style.setProperty('--step-columns',steps.length);$('steps').dataset.long=String(steps.length>7);
-  steps.forEach(([title],i)=>{const button=document.createElement('button');button.className='step-button';button.setAttribute('aria-label',`Step ${i+1}: ${title}`);const image=document.createElement('div');image.className='step-image';
+  steps.forEach(([title],i)=>{const button=document.createElement('button');button.className='step-button';button.setAttribute('aria-label',current.kind==='paper'&&i===0?'Starting sheet':`Step ${current.kind==='paper'?i:i+1}: ${title}`);const image=document.createElement('div');image.className='step-image';
     if(scene&&current.kind!=='recording'){const img=document.createElement('img');img.alt='';img.src=scene.thumbnail(thumbnailTime(i));image.append(img);}else{image.append(icon('play'));image.style.display='grid';image.style.placeItems='center';}
-    const number=document.createElement('span');number.className='step-number';number.textContent=i+1;image.append(number);
+    const number=document.createElement('span');number.className='step-number';number.textContent=current.kind==='paper'?(i===0?'Start':i):i+1;image.append(number);
     const label=document.createElement('span');label.className='step-label';label.textContent=title;label.title=title;const timestamp=document.createElement('span');timestamp.className='step-time';timestamp.textContent=clock(i*duration/steps.length);button.append(image,label,timestamp);button.onclick=()=>{if(current.kind==='lego'){playLegoStep(i);}else{setPlaying(false);seek(stepTime(i));}};$('steps').append(button);
   });
   active=-1;seek(0);
+}
+function applyPaperColor(color){
+  scene?.setPaperColor(color);lessonScene?.setPaperColor(color);
+  const selected=document.querySelector(`[data-paper-color="${color}"]`);
+  if(selected)$('paper-front-key').style.background=selected.style.getPropertyValue('--paper-swatch');
+  document.querySelectorAll('[data-paper-color]').forEach(button=>button.setAttribute('aria-pressed',String(button===selected)));
 }
 async function loadItem(item, options={}){
   if(!options.live){liveSession++;liveJob=null;$('generation-companion').hidden=true;$('activity-list').classList.remove('live-events');}
@@ -136,9 +143,9 @@ async function loadItem(item, options={}){
   $('footer-note').textContent='';
   if(item.kind==='toy'){steps=toySteps;duration=12;scene?.buildToy();}
   else if(item.kind==='lego'){steps=replay.version===2?replay.steps.map((step,i)=>[`${step.action==='rotate_hinge'?'Adjust':'Place'} ${replay.pieces.find(p=>p.id===step.piece)?.part.replaceAll('_',' ')||'piece'}`,step.instruction]):replay.pieces.map((p,i)=>[`Place piece ${i+1}: ${p.color} ${p.part.replaceAll('_',' ')}`,p.instruction]);duration=steps.length*replay.seconds_per_step;scene?.setLego(replay);$('teach').disabled=true;$('contacts').hidden=true;$('fold-guide-key').hidden=true;$('scene').setAttribute('aria-label','LEGO assembly. Drag to orbit; scroll to zoom.');$('canvas-subtitle').textContent=`${replay.pieces.length} pieces · ${steps.length} steps`;$('footer-note').textContent='';}
-  else if(item.kind==='paper'){steps=[['The starting sheet','Begin with the flat sheet, ready for its first fold.'],...item.commands.map(command=>[command.name||'Fold',command.type==='reorient'?'Turn the whole sheet together. Keep every fold in place; do not make a new crease.':command.name||'Follow the fold shown above.'])];if(steps.length!==replay.states.length)steps=replay.states.map((_,i)=>[i===0?'The starting sheet':`Fold ${i}`,i===0?'Start with the flat sheet.':item.commands[i-1]?.name||'Look at the fold from another angle.']);duration=steps.length*(replay.seconds_per_step||2.6);scene?.setPaper(replay);}
+  else if(item.kind==='paper'){steps=[['The starting sheet','Begin with the flat sheet, ready for its first fold.'],...item.commands.map(command=>[command.name||'Fold',command.type==='reorient'?'Turn the whole sheet together. Keep every fold in place; do not make a new crease.':command.name||'Follow the fold shown above.'])];if(steps.length!==replay.states.length)steps=replay.states.map((_,i)=>[i===0?'The starting sheet':`Fold ${i}`,i===0?'Start with the flat sheet.':item.commands[i-1]?.name||'Look at the fold from another angle.']);duration=steps.length*(replay.seconds_per_step||2.6);scene?.setPaper(replay);if(['ink','ivory','lilac','apricot'].includes(item.report?.paper_color))applyPaperColor(item.report.paper_color);}
   else{duration=Number(item.report.simulation_seconds)||14;steps=[['The starting state','Observe the mechanism before the actuators move.'],['The motion begins','Watch the pre-existing joints start to move.'],['Following the motion','Compare the changing shape and contact.'],['The final state','Look at the finished project from another angle.']];video.src=item.video;video.onerror=()=>toast('This recording could not be loaded. Try another library item.');video.onloadedmetadata=()=>{if(current.id!==item.id)return;duration=video.duration;$('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${steps.length} steps · ${Math.round(duration)} seconds`;renderSteps();};}
-  $('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${steps.length} steps · ${Math.round(duration)} seconds`;scene?.resize();renderSteps();seek(0);
+  $('scrubber').max=duration;$('duration').textContent=clock(duration);$('step-count').textContent=`${item.kind==='paper'?steps.length-1:steps.length} steps · ${Math.round(duration)} seconds`;scene?.resize();renderSteps();seek(0);
 }
 function makeLibraryItem(item){const row=document.createElement('div');row.className='library-row';row.dataset.token=item.delete_token||'';const button=document.createElement('button');button.className='library-item';if(item.thumbnail){const thumbnail=document.createElement('img');thumbnail.className='library-thumbnail';thumbnail.src=item.thumbnail;thumbnail.alt='';thumbnail.onerror=()=>thumbnail.remove();button.append(thumbnail);}else button.append(icon(item.kind==='recording'?'play':'cube'));finalStateThumbnail(item).then(url=>{if(!url)return;const preview=document.createElement('img');preview.className='library-thumbnail';preview.alt='Finished '+item.title;preview.src=url;preview.onload=()=>{const old=button.querySelector('.library-thumbnail')||button.querySelector(':scope > svg');if(old)old.replaceWith(preview);else button.prepend(preview);};});const copy=document.createElement('div');const title=document.createElement('strong');title.textContent=item.title;const description=document.createElement('p');description.textContent=item.kind==='toy'?'Interactive sample · 6 moments to explore':({paper:'Origami tutorial',lego:'LEGO building instructions',recording:'Video tutorial'}[item.kind]||'Tutorial');if(item.saved_at)description.textContent+=` · ${new Date(item.saved_at*1000).toLocaleString()}`;copy.append(title,description);const arrow=icon('arrow');arrow.classList.add('item-arrow');button.append(copy,arrow);button.onclick=()=>{$('library-dialog').close();loadItem(item).catch(()=>toast('This tutorial could not be opened.'));};row.append(button);if(item.delete_token){const remove=document.createElement('button');remove.className='delete-run-button';remove.textContent='Delete';remove.setAttribute('aria-label',`Delete ${item.title}`);remove.onclick=()=>confirmDeleteRun(item);row.append(remove);}return row;}
 let pendingDelete=null;
@@ -301,11 +308,30 @@ async function followJob(id){
         const replay=await readAPIJSON(result);if(session!==liveSession)return;
         // Each atomic snapshot can be newer than the status poll. Wait until they agree.
         if(replay.states.length!==job.commands.length+1||(replay.attempt||0)!==(job.attempt||0)||(job.command_hash&&replay.command_hash!==job.command_hash)){await new Promise(resolve=>setTimeout(resolve,1200));continue;}
+        const samePaper=current.kind==='paper'&&current.id===job.id&&attempt===(job.attempt||0);
+        const revisionMotion=samePaper?paperRevision(current.commands,job.commands,scene.replay.seconds_per_step||2.6,time):null;
+        const camera=samePaper?{angle:scene.angle,elevation:scene.elevation,distance:scene.distance,target:scene.target.clone()}:null;
+        if(revisionMotion){
+          setPlaying(false);const loading=loadSession,guide=scene.guideVisible;
+          scene.setFoldGuide(false);
+          $('generation-label').textContent='Undoing the last fold…';
+          $('generation-detail').textContent='↶ Unfolding before trying again';
+          undoInProgress=true;
+          const finished=await animatePaperUndo(revisionMotion,{draw:seek,valid:()=>session===liveSession&&loading===loadSession});
+          undoInProgress=false;
+          if(!finished)return;
+          setPlaying(false);
+          scene.setFoldGuide(guide);
+        }
         await loadItem({id:job.id,title:job.route.title||'Origami tutorial',kind:'paper',engine:'Argon · paper harness',
           commands:job.commands,source_url:job.url,report:{...replay.metrics,ok:true,accepted_folds:job.accepted},
           report_url:`/api/jobs/${id}`,replay_url:`/api/jobs/${id}/playback`},{live:true,replay});
         history.replaceState(null,'',`?job=${encodeURIComponent(id)}`);
-        accepted=job.accepted;attempt=job.attempt||0;commandHash=job.command_hash;seek(stepTime(steps.length-1));setPlaying(job.accepted>0);
+        if(camera){Object.assign(scene,{angle:camera.angle,elevation:camera.elevation,distance:camera.distance});scene.target.copy(camera.target);scene.setCamera();}
+        accepted=job.accepted;attempt=job.attempt||0;commandHash=job.command_hash;
+        seek(revisionMotion?(revisionMotion.hasReplacement?stepTime(revisionMotion.shared+1):duration):stepTime(steps.length-1));
+        setPlaying(revisionMotion?revisionMotion.hasReplacement:job.accepted>0);
+        renderGeneration(job);
       }
       if(job.revision!==revision){
         revision=job.revision;$('sample-badge').textContent=['queued','classifying','running'].includes(job.status)?'Creating tutorial':['model_claimed_done','completed'].includes(job.status)?'Ready to explore':'Incomplete preview';$('activity-tag').textContent=['queued','classifying','running'].includes(job.status)?'LIVE':['model_claimed_done','completed'].includes(job.status)?'READY':'INCOMPLETE';
@@ -433,8 +459,8 @@ function showHome(){
 $('replay-fold').onclick=()=>{if(current.kind!=='paper'||active<1)return;const index=active;setPlaying(false);seek(stepTime(index));setPlaying(true);stopAt=Math.min(duration,(index+1)*duration/steps.length-.00001);};
 $('final-view').onclick=()=>{setPlaying(false);seek(duration);};
 document.querySelectorAll('[data-paper-view]').forEach(button=>button.onclick=()=>{scene?.setPaperView(button.dataset.paperView);document.querySelectorAll('[data-paper-view]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
-document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>{scene?.setPaperColor(button.dataset.paperColor);lessonScene?.setPaperColor(button.dataset.paperColor);$('paper-front-key').style.background=button.style.getPropertyValue('--paper-swatch');document.querySelectorAll('[data-paper-color]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));});
-let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt*playbackSpeed,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended){const celebrate=finishArmed&&stopAt===null;setPlaying(false);if(celebrate)clearFinish=playbackFinish($('scene-stage'));}}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
+document.querySelectorAll('[data-paper-color]').forEach(button=>button.onclick=()=>applyPaperColor(button.dataset.paperColor));
+let last=performance.now();function animate(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing&&!undoInProgress){if(current.kind==='recording')seek($('recording').currentTime);else seek(Math.min(time+dt*playbackSpeed,stopAt??duration));if(time>=duration||stopAt!==null&&time>=stopAt||current.kind==='recording'&&$('recording').ended){const celebrate=finishArmed&&stopAt===null;setPlaying(false);if(celebrate)clearFinish=playbackFinish($('scene-stage'));}}if(lessonDemoTime!==null&&lessonScene&&!$('teaching').hidden&&!document.hidden&&current.kind==='paper'){
   const end=Math.min(duration,stepTime(active+1))-.00001;
   lessonDemoTime+=dt;lessonScene.setTime(Math.min(lessonDemoTime,end));
   if(lessonDemoTime>=end+.8)lessonDemoTime=$('lesson-autoloop').checked&&active>0?stepTime(active):null;

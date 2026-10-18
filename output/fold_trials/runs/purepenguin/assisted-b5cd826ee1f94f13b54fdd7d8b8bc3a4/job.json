@@ -1,0 +1,954 @@
+{
+  "id": "assisted-b5cd826ee1f94f13b54fdd7d8b8bc3a4",
+  "url": "https://cfcorigami.com/diagram/pinguino-purelandpureland-penguin",
+  "status": "manual_verified",
+  "events": [
+    {
+      "kind": "classifying",
+      "message": "Watching the video to choose a simulator"
+    },
+    {
+      "kind": "planning",
+      "message": "Building a fold-only approximation",
+      "attempt": 1
+    },
+    {
+      "kind": "accepted",
+      "message": "Crease the vertical center line",
+      "step": 1
+    },
+    {
+      "kind": "accepted",
+      "message": "Unfold the vertical center line",
+      "step": 2
+    },
+    {
+      "kind": "accepted",
+      "message": "Crease the first diagonal",
+      "step": 3
+    },
+    {
+      "kind": "accepted",
+      "message": "Unfold the first diagonal",
+      "step": 4
+    },
+    {
+      "kind": "accepted",
+      "message": "Crease the second diagonal",
+      "step": 5
+    },
+    {
+      "kind": "accepted",
+      "message": "Unfold the second diagonal",
+      "step": 6
+    },
+    {
+      "kind": "accepted",
+      "message": "Crease the upper-left quarter reference",
+      "step": 7
+    },
+    {
+      "kind": "accepted",
+      "message": "Unfold the upper-left quarter reference",
+      "step": 8
+    },
+    {
+      "kind": "accepted",
+      "message": "Crease the upper-right quarter reference",
+      "step": 9
+    },
+    {
+      "kind": "accepted",
+      "message": "Unfold the upper-right quarter reference",
+      "step": 10
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold down the top tip",
+      "step": 11
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the small tip back up",
+      "step": 12
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the upper-left edge inward",
+      "step": 13
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the upper-right edge inward",
+      "step": 14
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the bottom tip behind",
+      "step": 15
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the left side back",
+      "step": 16
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the right side back",
+      "step": 17
+    },
+    {
+      "kind": "accepted",
+      "message": "Turn the penguin over",
+      "step": 18
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the head down",
+      "step": 19
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the beak tip upward",
+      "step": 20
+    },
+    {
+      "kind": "accepted",
+      "message": "Turn the penguin over",
+      "step": 21
+    },
+    {
+      "kind": "accepted",
+      "message": "Shorten the body and raise the flipper corners",
+      "step": 22
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the right side inward",
+      "step": 23
+    },
+    {
+      "kind": "accepted",
+      "message": "Pleat the right flipper outward",
+      "step": 24
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the left side inward",
+      "step": 25
+    },
+    {
+      "kind": "accepted",
+      "message": "Pleat the left flipper outward",
+      "step": 26
+    },
+    {
+      "kind": "accepted",
+      "message": "Turn the penguin over",
+      "step": 27
+    },
+    {
+      "kind": "resuming",
+      "message": "Continuing from the saved paper and accepted folds"
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the pointed beak down",
+      "step": 28
+    },
+    {
+      "kind": "resuming",
+      "message": "Continuing from the saved paper and accepted folds"
+    },
+    {
+      "kind": "accepted",
+      "message": "Round the left side of the head",
+      "step": 29
+    },
+    {
+      "kind": "accepted",
+      "message": "Round the right side of the head",
+      "step": 30
+    },
+    {
+      "kind": "finished",
+      "message": "Run finished: manual verified"
+    }
+  ],
+  "revision": 35,
+  "commands": [
+    {
+      "name": "Crease the vertical center line",
+      "crease": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the vertical center line",
+      "crease": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m"
+      ]
+    },
+    {
+      "name": "Crease the first diagonal",
+      "crease": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the first diagonal",
+      "crease": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m",
+        "paper/m/m"
+      ]
+    },
+    {
+      "name": "Crease the second diagonal",
+      "crease": [
+        [
+          -1,
+          1,
+          0
+        ],
+        [
+          1,
+          -1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the second diagonal",
+      "crease": [
+        [
+          -1,
+          1,
+          0
+        ],
+        [
+          1,
+          -1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/s/m",
+        "paper/s/m",
+        "paper/m/m/m"
+      ]
+    },
+    {
+      "name": "Crease the upper-left quarter reference",
+      "crease": [
+        [
+          -1,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the upper-left quarter reference",
+      "crease": [
+        [
+          -1,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m/m/s/m",
+        "paper/s/m/m",
+        "paper/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Crease the upper-right quarter reference",
+      "crease": [
+        [
+          -0.5,
+          1,
+          0
+        ],
+        [
+          1,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the upper-right quarter reference",
+      "crease": [
+        [
+          -0.5,
+          1,
+          0
+        ],
+        [
+          1,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/s/m/m",
+        "paper/s/m/s/m",
+        "paper/s/m/m",
+        "paper/m/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold down the top tip",
+      "crease": [
+        [
+          -0.25,
+          0.75,
+          0
+        ],
+        [
+          0.25,
+          0.75,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the small tip back up",
+      "crease": [
+        [
+          -0.125,
+          0.625,
+          0
+        ],
+        [
+          0.125,
+          0.625,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m/m/m",
+        "paper/m/m/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold the upper-left edge inward",
+      "crease": [
+        [
+          -1,
+          -0.25,
+          0
+        ],
+        [
+          0,
+          0.75,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the upper-right edge inward",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          1,
+          -0.25,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the bottom tip behind",
+      "crease": [
+        [
+          -0.5,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the left side back",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          -0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the right side back",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Fold the head down",
+      "crease": [
+        [
+          -0.3,
+          0.45,
+          0
+        ],
+        [
+          0.3,
+          0.45,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the beak tip upward",
+      "crease": [
+        [
+          -0.25,
+          0.3,
+          0
+        ],
+        [
+          0.25,
+          0.3,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m/m/s/s/s/s",
+        "paper/m/m/m/m/m/s/s/s/s",
+        "paper/s/m/m/m/s/s/s",
+        "paper/m/m/m/m/m/m/s/s/s",
+        "paper/s/m/m/s/m/s",
+        "paper/m/m/m/m/m/s/m/s",
+        "paper/s/m/m/m/m/s",
+        "paper/m/m/m/m/m/m/m/s",
+        "paper/m/m/m/m/m/s/s/m/s",
+        "paper/m/m/m/m/m/m/s/m/s",
+        "paper/s/m/m/s/s/m/s",
+        "paper/s/m/m/m/s/m/s",
+        "paper/m/m/m/m/m/s/s/s/m",
+        "paper/m/m/m/m/m/m/s/s/m",
+        "paper/m/m/m/m/m/s/m/m",
+        "paper/m/m/m/m/m/m/m/m",
+        "paper/m/m/m/m/m/s/s/m/m",
+        "paper/m/m/m/m/m/m/s/m/m",
+        "paper/s/m/m/s/s/s/m",
+        "paper/s/m/m/m/s/s/m",
+        "paper/s/m/m/s/m/m",
+        "paper/s/m/m/m/m/m",
+        "paper/s/m/m/s/s/m/m",
+        "paper/s/m/m/m/s/m/m"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Shorten the body and raise the flipper corners",
+      "crease": [
+        [
+          -0.6,
+          -0.15,
+          0
+        ],
+        [
+          0.6,
+          -0.15,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the right side inward",
+      "crease": [
+        [
+          0.2,
+          -0.3,
+          0
+        ],
+        [
+          0.2,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Pleat the right flipper outward",
+      "crease": [
+        [
+          0.15,
+          -0.3,
+          0
+        ],
+        [
+          0.15,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/s/m/s/s/s/m",
+        "paper/s/s/m/s/m/s/m",
+        "paper/s/s/s/s/m/m",
+        "paper/s/s/m/s/s/m/m",
+        "paper/s/s/s/m/m/m",
+        "paper/s/s/m/s/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold the left side inward",
+      "crease": [
+        [
+          -0.2,
+          -0.3,
+          0
+        ],
+        [
+          -0.2,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Pleat the left flipper outward",
+      "crease": [
+        [
+          -0.15,
+          -0.3,
+          0
+        ],
+        [
+          -0.15,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m/m/s/s/s/s/m",
+        "paper/m/m/s/s/m/s/m",
+        "paper/m/s/s/m/m",
+        "paper/m/m/s/s/s/m/m",
+        "paper/m/s/m/m/m",
+        "paper/m/m/s/s/m/m/m"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Fold the pointed beak down",
+      "crease": [
+        [
+          -0.2,
+          0.4,
+          0
+        ],
+        [
+          0.2,
+          0.4,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/m/m/s/s/s/s",
+        "paper/m/m/m/m/m/s/s/s/s",
+        "paper/s/m/m/m/s/s/s",
+        "paper/m/m/m/m/m/m/s/s/s",
+        "paper/s/m/m/m/m/s",
+        "paper/m/m/m/m/m/m/m/s",
+        "paper/m/m/m/m/m/s/s/m/s/m",
+        "paper/m/m/m/m/m/m/s/m/s/m",
+        "paper/s/m/m/s/s/m/s/m",
+        "paper/s/m/m/m/s/m/s/m",
+        "paper/m/m/m/m/m/s/s/s/m/m",
+        "paper/m/m/m/m/m/m/s/s/m/m",
+        "paper/m/m/m/m/m/m/m/m/m",
+        "paper/m/m/m/m/m/s/s/m/m/m",
+        "paper/m/m/m/m/m/m/s/m/m/m",
+        "paper/s/m/m/s/s/s/m/m",
+        "paper/s/m/m/m/s/s/m/m",
+        "paper/s/m/m/m/m/m/m",
+        "paper/s/m/m/s/s/m/m/m",
+        "paper/s/m/m/m/s/m/m/m"
+      ]
+    },
+    {
+      "name": "Round the left side of the head",
+      "crease": [
+        [
+          -0.12,
+          0.4,
+          0
+        ],
+        [
+          -0.07,
+          0.45,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Round the right side of the head",
+      "crease": [
+        [
+          0.07,
+          0.45,
+          0
+        ],
+        [
+          0.12,
+          0.4,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    }
+  ],
+  "accepted": 30,
+  "route": {
+    "kind": "origami",
+    "title": "Penguin — 30-step Pureland demo",
+    "summary": "A blue-and-ivory penguin with a pointed beak and two flippers. Adapted from Xabier Sevillano’s Pureland penguin; model-assisted, manually completed and harness-validated."
+  },
+  "attempt": 1,
+  "command_hash": "f077ddc83369e1f5b04f",
+  "report": {
+    "status": "manual_verified",
+    "accepted_folds": 30,
+    "model": "gemini-4-argon",
+    "thinking_level": "medium",
+    "authorship": "Gemini-assisted; geometry manually completed and validated",
+    "video_url": "https://cfcorigami.com/diagram/pinguino-purelandpureland-penguin",
+    "source_type": "PDF diagrams",
+    "paper_color": "ink",
+    "metrics": {
+      "material_area": 1.9999999999999996,
+      "max_length_error": 3.3306690738754696e-16,
+      "max_seam_gap": 8.887059441036587e-16,
+      "panel_count": 248
+    },
+    "feedback_source": "FoldHarness",
+    "video_match": "Adaptation of the published penguin; manually inspected final silhouette"
+  }
+}

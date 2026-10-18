@@ -122,6 +122,15 @@ class LiveJobTests(unittest.TestCase):
             self.assertEqual(len(sources), 1)
             self.assertEqual(next(iter(sources.values()))[0], base)
 
+    def test_verified_assisted_tutorial_is_saved_without_claiming_model_completion(self):
+        with TemporaryDirectory() as directory, patch('ori.coaching.server.ROOT', Path(directory)):
+            base = Path(directory) / 'output/fold_trials/runs/penguin/assisted'
+            base.mkdir(parents=True)
+            (base / 'result.json').write_text(json.dumps(dict(status='manual_verified', accepted_folds=30)))
+            (base / 'job.json').write_text(json.dumps(dict(route=dict(title='30-step penguin'))))
+            source = next(iter(paper_sources().values()))
+            self.assertEqual(source, (base, '30-step penguin', 'Assisted · paper harness'))
+
     def test_classifier_uses_video_and_rejects_unknown_engine(self):
         client = MagicMock()
         client.models.generate_content.return_value = SimpleNamespace(

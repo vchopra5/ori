@@ -1,0 +1,183 @@
+{
+  "commands": [
+    {
+      "type": "reorient",
+      "name": "Rotate square to axis-aligned orientation",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "angle_degrees": 45
+    },
+    {
+      "name": "Fold bottom edge to center line",
+      "crease": [
+        [
+          1.0,
+          -0.3535533905932738,
+          0.0
+        ],
+        [
+          -1.0,
+          -0.3535533905932738,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Diagonally fold down the right side of bottom flap",
+      "crease": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.7071067811865475,
+          -0.3535533905932738,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/m"
+      ]
+    },
+    {
+      "name": "Diagonally fold down the left side of bottom flap",
+      "crease": [
+        [
+          -0.7071067811865475,
+          -0.3535533905932738,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/m/s"
+      ]
+    },
+    {
+      "name": "Fold down the top part",
+      "crease": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold about 3/4 of the top flap back up",
+      "crease": [
+        [
+          1.0,
+          -0.1767766952966369,
+          0.0
+        ],
+        [
+          -1.0,
+          -0.1767766952966369,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/m/s/m",
+        "paper/s/s/m/m",
+        "paper/s/m/m"
+      ]
+    },
+    {
+      "name": "Fold down the top right corner",
+      "crease": [
+        [
+          0.1767766952966369,
+          0.3535533905932738,
+          0.0
+        ],
+        [
+          0.7071067811865475,
+          -0.1767766952966369,
+          0.0
+        ]
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/m/m/m",
+        "paper/s/m/s/m/m"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the whole model over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    }
+  ]
+}

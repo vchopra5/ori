@@ -49,7 +49,8 @@ class PlanningUndoTests(TestCase):
         outputs=[dict(commands=[FOLD]),dict(commands=[],undo=1),dict(commands=[corrected]),dict(commands=[],done=True)]
         def respond(*args,**kwargs):
             text=json.dumps(outputs.pop(0));return SimpleNamespace(status='completed',output_text=text,model_dump=lambda **_:dict(output_text=text))
-        with TemporaryDirectory() as directory,patch('ori.reconstruction.fold_trial.generate_content',side_effect=respond):
+        hints=dict(model='gemini-3.8-flash', video_sampling_fps=.5, rehearsal_sequence=copy.deepcopy(outputs))
+        with TemporaryDirectory() as directory,patch('ori.reconstruction.fold_trial.generate_content',side_effect=respond),patch('ori.coaching.jobs.load_hints',return_value=hints):
             base=Path(directory);url='https://youtu.be/10KurnMH_6o';route=dict(title='Fox',summary='Fox face')
             progress=Progress(base,url);progress.data['route']=route
             run_paper(MagicMock(),url,base,progress,route,max_calls=2)

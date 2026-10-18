@@ -6,7 +6,14 @@ export function rotate(point, crease, angle, vector=false) {
   const cross=[n[1]*p[2]-n[2]*p[1],n[2]*p[0]-n[0]*p[2],n[0]*p[1]-n[1]*p[0]];
   return p.map((x,i)=>origin[i]+x*c+cross[i]*s+n[i]*dot*(1-c));
 }
-export function layerOffsets(panels, end=false) {
+// The 30-step Pureland penguin has 248 subdivisions. Its default display
+// spacing accumulates to .28 units and visibly separates connected paper.
+// Scope this presentation override to the saved command sequence, so it also
+// applies in thumbnails/teaching without changing other demos or replay data.
+export function displayLayerSpread(replay) {
+  return replay.command_hash==='f077ddc83369e1f5b04f' ? .002 : Infinity;
+}
+export function layerOffsets(panels, end=false, maxSpread=Infinity) {
   const rank=new Map(panels.map(p=>[p.id,0])), pending=new Map(panels.map(p=>[p.id,new Set()]));
   for(const p of panels)for(const [other,normal]of Object.entries(end?p.end_contacts||{}:p.contacts||{}))
     if(rank.has(other)&&normal[2]>1e-8)pending.get(p.id).add(other);
@@ -17,8 +24,9 @@ export function layerOffsets(panels, end=false) {
     for(const id of ready){pending.delete(id);result.set(id,rank.get(id));
       for(const [next,deps]of pending)if(deps.delete(id))rank.set(next,Math.max(rank.get(next),rank.get(id)+1));}
   }
-  const center=Math.max(0,...result.values())/2;
-  return new Map([...result].map(([id,r])=>[id,[0,0,(r-center)*.005]]));
+  const highest=Math.max(0,...result.values()),center=highest/2;
+  const spacing=highest ? Math.min(.005,maxSpread/highest) : .005;
+  return new Map([...result].map(([id,r])=>[id,[0,0,(r-center)*spacing]]));
 }
 export function evaluatePath(node,t) {
   if(typeof node==='number')return node;

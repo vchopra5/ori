@@ -1,0 +1,165 @@
+{
+  "commands": [
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold top corner down to center",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.75,
+          -0.25,
+          0.0
+        ],
+        [
+          -0.75,
+          -0.25,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold bottom corner up to top edge",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.75,
+          0.5,
+          0.0
+        ],
+        [
+          0.0,
+          -0.25,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold right side up to center line",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.0,
+          -0.25,
+          0.0
+        ],
+        [
+          -0.75,
+          0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold left side up to center line",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.5,
+          0.625,
+          0.0
+        ],
+        [
+          -0.5,
+          0.625,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold top peaks down to round the top of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.75,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold right corner behind to round the side of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.75,
+          0.0
+        ],
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold left corner behind to round the side of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    }
+  ]
+}

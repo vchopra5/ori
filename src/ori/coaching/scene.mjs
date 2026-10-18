@@ -1,5 +1,5 @@
 import {legoFrame,turnPose} from './lego-motion.mjs';
-import {frameAt, layerOffsets, rotate, foldGuide, foldProgress} from './paper-motion.mjs';
+import {frameAt, layerOffsets, displayLayerSpread, rotate, foldGuide, foldProgress} from './paper-motion.mjs?v=penguin-compact-2';
 /* Rendering only. Sample motion is illustrative, never a physics validation. */
 const T = window.THREE;
 export class StudioScene {
@@ -179,8 +179,18 @@ export class StudioScene {
     for(let i=0;i<90;i++){ctx.beginPath();ctx.moveTo((i*73)%256,(i*37)%256);ctx.lineTo((i*73)%256+12,(i*37)%256+3);ctx.stroke();}
     const texture=new T.CanvasTexture(canvas);texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(2,2);return texture;
   }
+  makeMarkedPaperTexture(marks){
+    if(!marks.length)return null;
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=1024;
+    const ctx=canvas.getContext('2d');ctx.drawImage(this.paperTexture.image,0,0,1024,1024);
+    for(const mark of marks){ctx.fillStyle=mark.color||'#17232e';ctx.beginPath();ctx.arc((mark.material[0]+1)*512,(1-mark.material[1])*512,mark.radius*512,0,Math.PI*2);ctx.fill();}
+    const texture=new T.CanvasTexture(canvas);texture.offset.set(.5,.5);texture.repeat.set(.5,.5);return texture;
+  }
   setPaper(replay){
     this.mode='paper';this.replay=replay;this.lastPaperStep=-1;this.paperNodes=[];
+    this.paperFrontTexture?.dispose();this.paperBackTexture?.dispose();
+    this.paperFrontTexture=this.makeMarkedPaperTexture((replay.paper_marks||[]).filter(mark=>mark.side==='front'));
+    this.paperBackTexture=this.makeMarkedPaperTexture((replay.paper_marks||[]).filter(mark=>mark.side==='back'));
     this.clear(this.root);this.clear(this.markers);this.setPaperView('perspective');this.setTime(0);
   }
   setPaperView(view){
@@ -261,9 +271,10 @@ export class StudioScene {
     this.paperFit=Math.max(.6,Math.min(1.25,span/1.9));this.setCamera();
     if(frame.index!==this.lastPaperStep){
       this.lastPaperStep=frame.index;this.buildFoldGuide(frame.motion);this.clear(this.root);this.clear(this.markers);this.paperNodes=[];
-      const palette={lilac:[0x8974bd,0xf5e9cf],apricot:[0xd96950,0xf5e9cf],ivory:[0x65977f,0xf5e9cf]}[this.paperColor];
-      this.startOffsets=layerOffsets(frame.motion?.panels||frame.panels);
-      this.endOffsets=frame.motion?layerOffsets(frame.motion.panels,true):this.startOffsets;
+      const palette={ink:[0x274b72,0xfff4dd],lilac:[0x8974bd,0xf5e9cf],apricot:[0xd96950,0xf5e9cf],ivory:[0x65977f,0xf5e9cf]}[this.paperColor];
+      const maxSpread=displayLayerSpread(this.replay);
+      this.startOffsets=layerOffsets(frame.motion?.panels||frame.panels,false,maxSpread);
+      this.endOffsets=frame.motion?layerOffsets(frame.motion.panels,true,maxSpread):this.startOffsets;
       for(const panel of frame.panels){
         const geometry=new T.Geometry();
         panel.vertices.forEach(()=>geometry.vertices.push(new T.Vector3()));
@@ -277,8 +288,8 @@ export class StudioScene {
           // Contact-order depth adds a subtle tonal cue to lower paper layers.
           const depth=this.startOffsets.get(panel.id)?.[2]||0;
           tint.multiplyScalar(1-Math.min(.12,Math.max(0,-depth)*5));
-          const material=new T.MeshStandardMaterial({color:tint,side,roughness:.92,metalness:0,map:this.paperTexture,
-            bumpMap:this.paperTexture,bumpScale:.001,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1});
+          const material=new T.MeshStandardMaterial({color:tint,side,roughness:.92,metalness:0,map:(side===T.FrontSide?this.paperFrontTexture:this.paperBackTexture)||this.paperTexture,
+            bumpMap:this.paperTexture,bumpScale:.001,polygonOffset:true,polygonOffsetFactor:Number.isFinite(maxSpread)?0:1,polygonOffsetUnits:Number.isFinite(maxSpread)?0:1});
           const mesh=new T.Mesh(geometry,material);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;group.add(mesh);
         }
         const edgeGeometry=new T.Geometry();panel.vertices.forEach(()=>edgeGeometry.vertices.push(new T.Vector3(),new T.Vector3()));
@@ -305,7 +316,11 @@ export class StudioScene {
   }
   setTime(time){this.time=time;if(this.mode==='lego'&&this.replay.version===2){this.drawLego(time);}else if(this.mode==='lego'){const step=Math.floor(time/this.replay.seconds_per_step);this.legoNodes.forEach((node,i)=>{node.visible=i<=step;});}else if(this.mode==='paper'){this.drawPaper(time);}else{const t=Math.max(0,Math.min(1,time/12));this.beam.rotation.z=.085-Math.sin(t*Math.PI/2)*.21;this.ball.position.set(-1.65+Math.min(1,t*1.12)*3.03,.325,0);this.ball.rotation.z=-t*12;this.block.position.x=1.7+Math.max(0,t-.86)*1.1;this.beam.updateMatrixWorld(true);this.contact.position.copy(this.beam.localToWorld(new T.Vector3(this.ball.position.x,.08,0)));}this.markers.visible=this.contactVisible;this.render();}
   setContacts(value){this.contactVisible=value;this.markers.visible=value;this.render();}
-  setCamera(){const distance=this.distance*(this.mode==='paper'?(this.paperFit||1):1)*Math.max(1,1.15/this.camera.aspect);this.camera.position.set(Math.sin(this.angle)*distance,Math.sin(this.elevation)*distance,Math.cos(this.angle)*Math.cos(this.elevation)*distance);const focus=this.target.clone();if(this.mode==='paper'&&this.camera.aspect<1)focus.z-=.6;this.camera.lookAt(focus);}
+  setCamera(){
+    // Compact penguin layers need more depth precision than the default .01 near plane.
+    const near=this.mode==='paper'&&Number.isFinite(displayLayerSpread(this.replay)) ? .5 : .01;
+    if(this.camera.near!==near){this.camera.near=near;this.camera.updateProjectionMatrix();}
+    const distance=this.distance*(this.mode==='paper'?(this.paperFit||1):1)*Math.max(1,1.15/this.camera.aspect);this.camera.position.set(Math.sin(this.angle)*distance,Math.sin(this.elevation)*distance,Math.cos(this.angle)*Math.cos(this.elevation)*distance);const focus=this.target.clone();if(this.mode==='paper'&&this.camera.aspect<1)focus.z-=.6;this.camera.lookAt(focus);}
   resize(){const {width,height}=this.canvas.parentElement.getBoundingClientRect();if(!width||!height)return;this.renderer.setSize(width,height,false);this.camera.aspect=width/height;this.camera.updateProjectionMatrix();this.setCamera();this.render();}
   render(){this.renderer.render(this.scene,this.camera);}
   thumbnail(time){const old=this.time,guide=this.guideVisible;this.guideVisible=false;this.lastPaperStep=-1;this.setTime(time);const capture=document.createElement('canvas');capture.width=300;capture.height=150;const ctx=capture.getContext('2d');ctx.drawImage(this.canvas,0,this.canvas.height*.18,this.canvas.width,this.canvas.height*.65,0,0,300,150);const url=capture.toDataURL();this.guideVisible=guide;this.lastPaperStep=-1;this.setTime(old);return url;}

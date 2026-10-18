@@ -1,0 +1,424 @@
+{
+  "status": "model_claimed_done",
+  "calls": 8,
+  "accepted_folds": 8,
+  "model": "gemini-4-argon",
+  "video_url": "https://www.youtube.com/watch?v=RZl_8F8n7GU",
+  "feedback_source": "harness_only",
+  "metrics": {
+    "material_area": 2.0,
+    "max_length_error": 2.220446049250313e-16,
+    "max_seam_gap": 3.510833468576701e-16,
+    "panel_count": 22
+  },
+  "transport": "generate-content",
+  "context_policy": {
+    "version": 1,
+    "recent_exchanges": 8,
+    "recent_chars": 24000,
+    "failure_entries": 24,
+    "failure_chars": 12000
+  },
+  "thinking_level": "medium",
+  "max_output_tokens": 32768,
+  "layer_state": {
+    "contacts": [
+      {
+        "panel": "paper/m/s/s/s",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/s/s",
+        "other": "paper/s/m/m/s",
+        "toward_panel": [
+          -1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/s/s",
+        "other": "paper/s/m/m/m/s",
+        "toward_panel": [
+          -1.2246467991473532e-16,
+          1.2246467991473535e-16,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/s/s",
+        "other": "paper/s/m/m/m/m",
+        "toward_panel": [
+          -1.2246467991473532e-16,
+          1.2246467991473535e-16,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/s",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/s",
+        "other": "paper/m/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -1.2246467991473527e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/s",
+        "other": "paper/s/m/m/s",
+        "toward_panel": [
+          -1.6566855402010331e-16,
+          -3.605693170399933e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/s",
+        "other": "paper/s/m/m/m/s",
+        "toward_panel": [
+          -1.6566855402010331e-16,
+          -3.6056931703999335e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/s",
+        "other": "paper/s/m/m/m/m",
+        "toward_panel": [
+          -1.6566855402010331e-16,
+          -3.6056931703999335e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/s",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/s",
+        "other": "paper/m/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/s",
+        "other": "paper/s/m/m/s",
+        "toward_panel": [
+          -7.926080580936732e-17,
+          -3.605693170399935e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/s",
+        "other": "paper/s/m/m/m/s",
+        "toward_panel": [
+          -7.926080580936735e-17,
+          -3.6056931703999397e-17,
+          1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/s/s",
+        "other": "paper/s/m/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/m/s",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/s",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/s/m",
+        "other": "paper/s/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/m",
+        "other": "paper/s/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/m/m",
+        "other": "paper/m/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -1.2246467991473527e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/m",
+        "other": "paper/s/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/m/s/m/m",
+        "other": "paper/m/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/m/s",
+        "other": "paper/s/m/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/m/s",
+        "other": "paper/s/m/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/m/m",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/s/m/m/m",
+        "other": "paper/s/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/m/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/m/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/s",
+        "other": "paper/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/s/m",
+        "other": "paper/s/m/s/s/s/m",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/m/m",
+        "other": "paper/s/m/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/m/m",
+        "other": "paper/s/m/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/s/m/m/m",
+        "other": "paper/s/m/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/m/s/s/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/m/s/m/s/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          1.2246467991473532e-16,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/m/s/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          0.0,
+          -1.0
+        ]
+      },
+      {
+        "panel": "paper/s/m/m/m/m",
+        "other": "paper/s/m/m/m/s",
+        "toward_panel": [
+          1.2246467991473532e-16,
+          -1.3823497170928943e-33,
+          -1.0
+        ]
+      }
+    ],
+    "back_to_front_z": [
+      "paper/s/m/s/m/m/m",
+      "paper/s/m/s/m/s/m",
+      "paper/s/m/m/m/m",
+      "paper/s/m/s/s/s/m",
+      "paper/s/m/s/s/m",
+      "paper/s/m/s/m/m/s",
+      "paper/m/m/m",
+      "paper/s/m/m/m/s",
+      "paper/s/m/s/m/s/s",
+      "paper/s/m/s/s/s/s",
+      "paper/s/m/m/s",
+      "paper/m/m/s",
+      "paper/m/s/m/s",
+      "paper/m/s/s/s",
+      "paper/s/s/s/s",
+      "paper/m/s/m/m",
+      "paper/m/s/s/m",
+      "paper/s/s/s/m",
+      "paper/s/s/m/s/m",
+      "paper/s/s/m/m/m",
+      "paper/s/s/m/m/s",
+      "paper/s/s/m/s/s"
+    ]
+  },
+  "rejected_proposals": 0,
+  "model_reported_blocked": "",
+  "video_match": "Not independently verified; completion is a model claim, not a harness measurement"
+}

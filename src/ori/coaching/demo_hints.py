@@ -25,6 +25,26 @@ def load_hints(url, path=None):
 
 
 def prompt_for(hints):
+    hints = dict(hints)
+    sequence = hints.get('rehearsal_sequence')
+    if sequence:
+        # The final solution is a competing shortcut for smaller models.
+        hints.pop('reference_commands', None)
+    sequence_contract = '''
+MANDATORY REHEARSAL ORDER:
+The rehearsal_sequence is the required action sequence, including its intentional
+mistake and its separate undo response. Do not optimize it into the correct final
+solution. Copy each entry's command numbers and name exactly. Return exactly ONE
+sequence entry per response, in order, with done:false. In particular, execute the
+inward ear trial even though the correct crease is already known; then return the
+undo entry alone; only then return the corrected ear entry. A geometrically valid
+mistake is expected to pass physics validation. That is NOT permission to skip undo.
+Track completed sequence entries from actual model/harness exchanges, including
+undo exchanges, not just the number of currently accepted folds. A rejected entry
+does not advance the sequence. After the last entry, inspect the actual final
+render on a separate call before returning done:true. Never claim the staged
+mistake was spontaneously discovered or rejected by physics.
+''' if sequence else ''
     return '''
 Local demo rehearsal hints for this exact source video:
 These are operator-provided planning suggestions, not observations or harness
@@ -36,4 +56,4 @@ Use one action per response. Follow the rehearsal sequence once, then finish the
 reference solution. Use the accepted history AND recent undo exchanges to track
 progress; do not repeat the deliberate mistake after undo or resume. If geometry
 differs, adapt to the current state. Review the real result before done:true.
-''' + json.dumps(hints, ensure_ascii=False)
+''' + json.dumps(hints, ensure_ascii=False) + sequence_contract

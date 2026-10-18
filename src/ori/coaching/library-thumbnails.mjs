@@ -33,7 +33,7 @@ export function finalStateThumbnail(item){
       if(item.kind==='recording')return videoPreview(item.video);
       const response=await fetch(item.replay_url);if(!response.ok)throw Error('Replay unavailable');
       const replay=await response.json(),scene=renderer();
-      if(item.kind==='paper')scene.setPaper(replay);else scene.setLego(replay);
+      if(item.kind==='paper'){scene.setPaper(replay);scene.setPaperColor(item.report?.paper_color||'apricot');}else scene.setLego(replay);
       scene.setContacts(false);scene.setFoldGuide(false);
       const count=item.kind==='paper'?replay.states.length:(replay.steps?.length||replay.pieces.length);
       scene.setTime(count*(replay.seconds_per_step||2.6));

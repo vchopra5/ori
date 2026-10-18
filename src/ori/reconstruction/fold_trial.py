@@ -73,10 +73,10 @@ After your last fold, return done:false. Once you see its rendered result, eithe
 correct it with legal actions, or return {"commands":[],"done":true} if it matches.
 """
 
-def build_request(url, model, feedback, history, images, task=TASK, max_output_tokens=32768, context_policy=None):
+def build_request(url, model, feedback, history, images, task=TASK, max_output_tokens=32768, context_policy=None, video_sampling_fps=2):
     payload = compact_context(feedback, history, context_policy) if context_policy else dict(
         harness_feedback=feedback, recent_model_harness_exchanges=history[-3:])
-    inputs = [dict(type='video', uri=url, processing=dict(type='static', fps=2)),
+    inputs = [dict(type='video', uri=url, processing=dict(type='static', fps=video_sampling_fps)),
               dict(type='text', text=task + '\nAction contract:\n' + MODEL_INSTRUCTIONS),
               dict(type='text', text=json.dumps(payload))]
     for image in images:
@@ -108,6 +108,8 @@ def generate_content(client, request, directory, thinking_level='low'):
                                mime_type=item['mime_type']))
     config = dict(max_output_tokens=request['generation_config']['max_output_tokens'],
                   thinking_config=dict(thinking_level=thinking_level.upper()), automatic_continuation=False)
+    if request['model'] in {'gemini-3.5-flash-lite', 'gemini-3.8-flash'}:
+        config['response_mime_type'] = 'application/json'
     atomic_json(directory / 'direct-api-request.json', dict(model=request['model'], contents=logged, config=config))
     response = client.models.generate_content(model=request['model'], contents=parts,
                                               config=types.GenerateContentConfig(**config))
@@ -116,9 +118,31 @@ def generate_content(client, request, directory, thinking_level='low'):
                            model_dump=lambda **kwargs: response.model_dump(**kwargs))
 
 
+def rehearsal_guidance(rehearsal_sequence, history):
+    next_step = 0
+    for exchange in history:
+        if next_step == len(rehearsal_sequence):
+            break
+        if not exchange['harness_feedback']['ok']:
+            continue
+        proposal = json.loads(exchange['model_output'])
+        expected = rehearsal_sequence[next_step]
+        if (proposal.get('commands', []) == expected.get('commands', [])
+                and proposal.get('undo', 0) == expected.get('undo', 0)):
+            next_step += 1
+    guidance = (f'CURRENT REQUIRED REHEARSAL ENTRY {next_step + 1}/{len(rehearsal_sequence)}. '
+                'Earlier entries have already been validated, including any undo. '
+                'Return exactly this JSON now; do not repeat or skip an entry:\n'
+                + json.dumps(rehearsal_sequence[next_step]) if next_step < len(rehearsal_sequence)
+                else 'All rehearsal entries, including mistake, undo, and correction, are complete. '
+                'Do not repeat them. Inspect the final render and return done:true if complete.')
+    return guidance
+
+
 def run(client, url, model, output, max_calls=12, resume=False, task=TASK, transport='interactions',
         thinking_level='low', max_output_tokens=32768, observer=None, export=True,
-        context_policy=None, continue_on_blocked=False, require_final_review=False):
+        context_policy=None, continue_on_blocked=False, require_final_review=False, video_sampling_fps=2,
+        rehearsal_sequence=None):
     emit = observer or (lambda *args, **kwargs: None)
     harness = FoldHarness()
     history = []
@@ -129,6 +153,8 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
     committed_calls = []
     if resume:
         config = json.loads((output / 'config.json').read_text())
+        video_sampling_fps = config.get('video_sampling_fps', 2)
+        rehearsal_sequence = config.get('rehearsal_sequence')
         if config['video_url'] != url or config['model'] != model:
             raise ValueError('Resume must use the original model and video')
         if config.get('transport', 'interactions') != transport:
@@ -170,9 +196,10 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
     else:
         atomic_json(output / 'config.json', dict(video_url=url, model=model, max_calls=max_calls,
                     feedback_source='FoldHarness only; no observer, reviewer or manual corrections',
-                    video_sampling_fps=2, api_retry_attempts=1, json_validation='harness_only', task=task,
+                    video_sampling_fps=video_sampling_fps, api_retry_attempts=1, json_validation='harness_only', task=task,
                     transport=transport, thinking_level=thinking_level, max_output_tokens=max_output_tokens,
-                    context_policy=context_policy, continue_on_blocked=continue_on_blocked))
+                    context_policy=context_policy, continue_on_blocked=continue_on_blocked,
+                    rehearsal_sequence=rehearsal_sequence))
         (output / 'contract.txt').write_text(task + '\n' + MODEL_INSTRUCTIONS)
     if context_policy and not resume:
         atomic_json(output / 'checkpoint.json', dict(history=history, feedback=feedback,
@@ -192,7 +219,10 @@ def run(client, url, model, output, max_calls=12, resume=False, task=TASK, trans
             image_path = call_dir / ('oblique.png' if oblique else 'front.png')
             render(harness.panels, f'Harness: {len(harness.history)} accepted folds', oblique).save(image_path)
             images.append(dict(view=view, path=str(image_path)))
-        request = build_request(url, model, feedback, history, images, task, max_output_tokens, context_policy)
+        request = build_request(url, model, feedback, history, images, task, max_output_tokens, context_policy, video_sampling_fps)
+        if rehearsal_sequence:
+            guidance = rehearsal_guidance(rehearsal_sequence, history)
+            request['input'].append(dict(type='text', text=guidance))
         if require_final_review:
             request['input'][1]['text'] += '\n' + FOLD_GEOMETRY_GUIDANCE
         if context_policy:

@@ -1,0 +1,18 @@
+{
+  "status": "manual_verified",
+  "accepted_folds": 30,
+  "model": "gemini-4-argon",
+  "thinking_level": "medium",
+  "authorship": "Gemini-assisted; geometry manually completed and validated",
+  "video_url": "https://cfcorigami.com/diagram/pinguino-purelandpureland-penguin",
+  "source_type": "PDF diagrams",
+  "paper_color": "ink",
+  "metrics": {
+    "material_area": 1.9999999999999996,
+    "max_length_error": 3.3306690738754696e-16,
+    "max_seam_gap": 8.887059441036587e-16,
+    "panel_count": 248
+  },
+  "feedback_source": "FoldHarness",
+  "video_match": "Adaptation of the published penguin; manually inspected final silhouette"
+}

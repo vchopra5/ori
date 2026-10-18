@@ -1,0 +1,110 @@
+{
+  "commands": [
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ]
+      ],
+      "moving_side": "left",
+      "name": "Fold the square in half diagonally to form a triangle",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          0.5,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold the top corner down to the bottom edge",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.58,
+          0.42,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "Fold the right corner up to form the right ear",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -0.58,
+          0.42,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold the left corner up to form the left ear",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "name": "Turn the paper over to reveal the fox face",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "type": "reorient"
+    }
+  ]
+}

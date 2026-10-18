@@ -1,0 +1,292 @@
+{
+  "commands": [
+    {
+      "name": "Fold the bottom corner to the top",
+      "crease": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Bring the left leg tip to the top",
+      "crease": [
+        [
+          -0.5,
+          0.5,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Bring the right leg tip to the top",
+      "crease": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the left side into the center",
+      "crease": [
+        [
+          -0.25,
+          0,
+          0
+        ],
+        [
+          -0.25,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the right side into the center",
+      "crease": [
+        [
+          0.25,
+          0,
+          0
+        ],
+        [
+          0.25,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Spread the left front leg",
+      "crease": [
+        [
+          0,
+          0.5,
+          0
+        ],
+        [
+          -0.1913417161825449,
+          0.9619397662556434,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m/m/s",
+        "paper/s/m/s"
+      ]
+    },
+    {
+      "name": "Spread the right front leg",
+      "crease": [
+        [
+          0,
+          0.5,
+          0
+        ],
+        [
+          0.1913417161825449,
+          0.9619397662556434,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/m/s/m/s/m",
+        "paper/s/s/m/s/m"
+      ]
+    },
+    {
+      "name": "Fold the bottom point up to the center",
+      "crease": [
+        [
+          -1,
+          0.25,
+          0
+        ],
+        [
+          1,
+          0.25,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the rear half forward",
+      "crease": [
+        [
+          -1,
+          0.5,
+          0
+        ],
+        [
+          1,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the spring back in a zigzag",
+      "crease": [
+        [
+          -1,
+          0.625,
+          0
+        ],
+        [
+          1,
+          0.625,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/m/m/m/m",
+        "paper/m/m/s/s/m/m",
+        "paper/m/m/s/s/m/s/m",
+        "paper/m/m/s/s/s/m",
+        "paper/m/m/s/s/s/s",
+        "paper/m/s/m/m/m",
+        "paper/m/s/m/s/m/s/m",
+        "paper/m/s/m/s/m/s/s/m",
+        "paper/m/s/m/s/s/m",
+        "paper/m/s/m/s/s/s",
+        "paper/m/s/s/m/m",
+        "paper/m/s/s/s/m/m",
+        "paper/m/s/s/s/s/m/s/m",
+        "paper/m/s/s/s/s/m/s/s/m",
+        "paper/m/s/s/s/s/s/m/m",
+        "paper/m/s/s/s/s/s/m/s/m",
+        "paper/m/s/s/s/s/s/s/m",
+        "paper/m/s/s/s/s/s/s/s",
+        "paper/s/m/m/m",
+        "paper/s/m/s/s/m/m",
+        "paper/s/m/s/s/m/s/m",
+        "paper/s/m/s/s/s/m",
+        "paper/s/m/s/s/s/s",
+        "paper/s/s/m/m/m",
+        "paper/s/s/m/s/m/s/m",
+        "paper/s/s/m/s/m/s/s/m",
+        "paper/s/s/m/s/s/m",
+        "paper/s/s/m/s/s/s",
+        "paper/s/s/s/m/m",
+        "paper/s/s/s/s/m/m",
+        "paper/s/s/s/s/s/m/s/m",
+        "paper/s/s/s/s/s/m/s/s/m",
+        "paper/s/s/s/s/s/s/m/m",
+        "paper/s/s/s/s/s/s/m/s/m",
+        "paper/s/s/s/s/s/s/s/m",
+        "paper/s/s/s/s/s/s/s/s"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the frog over — press its back to jump",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    }
+  ]
+}

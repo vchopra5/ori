@@ -1,0 +1,534 @@
+{
+  "id": "live-e61b358393554a72a2660427f5c84f70",
+  "url": "https://www.youtube.com/watch?v=10KurnMH_6o",
+  "status": "model_claimed_done",
+  "events": [
+    {
+      "kind": "classifying",
+      "message": "Watching the video to choose a simulator"
+    },
+    {
+      "kind": "routed",
+      "message": "Selected paper harness: Hands fold a red square of paper into a simple fox face and draw eyes and a nose with a black marker."
+    },
+    {
+      "kind": "planning",
+      "message": "Building a fold-only approximation",
+      "attempt": 1
+    },
+    {
+      "kind": "planning",
+      "message": "Working toward the target while preserving every validated fold"
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 1
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold the square in half diagonally to form a triangle"
+      ],
+      "call": 1
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the square in half diagonally to form a triangle",
+      "step": 1
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 2
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold the top corner down to the bottom edge"
+      ],
+      "call": 2
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the top corner down to the bottom edge",
+      "step": 2
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 3
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold the right corner up to form the first ear"
+      ],
+      "call": 3
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the right corner up to form the first ear",
+      "step": 3
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 4
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking model response",
+      "names": [],
+      "call": 4
+    },
+    {
+      "kind": "undone",
+      "message": "Removed 1 mistaken action(s); restored the earlier paper",
+      "count": 1
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 5
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking model response",
+      "names": [],
+      "call": 5
+    },
+    {
+      "kind": "tested",
+      "message": "Candidate motion passed; live paper unchanged",
+      "call": 5,
+      "ok": true
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 6
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold the right corner up to form the right ear",
+        "Fold the left corner up to form the left ear",
+        "Turn the paper over to reveal the fox face"
+      ],
+      "call": 6
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the right corner up to form the right ear",
+      "step": 3
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold the left corner up to form the left ear",
+      "step": 4
+    },
+    {
+      "kind": "accepted",
+      "message": "Turn the paper over to reveal the fox face",
+      "step": 5
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 7
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking model response",
+      "names": [],
+      "call": 7
+    },
+    {
+      "kind": "finished",
+      "message": "Your fold-only approximation is ready."
+    }
+  ],
+  "revision": 27,
+  "commands": [
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ]
+      ],
+      "moving_side": "left",
+      "name": "Fold the square in half diagonally to form a triangle",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          0.5,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold the top corner down to the bottom edge",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": -180,
+      "crease": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.58,
+          0.42,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "right",
+      "name": "Fold the right corner up to form the right ear",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -0.58,
+          0.42,
+          0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold the left corner up to form the left ear",
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "name": "Turn the paper over to reveal the fox face",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "type": "reorient"
+    }
+  ],
+  "accepted": 5,
+  "route": {
+    "kind": "origami",
+    "title": "Origami Fox Face",
+    "summary": "Hands fold a red square of paper into a simple fox face and draw eyes and a nose with a black marker."
+  },
+  "attempt": 1,
+  "command_hash": "e71bddfcc6efac111576",
+  "max_calls": 512,
+  "resumable": true,
+  "calls": 7,
+  "report": {
+    "status": "model_claimed_done",
+    "calls": 7,
+    "accepted_folds": 5,
+    "model": "gemini-4-argon",
+    "video_url": "https://www.youtube.com/watch?v=10KurnMH_6o",
+    "feedback_source": "harness_only",
+    "metrics": {
+      "material_area": 2.0,
+      "max_length_error": 2.220446049250313e-16,
+      "max_seam_gap": 1.2246467991473532e-16,
+      "panel_count": 8
+    },
+    "transport": "generate-content",
+    "context_policy": {
+      "version": 1,
+      "recent_exchanges": 8,
+      "recent_chars": 24000,
+      "failure_entries": 24,
+      "failure_chars": 12000
+    },
+    "thinking_level": "medium",
+    "max_output_tokens": 32768,
+    "layer_state": {
+      "contacts": [
+        {
+          "panel": "paper/m/s/s/s",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/s",
+          "other": "paper/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/s",
+          "other": "paper/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/s",
+          "other": "paper/s/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            1.224646799147353e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m",
+          "other": "paper/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            -1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m",
+          "other": "paper/s/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            -1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/m/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            -1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/m/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/s/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m/m",
+          "other": "paper/m/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/m",
+          "other": "paper/m/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/m",
+          "other": "paper/s/m",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/m",
+          "other": "paper/s/s/m",
+          "toward_panel": [
+            -5.063794350270835e-17,
+            9.918930266422773e-17,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/m",
+          "other": "paper/s/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/m",
+          "other": "paper/m/s/s/s",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            -1.224646799147353e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/m",
+          "other": "paper/s/m",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m/s/s/m",
+          "other": "paper/s/s/s/m",
+          "toward_panel": [
+            -1.942914163267623e-16,
+            9.918930266422773e-17,
+            1.0
+          ]
+        }
+      ],
+      "back_to_front_z": [
+        "paper/s/s/m",
+        "paper/m/s/m",
+        "paper/s/s/s/m",
+        "paper/m/s/s/m",
+        "paper/s/m",
+        "paper/m/m",
+        "paper/m/s/s/s",
+        "paper/s/s/s/s"
+      ]
+    },
+    "rejected_proposals": 0,
+    "model_reported_blocked": "",
+    "video_match": "Not independently verified; completion is a model claim, not a harness measurement"
+  },
+  "message": "Your fold-only approximation is ready."
+}

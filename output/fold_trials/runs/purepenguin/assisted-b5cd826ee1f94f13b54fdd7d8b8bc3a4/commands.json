@@ -1,0 +1,751 @@
+{
+  "commands": [
+    {
+      "name": "Crease the vertical center line",
+      "crease": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the vertical center line",
+      "crease": [
+        [
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m"
+      ]
+    },
+    {
+      "name": "Crease the first diagonal",
+      "crease": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the first diagonal",
+      "crease": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m",
+        "paper/m/m"
+      ]
+    },
+    {
+      "name": "Crease the second diagonal",
+      "crease": [
+        [
+          -1,
+          1,
+          0
+        ],
+        [
+          1,
+          -1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the second diagonal",
+      "crease": [
+        [
+          -1,
+          1,
+          0
+        ],
+        [
+          1,
+          -1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/s/m",
+        "paper/s/m",
+        "paper/m/m/m"
+      ]
+    },
+    {
+      "name": "Crease the upper-left quarter reference",
+      "crease": [
+        [
+          -1,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the upper-left quarter reference",
+      "crease": [
+        [
+          -1,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          1,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m/m/s/m",
+        "paper/s/m/m",
+        "paper/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Crease the upper-right quarter reference",
+      "crease": [
+        [
+          -0.5,
+          1,
+          0
+        ],
+        [
+          1,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Unfold the upper-right quarter reference",
+      "crease": [
+        [
+          -0.5,
+          1,
+          0
+        ],
+        [
+          1,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/s/m/m",
+        "paper/s/m/s/m",
+        "paper/s/m/m",
+        "paper/m/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold down the top tip",
+      "crease": [
+        [
+          -0.25,
+          0.75,
+          0
+        ],
+        [
+          0.25,
+          0.75,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the small tip back up",
+      "crease": [
+        [
+          -0.125,
+          0.625,
+          0
+        ],
+        [
+          0.125,
+          0.625,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m/m/m",
+        "paper/m/m/m/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold the upper-left edge inward",
+      "crease": [
+        [
+          -1,
+          -0.25,
+          0
+        ],
+        [
+          0,
+          0.75,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the upper-right edge inward",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          1,
+          -0.25,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the bottom tip behind",
+      "crease": [
+        [
+          -0.5,
+          -0.5,
+          0
+        ],
+        [
+          0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the left side back",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          -0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the right side back",
+      "crease": [
+        [
+          0,
+          0.75,
+          0
+        ],
+        [
+          0.5,
+          -0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Fold the head down",
+      "crease": [
+        [
+          -0.3,
+          0.45,
+          0
+        ],
+        [
+          0.3,
+          0.45,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the beak tip upward",
+      "crease": [
+        [
+          -0.25,
+          0.3,
+          0
+        ],
+        [
+          0.25,
+          0.3,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/s/m/m/s/s/s/s",
+        "paper/m/m/m/m/m/s/s/s/s",
+        "paper/s/m/m/m/s/s/s",
+        "paper/m/m/m/m/m/m/s/s/s",
+        "paper/s/m/m/s/m/s",
+        "paper/m/m/m/m/m/s/m/s",
+        "paper/s/m/m/m/m/s",
+        "paper/m/m/m/m/m/m/m/s",
+        "paper/m/m/m/m/m/s/s/m/s",
+        "paper/m/m/m/m/m/m/s/m/s",
+        "paper/s/m/m/s/s/m/s",
+        "paper/s/m/m/m/s/m/s",
+        "paper/m/m/m/m/m/s/s/s/m",
+        "paper/m/m/m/m/m/m/s/s/m",
+        "paper/m/m/m/m/m/s/m/m",
+        "paper/m/m/m/m/m/m/m/m",
+        "paper/m/m/m/m/m/s/s/m/m",
+        "paper/m/m/m/m/m/m/s/m/m",
+        "paper/s/m/m/s/s/s/m",
+        "paper/s/m/m/m/s/s/m",
+        "paper/s/m/m/s/m/m",
+        "paper/s/m/m/m/m/m",
+        "paper/s/m/m/s/s/m/m",
+        "paper/s/m/m/m/s/m/m"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Shorten the body and raise the flipper corners",
+      "crease": [
+        [
+          -0.6,
+          -0.15,
+          0
+        ],
+        [
+          0.6,
+          -0.15,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Fold the right side inward",
+      "crease": [
+        [
+          0.2,
+          -0.3,
+          0
+        ],
+        [
+          0.2,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Pleat the right flipper outward",
+      "crease": [
+        [
+          0.15,
+          -0.3,
+          0
+        ],
+        [
+          0.15,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/s/m/s/s/s/m",
+        "paper/s/s/m/s/m/s/m",
+        "paper/s/s/s/s/m/m",
+        "paper/s/s/m/s/s/m/m",
+        "paper/s/s/s/m/m/m",
+        "paper/s/s/m/s/m/m/m"
+      ]
+    },
+    {
+      "name": "Fold the left side inward",
+      "crease": [
+        [
+          -0.2,
+          -0.3,
+          0
+        ],
+        [
+          -0.2,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": "all"
+    },
+    {
+      "name": "Pleat the left flipper outward",
+      "crease": [
+        [
+          -0.15,
+          -0.3,
+          0
+        ],
+        [
+          -0.15,
+          0.5,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "right",
+      "angle_degrees": -180,
+      "layers": [
+        "paper/m/m/s/s/s/s/m",
+        "paper/m/m/s/s/m/s/m",
+        "paper/m/s/s/m/m",
+        "paper/m/m/s/s/s/m/m",
+        "paper/m/s/m/m/m",
+        "paper/m/m/s/s/m/m/m"
+      ]
+    },
+    {
+      "type": "reorient",
+      "name": "Turn the penguin over",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "angle_degrees": 180
+    },
+    {
+      "name": "Fold the pointed beak down",
+      "crease": [
+        [
+          -0.2,
+          0.4,
+          0
+        ],
+        [
+          0.2,
+          0.4,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": 180,
+      "layers": [
+        "paper/s/m/m/s/s/s/s",
+        "paper/m/m/m/m/m/s/s/s/s",
+        "paper/s/m/m/m/s/s/s",
+        "paper/m/m/m/m/m/m/s/s/s",
+        "paper/s/m/m/m/m/s",
+        "paper/m/m/m/m/m/m/m/s",
+        "paper/m/m/m/m/m/s/s/m/s/m",
+        "paper/m/m/m/m/m/m/s/m/s/m",
+        "paper/s/m/m/s/s/m/s/m",
+        "paper/s/m/m/m/s/m/s/m",
+        "paper/m/m/m/m/m/s/s/s/m/m",
+        "paper/m/m/m/m/m/m/s/s/m/m",
+        "paper/m/m/m/m/m/m/m/m/m",
+        "paper/m/m/m/m/m/s/s/m/m/m",
+        "paper/m/m/m/m/m/m/s/m/m/m",
+        "paper/s/m/m/s/s/s/m/m",
+        "paper/s/m/m/m/s/s/m/m",
+        "paper/s/m/m/m/m/m/m",
+        "paper/s/m/m/s/s/m/m/m",
+        "paper/s/m/m/m/s/m/m/m"
+      ]
+    },
+    {
+      "name": "Round the left side of the head",
+      "crease": [
+        [
+          -0.12,
+          0.4,
+          0
+        ],
+        [
+          -0.07,
+          0.45,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    },
+    {
+      "name": "Round the right side of the head",
+      "crease": [
+        [
+          0.07,
+          0.45,
+          0
+        ],
+        [
+          0.12,
+          0.4,
+          0
+        ]
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ],
+      "moving_side": "left",
+      "angle_degrees": -180,
+      "layers": "all"
+    }
+  ]
+}

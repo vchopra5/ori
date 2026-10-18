@@ -8,7 +8,7 @@ from PIL import Image
 from .batching import atomic_json
 from .fold_commands import FoldHarness, MODEL_INSTRUCTIONS, LEGACY_MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS, PRE_UNDO_MODEL_INSTRUCTIONS
 from .fold_render import render
-from .fold_trial import TASK, FOLD_GEOMETRY_GUIDANCE
+from .fold_trial import TASK, FOLD_GEOMETRY_GUIDANCE, rehearsal_guidance
 from .fold_context import compact_context, physics_checkpoint
 
 
@@ -35,8 +35,10 @@ def audit(output):
         request = json.loads((directory / 'request.json').read_text())
         inputs = request['input']
         assert request['model'] == config['model']
-        assert len(inputs) == 7
-        assert inputs[0] == dict(type='video', uri=config['video_url'], processing=dict(type='static', fps=2))
+        assert len(inputs) == (8 if config.get('rehearsal_sequence') else 7)
+        if config.get('rehearsal_sequence'):
+            assert inputs[7] == dict(type='text', text=rehearsal_guidance(config['rehearsal_sequence'], history))
+        assert inputs[0] == dict(type='video', uri=config['video_url'], processing=dict(type='static', fps=config.get('video_sampling_fps', 2)))
         instructions = original_instructions
         for upgrade in config.get('action_contract_upgrades', []):
             assert upgrade['instructions'] in (MODEL_INSTRUCTIONS, PRE_ROTATION_MODEL_INSTRUCTIONS, PRE_UNDO_MODEL_INSTRUCTIONS)
@@ -80,7 +82,7 @@ def audit(output):
     report = dict(passed=True, requests_checked=requests, feedback_exchanges_replayed=len(history),
                   harness_images_verified=image_count, accepted_folds=len(harness.history),
                   checks=['Fixed model contract and original video unchanged',
-                          'Every dynamic text payload exactly equals replayed harness feedback and prior model/harness exchanges',
+                          'Every dynamic text payload matches replayed feedback, exchanges, or configured rehearsal guidance',
                           'Every supplied image matches a render of the replayed harness state',
                           'Every saved execution result exactly matches harness replay'],
                   does_not_verify='Whether model-selected folds match the source video')

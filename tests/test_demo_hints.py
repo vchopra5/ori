@@ -10,6 +10,30 @@ from ori.coaching import server
 
 
 class DemoHintsTests(unittest.TestCase):
+    def test_model_override_is_scoped_and_resume_keeps_saved_model(self):
+        with TemporaryDirectory() as directory:
+            hints_path = Path(directory) / 'hints.json'
+            hints_path.write_text(json.dumps(dict(version=1, videos={
+                '10KurnMH_6o': {'model': 'gemini-3.8-flash', 'video_sampling_fps': 0.5}})))
+            for video, expected in [('10KurnMH_6o', 'gemini-3.8-flash'),
+                                    ('abcdefghijk', 'gemini-4-argon')]:
+                base = Path(directory) / video
+                base.mkdir()
+                url = 'https://youtu.be/' + video
+                with patch('ori.coaching.jobs.load_hints', side_effect=lambda url: load_hints(url, hints_path)), patch('ori.coaching.jobs.run', return_value=dict(status='max_calls', accepted_folds=0)) as runner:
+                    progress = Progress(base, url)
+                    run_paper(MagicMock(), url, base, progress, dict(title='Paper', summary='Paper'), max_calls=1)
+                    self.assertEqual(runner.call_args.args[2], expected)
+                    fps = 0.5 if video == '10KurnMH_6o' else 2
+                    self.assertEqual(runner.call_args.kwargs['video_sampling_fps'], fps)
+                    (base / 'config.json').write_text(json.dumps(dict(
+                        task='saved task', context_policy={'version': 1},
+                        continue_on_blocked=True, model=expected, thinking_level='low', video_sampling_fps=fps)))
+                with patch('ori.coaching.jobs.load_hints', side_effect=AssertionError('Resume must not reload hints')), patch('ori.coaching.jobs.run', return_value=dict(status='max_calls', accepted_folds=0)) as runner:
+                    run_paper(MagicMock(), url, base, progress, dict(title='Paper', summary='Paper'), max_calls=1, resume=True)
+                    self.assertEqual(runner.call_args.args[2], expected)
+                    self.assertEqual(runner.call_args.kwargs['video_sampling_fps'], fps)
+
     def test_thinking_override_is_optional_and_explicit_caller_wins(self):
         for hints, explicit, expected in [(None, None, 'medium'),
                                           ({'thinking_level': 'low'}, None, 'low'),

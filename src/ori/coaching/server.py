@@ -27,15 +27,15 @@ def paper_sources():
         if (base / 'commands.json').exists():
             sources[folder] = (base, title, 'Paper harness')
     trials = sorted((ROOT / 'output/fold_trials/runs').glob('*/*/result.json'),
-                    key=lambda p: (read_json(p, {}).get('status') == 'model_claimed_done', p.stat().st_mtime), reverse=True)
+                    key=lambda p: (read_json(p, {}).get('status') in {'model_claimed_done', 'manual_verified'}, p.stat().st_mtime), reverse=True)
     for path in trials:
         result = read_json(path, {})
-        if not result.get('accepted_folds') or result.get('status') != 'model_claimed_done':
+        if not result.get('accepted_folds') or result.get('status') not in {'model_claimed_done', 'manual_verified'}:
             continue
         from hashlib import sha256
         key = 'trial-' + sha256(str(path.parent.relative_to(ROOT)).encode()).hexdigest()[:16]
         if key not in sources:
-            sources[key] = (path.parent, read_json(path.parent / 'job.json', {}).get('route', {}).get('title') or ('An owl, imagined by Argon' if path.parent.parent.name == 'FdBTwMuh1mU' else 'Paper, imagined by Argon'), 'Argon · paper harness')
+            sources[key] = (path.parent, read_json(path.parent / 'job.json', {}).get('route', {}).get('title') or ('An owl, imagined by Argon' if path.parent.parent.name == 'FdBTwMuh1mU' else 'Paper, imagined by Argon'), ('Manual · paper harness' if result.get('authoring_method') == 'manual' else 'Assisted · paper harness') if result.get('status') == 'manual_verified' else 'Argon · paper harness')
     return sources
 
 

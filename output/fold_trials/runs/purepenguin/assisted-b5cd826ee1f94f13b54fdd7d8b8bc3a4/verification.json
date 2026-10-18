@@ -1,0 +1,17 @@
+{
+  "action_count": 30,
+  "state_count": 31,
+  "original_validator_metrics": {
+    "material_area": 1.9999999999999996,
+    "max_length_error": 3.3306690738754696e-16,
+    "max_seam_gap": 8.887059441036587e-16,
+    "panel_count": 248
+  },
+  "optimized_validator_metrics": {
+    "material_area": 1.9999999999999996,
+    "max_length_error": 3.3306690738754696e-16,
+    "max_seam_gap": 8.887059441036587e-16,
+    "panel_count": 248
+  },
+  "fold_and_layer_tests_passed": 17
+}

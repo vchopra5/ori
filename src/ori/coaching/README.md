@@ -39,6 +39,14 @@ Hints never bypass model generation or harness validation. Deliberately rehearse
 mistakes are operator guidance, not evidence of spontaneous model recovery.
 An optional `thinking_level` (`low`, `medium`, `high`) applies only to that video;
 explicit caller overrides take precedence, and resumes keep the saved level.
+An optional `model` sets the generation model for that exact video only; other
+videos use the default model, and resumed jobs retain their saved model.
+`video_sampling_fps` optionally lowers video sampling for that video (default 2);
+resumed jobs retain the saved sampling rate.
+When `rehearsal_sequence` is supplied, each generation request identifies the next
+entry by matching prior model outputs against successful harness feedback. This
+keeps intentional mistake/undo steps in order across retries and resumes; the
+model still emits every action and the harness still validates it.
 `prefer_fresh_run` makes pasting that video's link start a new job; saved library
 cards still replay normally. Remove the entry/file to disable it.
 

@@ -1,0 +1,637 @@
+{
+  "id": "live-a8d0034d9b2243a0846c81073b7eb5a0",
+  "url": "https://www.youtube.com/shorts/YnCPA9suimo",
+  "status": "model_claimed_done",
+  "events": [
+    {
+      "kind": "classifying",
+      "message": "Watching the video to choose a simulator"
+    },
+    {
+      "kind": "routed",
+      "message": "Selected paper harness: Hands fold a red square sheet of paper into a simple origami heart."
+    },
+    {
+      "kind": "planning",
+      "message": "Building a fold-only approximation",
+      "attempt": 1
+    },
+    {
+      "kind": "planning",
+      "message": "Working toward the target while preserving every validated fold"
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 1
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold top corner down to center"
+      ],
+      "call": 1
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold top corner down to center",
+      "step": 1
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 2
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold bottom corner up to top edge"
+      ],
+      "call": 2
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold bottom corner up to top edge",
+      "step": 2
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 3
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold right side up to center line"
+      ],
+      "call": 3
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold right side up to center line",
+      "step": 3
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 4
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold left side up to center line"
+      ],
+      "call": 4
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold left side up to center line",
+      "step": 4
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 5
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold top peaks down to round the top of the heart"
+      ],
+      "call": 5
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold top peaks down to round the top of the heart",
+      "step": 5
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 6
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold right corner behind to round the side of the heart"
+      ],
+      "call": 6
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold right corner behind to round the side of the heart",
+      "step": 6
+    },
+    {
+      "kind": "working",
+      "message": "Argon is choosing its next folds",
+      "call": 7
+    },
+    {
+      "kind": "proposal",
+      "message": "Checking proposed folds",
+      "names": [
+        "Fold left corner behind to round the side of the heart"
+      ],
+      "call": 7
+    },
+    {
+      "kind": "accepted",
+      "message": "Fold left corner behind to round the side of the heart",
+      "step": 7
+    },
+    {
+      "kind": "finished",
+      "message": "Your fold-only approximation is ready."
+    }
+  ],
+  "revision": 26,
+  "commands": [
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold top corner down to center",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.75,
+          -0.25,
+          0.0
+        ],
+        [
+          -0.75,
+          -0.25,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold bottom corner up to top edge",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.75,
+          0.5,
+          0.0
+        ],
+        [
+          0.0,
+          -0.25,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold right side up to center line",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.0,
+          -0.25,
+          0.0
+        ],
+        [
+          -0.75,
+          0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold left side up to center line",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.5,
+          0.625,
+          0.0
+        ],
+        [
+          -0.5,
+          0.625,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold top peaks down to round the top of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.75,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold right corner behind to round the side of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "angle_degrees": 180,
+      "crease": [
+        [
+          -0.5,
+          0.75,
+          0.0
+        ],
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ]
+      ],
+      "layers": "all",
+      "moving_side": "left",
+      "name": "Fold left corner behind to round the side of the heart",
+      "normal": [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    }
+  ],
+  "accepted": 7,
+  "route": {
+    "kind": "origami",
+    "title": "origami heart",
+    "summary": "Hands fold a red square sheet of paper into a simple origami heart."
+  },
+  "attempt": 1,
+  "command_hash": "2c65448c6a20112722f9",
+  "max_calls": 512,
+  "resumable": true,
+  "calls": 7,
+  "report": {
+    "status": "model_claimed_done",
+    "calls": 7,
+    "accepted_folds": 7,
+    "model": "gemini-4-argon",
+    "video_url": "https://www.youtube.com/shorts/YnCPA9suimo",
+    "feedback_source": "harness_only",
+    "metrics": {
+      "material_area": 2.0,
+      "max_length_error": 3.3306690738754696e-16,
+      "max_seam_gap": 1.412578686869e-16,
+      "panel_count": 13
+    },
+    "transport": "generate-content",
+    "context_policy": {
+      "version": 1,
+      "recent_exchanges": 8,
+      "recent_chars": 24000,
+      "failure_entries": 24,
+      "failure_chars": 12000
+    },
+    "thinking_level": "high",
+    "max_output_tokens": 32768,
+    "layer_state": {
+      "contacts": [
+        {
+          "panel": "paper/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/m",
+          "other": "paper/s/m/s/s",
+          "toward_panel": [
+            0.0,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m",
+          "other": "paper/s/s/m/s/s",
+          "toward_panel": [
+            0.0,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m",
+          "other": "paper/s/m/m",
+          "toward_panel": [
+            0.0,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m",
+          "other": "paper/s/s/s/m/s/s",
+          "toward_panel": [
+            0.0,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/m",
+          "other": "paper/s/m/s/m",
+          "toward_panel": [
+            0.0,
+            -1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/s",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/s",
+          "other": "paper/s/s/m/s/s",
+          "toward_panel": [
+            0.0,
+            1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/s",
+          "other": "paper/s/s/s/m/s/s",
+          "toward_panel": [
+            0.0,
+            1.2246467991473532e-16,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/s/s",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/s/s",
+          "other": "paper/s/s/s/s/m",
+          "toward_panel": [
+            8.659560562354929e-17,
+            -8.65956056235493e-17,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/m",
+          "other": "paper/s/m/s/s",
+          "toward_panel": [
+            -0.0,
+            -1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/m",
+          "other": "paper/s/s/m/s/s",
+          "toward_panel": [
+            -8.659560562354934e-17,
+            8.659560562354934e-17,
+            -1.0000000000000004
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/s/s",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/s/s",
+          "other": "paper/s/s/s/s/s/m",
+          "toward_panel": [
+            -8.659560562354928e-17,
+            -8.659560562354929e-17,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/m",
+          "other": "paper/s/m/s/s",
+          "toward_panel": [
+            -0.0,
+            -1.2246467991473532e-16,
+            1.0
+          ]
+        },
+        {
+          "panel": "paper/s/m/s/m",
+          "other": "paper/s/s/s/m/s/s",
+          "toward_panel": [
+            8.659560562354934e-17,
+            8.659560562354934e-17,
+            -1.0000000000000004
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/m",
+          "other": "paper/s/s/m/s/s",
+          "toward_panel": [
+            -8.659560562354929e-17,
+            8.65956056235493e-17,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/m",
+          "other": "paper/s/s/s/m/s/s",
+          "toward_panel": [
+            8.659560562354929e-17,
+            8.65956056235493e-17,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/s/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/s/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/s/m",
+          "other": "paper/s/s/m/s/s",
+          "toward_panel": [
+            -8.659560562354929e-17,
+            8.65956056235493e-17,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/m/s/m",
+          "other": "paper/s/s/s/s/m",
+          "toward_panel": [
+            1.2246467991473532e-16,
+            -0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/s/s/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/s/m",
+          "other": "paper/s/s/s/s/s/s",
+          "toward_panel": [
+            -0.0,
+            -0.0,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/s/m",
+          "other": "paper/s/s/s/m/s/s",
+          "toward_panel": [
+            8.659560562354928e-17,
+            8.659560562354929e-17,
+            -1.0
+          ]
+        },
+        {
+          "panel": "paper/s/s/s/m/s/m",
+          "other": "paper/s/s/s/s/s/m",
+          "toward_panel": [
+            -1.2246467991473532e-16,
+            -0.0,
+            -1.0
+          ]
+        }
+      ],
+      "back_to_front_z": [
+        "paper/s/s/m/m",
+        "paper/s/s/s/m/m",
+        "paper/s/s/s/m/s/m",
+        "paper/s/s/m/s/m",
+        "paper/s/s/s/s/m",
+        "paper/s/s/s/s/s/m",
+        "paper/s/s/s/s/s/s",
+        "paper/m",
+        "paper/s/m/s/s",
+        "paper/s/m/s/m",
+        "paper/s/m/m",
+        "paper/s/s/m/s/s",
+        "paper/s/s/s/m/s/s"
+      ]
+    },
+    "rejected_proposals": 0,
+    "model_reported_blocked": "",
+    "video_match": "Not independently verified; completion is a model claim, not a harness measurement"
+  },
+  "message": "Your fold-only approximation is ready."
+}

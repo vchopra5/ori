@@ -131,6 +131,9 @@ class Progress:
 def run_paper(client, url, output, progress, route, max_calls=None, resume=False, context_policy=None, thinking_level=None):
     """One continuous physics history, with lossless state and compacted dialogue."""
     requested_thinking = thinking_level
+    model = MODEL
+    video_sampling_fps = 2
+    rehearsal_sequence = None
     thinking_level = thinking_level or 'medium'
     if thinking_level not in {"low", "medium", "high"}:
         raise ValueError("Unsupported generation thinking level")
@@ -167,6 +170,9 @@ target. Set done:true only when you believe the approximation is complete.
         if not config.get('context_policy') or not config.get('continue_on_blocked'):
             raise ValueError('This older run cannot be continued by the compacting runner')
         task, policy = config['task'], config['context_policy']
+        model = config['model']
+        video_sampling_fps = config.get('video_sampling_fps', 2)
+        rehearsal_sequence = config.get('rehearsal_sequence')
         if requested_thinking is None:
             thinking_level = config.get('thinking_level', 'medium')
         previous_calls = max((int(p.name.removeprefix('call-')) for p in (output / 'debug').glob('call-*')), default=0)
@@ -174,6 +180,13 @@ target. Set done:true only when you believe the approximation is complete.
         progress.begin_run()
         hints = load_hints(url)
         if hints is not None:
+            model = hints.get('model', MODEL)
+            video_sampling_fps = hints.get('video_sampling_fps', 2)
+            rehearsal_sequence = hints.get('rehearsal_sequence')
+            if isinstance(video_sampling_fps, bool) or not isinstance(video_sampling_fps, (int, float)) or not 0 < video_sampling_fps <= 24:
+                raise ValueError('Demo video sampling rate must be in (0, 24] fps')
+            if not isinstance(model, str) or not model.strip():
+                raise ValueError('Demo model must be a nonempty model ID')
             if requested_thinking is None:
                 thinking_level = hints.get('thinking_level', thinking_level)
                 if thinking_level not in {'low', 'medium', 'high'}:
@@ -182,16 +195,17 @@ target. Set done:true only when you believe the approximation is complete.
             atomic_json(output / 'demo-hints.json', hints)
             progress.data['demo_hints'] = True
             progress.event('planning', 'Using local rehearsal hints for this video')
-    progress.data.update(max_calls=previous_calls+allowance, resumable=True)
+    progress.data.update(max_calls=previous_calls+allowance, resumable=True, model=model)
     progress.event('planning' if not resume else 'resuming',
                    'Working toward the target while preserving every validated fold')
     def observe(kind, **fields):
         if kind != 'finished':
             progress.observe(kind, **fields)
-    report = run(client, url, MODEL, output, max_calls=previous_calls+allowance, task=task,
+    report = run(client, url, model, output, max_calls=previous_calls+allowance, task=task,
                  transport='generate-content', thinking_level=thinking_level, max_output_tokens=32768,
                  observer=observe, export=False, resume=resume,
-                 context_policy=policy, continue_on_blocked=True, require_final_review=True)
+                 context_policy=policy, continue_on_blocked=True, require_final_review=True,
+                 video_sampling_fps=video_sampling_fps, rehearsal_sequence=rehearsal_sequence)
     complete = report['status'] == 'model_claimed_done' and report['accepted_folds'] > 0
     if not complete:
         report = dict(report, stop_reason=report['status'],
