@@ -241,6 +241,15 @@ const liveCoach=new LiveCoach({
   },
   event:msg=>{
     if(msg.type==='microphone'){if(msg.enabled&&liveCoach.ready)coachMessage(liveCoach.introduced?'Ori is listening · fold naturally and ask anything.':'Ori is introducing your lesson…');return;}
+    if(msg.type==='audio_blocked'){
+      coachMessage('Audio paused by the browser. Click Resume audio.');
+      let button=$('resume-coach-audio');
+      if(!button){button=document.createElement('button');button.id='resume-coach-audio';button.textContent='Resume audio';$('coach-question-text').parentElement.append(button);}
+      button.hidden=false;
+      button.onclick=()=>liveCoach.ensureAudio().then(()=>{button.hidden=true;coachMessage('Audio resumed.');}).catch(()=>coachMessage('Audio could not resume. Check your browser sound settings.'));
+      return;
+    }
+    if(msg.type==='audio_resumed'){const button=$('resume-coach-audio');if(button)button.hidden=true;return;}
     if(msg.type==='voice')return;
     if(msg.type==='intro_start'){setIntroVisible(true);return;}
     if(msg.type==='intro_complete'){setIntroVisible(false);startLessonDemo();coachMessage(`Fold ${active} · Ori is listening. Watch the demo, then show your result.`);return;}

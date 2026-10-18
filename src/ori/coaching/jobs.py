@@ -221,7 +221,7 @@ target. Set done:true only when you believe the approximation is complete.
     elif not resume and hints and hints.get('random_step_pauses') is True and rehearsal_sequence:
         # Local demo pacing only; never represented as model or physics latency.
         count = min(len(rehearsal_sequence), random.randint(3, 4))
-        pacing = {str(step): round(random.uniform(3, 5), 2)
+        pacing = {str(step): 1.0
                   for step in random.sample(range(1, len(rehearsal_sequence) + 1), count)}
         atomic_json(pacing_path, pacing)
     def observe(kind, **fields):

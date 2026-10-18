@@ -22,7 +22,7 @@ class DemoHintsTests(unittest.TestCase):
             run_paper(MagicMock(), progress.data['url'], base, progress, dict(title='Fox', summary='Fox face'))
             pacing = json.loads((base / 'demo-pacing.json').read_text())
             self.assertIn(len(pacing), [3, 4])
-            self.assertTrue(all(3 <= delay <= 5 for delay in pacing.values()))
+            self.assertTrue(all(delay == 1.0 for delay in pacing.values()))
             self.assertEqual(sleep.call_count, len(pacing))
             self.assertFalse(any(event['kind'] == 'demo_pause' for event in progress.data['events']))
 

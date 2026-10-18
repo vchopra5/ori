@@ -100,7 +100,22 @@ export class LiveCoach {
     const msg=this.pendingMatch.message,{step,epoch}=this.context();this.pendingMatch=null;
     if(msg.step===step&&msg.epoch===epoch)this.event(msg);
   }
-  async ensureAudio(){this.audio??=new AudioContext();await this.audio.resume();}
+  audioDiagnostic(event,state){
+    console.info('Ori audio',event,state);
+    this.send({type:'audio_diagnostic',event,state});
+  }
+  async ensureAudio(){
+    if(!this.audio){
+      this.audio=new AudioContext();
+      this.audio.addEventListener('statechange',()=>{
+        this.audioDiagnostic('context_state',this.audio.state);
+        if(this.speaking&&this.audio.state!=='running'&&this.audio.state!=='closed')this.event({type:'audio_blocked'});
+        if(this.audio.state==='running')this.event({type:'audio_resumed'});
+      });
+    }
+    await this.audio.resume();
+    this.audioDiagnostic('resume_result',this.audio.state);
+  }
   async toggleVoice(){
     this.speaking=!this.speaking;
     if(this.speaking){
@@ -132,6 +147,9 @@ export class LiveCoach {
       this.send({type:'microphone',enabled:true});this.speaking=true;
       this.event({type:'voice',enabled:true});
       this.micPending=false;this.event({type:'microphone',enabled:true,pending:false});
+      for(const track of stream.getAudioTracks()){
+        for(const event of ['mute','unmute','ended'])track.addEventListener(event,()=>this.audioDiagnostic('microphone_'+event,track.readyState));
+      }
       stream.getAudioTracks()[0]?.addEventListener('ended',()=>{if(this.micStream===stream){this.stopMicrophone();this.event({type:'microphone_ended'});}});
     }catch(error){
       if(generation!==this.micGeneration||session!==this.generation)return;
@@ -147,7 +165,14 @@ export class LiveCoach {
     this.send({type:'microphone',enabled:false});this.event({type:'microphone',enabled:false,pending:false});
   }
   playAudio(encoded){
-    if(!this.speaking||!this.audio||this.audio.state!=='running')return;
+    if(!this.speaking||!this.audio)return;
+    if(this.audio.state!=='running'&&!this.audioResumePending){
+      this.event({type:'audio_blocked'});
+      this.audioResumePending=true;
+      this.audio.resume().then(()=>{
+        if(this.audio.state==='running')this.event({type:'audio_resumed'});
+      }).catch(error=>console.warn('Ori audio resume failed',error.name)).finally(()=>{this.audioResumePending=false;});
+    }
     const raw=atob(encoded),bytes=Uint8Array.from(raw,char=>char.charCodeAt(0));
     const samples=new DataView(bytes.buffer),buffer=this.audio.createBuffer(1,bytes.length/2,24000),channel=buffer.getChannelData(0);
     for(let i=0;i<channel.length;i++)channel[i]=samples.getInt16(i*2,true)/32768;

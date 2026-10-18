@@ -2,10 +2,14 @@
 import asyncio
 import base64
 import json
+import logging
 import os
 import secrets
 import time
 from dataclasses import dataclass
+
+
+LOG=logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -207,8 +211,10 @@ async def check_camera(check, send, evidence, timeout=12):
     try:
         return await asyncio.wait_for(check(),timeout)
     except asyncio.TimeoutError:
+        LOG.warning('camera_check_timeout step=%s frame=%s',evidence.step,evidence.frame_id)
         await send(json.dumps(dict(context,status='slow',message='The paper check timed out. Retrying a fresh camera image.')))
     except Exception:
+        LOG.exception('camera_check_failed step=%s frame=%s',evidence.step,evidence.frame_id)
         await send(json.dumps(dict(context,status='failed',message='The paper check failed. Retrying; this does not mean your fold is wrong.')))
     return None
 
@@ -282,12 +288,13 @@ async def relay(socket, playback, commands):
     client=genai.Client(api_key=load_settings().gemini_api_key)
     config=dict(response_modalities=['AUDIO'], system_instruction=PROMPT,
                 input_audio_transcription={},output_audio_transcription={},
-                realtime_input_config={'activity_handling':'START_OF_ACTIVITY_INTERRUPTS',
+                realtime_input_config={'activity_handling':'NO_INTERRUPTION',
                     'automatic_activity_detection':{'prefix_padding_ms':300,'silence_duration_ms':700}},
                 context_window_compression={'sliding_window':{}},
                 tools=[{'function_declarations':[REPORT_TOOL]}])
     try:
         async with client.aio.live.connect(model=os.environ.get('ORI_LIVE_COACH_MODEL','gemini-3.8-live'), config=config) as session:
+            LOG.info('live_connected model=%s',os.environ.get('ORI_LIVE_COACH_MODEL','gemini-3.8-live'))
             await socket.send(json.dumps(dict(type='ready')))
             mic_enabled=False;last_speech=-float('inf');assistant_speaking=False;input_at=time.monotonic();display_ready=False;playback_active=False
             model_wait_at=None;model_output_at=time.monotonic()
@@ -298,7 +305,9 @@ async def relay(socket, playback, commands):
             def expect_response():
                 nonlocal model_wait_at,speech_allowed
                 speech_allowed=True
-                if model_wait_at is None:model_wait_at=time.monotonic()
+                if model_wait_at is None:
+                    model_wait_at=time.monotonic()
+                    LOG.info('response_requested step=%s epoch=%s',guard.step,guard.epoch)
             async def request_speech(text):
                 nonlocal required_speech,response_audio,speech_retries,silent_retry
                 required_speech=text;response_audio=False;speech_retries=0;silent_retry=False
@@ -321,7 +330,11 @@ async def relay(socket, playback, commands):
                     msg=json.loads(raw)
                     input_at=time.monotonic()
                     if not isinstance(msg,dict):raise ValueError('Invalid live message')
-                    if msg.get('type')=='stage':
+                    if msg.get('type')=='audio_diagnostic':
+                        event=msg.get('event');state=msg.get('state')
+                        if event in {'context_state','resume_result','microphone_mute','microphone_unmute','microphone_ended'} and state in {'running','suspended','interrupted','closed','live','ended'}:
+                            LOG.info('browser_audio event=%s state=%s',event,state)
+                    elif msg.get('type')=='stage':
                         display_ready=False;playback_active=False
                         latest_camera=None;stage_references=()
                         if verification_task is not None:verification_task.cancel()
@@ -406,7 +419,12 @@ async def relay(socket, playback, commands):
                                 assistant_speaking=False
                                 await socket.send(json.dumps(dict(type='interrupted')))
                             if content.input_transcription and content.input_transcription.text:
+                                LOG.info('user_speech_received step=%s',guard.step)
                                 last_speech=time.monotonic();guard.started=last_speech
+                                if input_new_turn:
+                                    required_speech='Answer the user’s latest spoken question directly and briefly. Do not wait for a paper check.'
+                                    response_audio=False;speech_retries=0;silent_retry=False
+                                    model_wait_at=time.monotonic()
                                 expect_response()
                                 await socket.send(json.dumps(dict(type='user_caption',text=content.input_transcription.text,new_turn=input_new_turn,epoch=guard.epoch)))
                                 input_new_turn=False
@@ -414,11 +432,14 @@ async def relay(socket, playback, commands):
                                 await socket.send(json.dumps(dict(type='caption',text=content.output_transcription.text,epoch=guard.epoch)))
                             for part in (content.model_turn.parts if content.model_turn else []):
                                 if speech_allowed and display_ready and part.inline_data and part.inline_data.mime_type.startswith('audio/'):
+                                    if not response_audio:
+                                        LOG.info('first_audio step=%s wait_seconds=%s',guard.step,round(time.monotonic()-model_wait_at,3) if model_wait_at is not None else None)
                                     assistant_speaking=True;response_audio=True
                                     await socket.send(json.dumps(dict(type='audio',data=base64.b64encode(part.inline_data.data).decode(),epoch=guard.epoch)))
                             if content.generation_complete or (content.turn_complete and not generation_finished):
                                 generation_finished=True
                                 assistant_speaking=False
+                                LOG.info('response_finished step=%s had_audio=%s',guard.step,response_audio)
                                 silent_retry=required_speech is not None and not response_audio
                                 if not silent_retry:
                                     required_speech=None;model_wait_at=None;speech_allowed=False
@@ -435,6 +456,7 @@ async def relay(socket, playback, commands):
                                 elif required_speech is None:
                                     await socket.send(json.dumps(dict(type='turn_complete',epoch=guard.epoch)))
                         if msg.go_away:
+                            LOG.warning('provider_go_away')
                             await socket.send(json.dumps(dict(type='error',retryable=True,message='Refreshing the live connection.')))
                             return
                     if not received:raise RuntimeError('Live receive stream ended')
@@ -444,7 +466,10 @@ async def relay(socket, playback, commands):
                     if time.monotonic()-input_at>25:
                         await socket.send(json.dumps(dict(type='error',retryable=True,message='The media stream stopped responding.')))
                         return
-                    if model_wait_at is not None and time.monotonic()-max(model_wait_at,model_output_at)>20:
+                    waiting_without_audio=(model_wait_at is not None and not response_audio and
+                                           time.monotonic()-model_wait_at>12 and time.monotonic()-last_speech>2)
+                    if waiting_without_audio or (model_wait_at is not None and time.monotonic()-max(model_wait_at,model_output_at)>20):
+                        LOG.warning('response_timeout step=%s elapsed=%.3f',guard.step,time.monotonic()-model_wait_at)
                         await socket.send(json.dumps(dict(type='error',retryable=True,message='The coach stopped responding to this step. Reconnecting to check the current view again.')))
                         return
                     await socket.send(json.dumps(dict(type='heartbeat')))
@@ -497,10 +522,12 @@ async def relay(socket, playback, commands):
                         event['final']=evidence.step==len(commands)
                         await socket.send(json.dumps(event))
                         await request_speech(confirmation_instruction(evidence,result,len(commands)))
-            tasks=[asyncio.create_task(incoming()),asyncio.create_task(outgoing()),asyncio.create_task(heartbeat()),asyncio.create_task(visual_verifier())]
+            tasks=[asyncio.create_task(fn(),name=fn.__name__) for fn in (incoming,outgoing,heartbeat,visual_verifier)]
             try:
                 done,_=await asyncio.wait(tasks,return_when=asyncio.FIRST_COMPLETED,timeout=1800)
-                for task in done:task.result()
+                for task in done:
+                    LOG.info('relay_task_finished task=%s cancelled=%s',task.get_name(),task.cancelled())
+                    task.result()
             finally:
                 for task in tasks:task.cancel()
                 await asyncio.gather(*tasks,return_exceptions=True)
@@ -522,8 +549,10 @@ async def serve(playback_path,commands_path,origin):
         claimed=True;connected.set()
         try:
             await relay(socket,playback,commands)
-        except ConnectionClosed:pass
+        except ConnectionClosed:
+            LOG.info('browser_disconnected')
         except Exception:
+            LOG.exception('live_session_failed')
             try:await socket.send(json.dumps(dict(type='error',retryable=True,message='Gemini Live could not continue.')))
             except ConnectionClosed:pass
         finally:
@@ -538,4 +567,6 @@ async def serve(playback_path,commands_path,origin):
 
 if __name__=='__main__':
     import sys
+    logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(name)s %(message)s')
+    logging.getLogger('httpx').setLevel(logging.WARNING)
     asyncio.run(serve(*sys.argv[1:]))

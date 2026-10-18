@@ -137,3 +137,20 @@ test('matched steps wait for generation AND actual playback; long replies are no
   assert.equal(events.filter(e=>e.type==='progress').length,2);
 
 });
+
+
+test('suspended audio is scheduled rather than discarded and requests resume',async()=>{
+  const events=[],starts=[];
+  const coach=new LiveCoach({context:()=>({step:1,epoch:2}),event:event=>events.push(event),state:()=>{}});
+  coach.speaking=true;
+  coach.audio={state:'suspended',currentTime:0,destination:{},
+    resume:async()=>{coach.audio.state='running';},
+    createBuffer:()=>({duration:.1,getChannelData:()=>new Float32Array(2)}),
+    createBufferSource:()=>({connect(){},start(at){starts.push(at);},stop(){}})};
+  coach.playAudio(btoa(String.fromCharCode(0,0,0,0)));
+  assert.equal(starts.length,1);
+  assert.equal(coach.sources.size,1);
+  await Promise.resolve();
+  assert.ok(events.some(event=>event.type==='audio_blocked'));
+  assert.ok(events.some(event=>event.type==='audio_resumed'));
+});

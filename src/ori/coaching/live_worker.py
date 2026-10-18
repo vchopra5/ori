@@ -6,6 +6,7 @@ from pathlib import Path
 import selectors
 import subprocess
 import threading
+import uuid
 
 ROOT=Path(__file__).resolve().parents[3]
 
@@ -32,15 +33,19 @@ class LiveWorker:
                     raise RuntimeError('Another tab is already using the live coach on this server. Stop that session before starting another; it has been left connected.')
             self.close()
             self.owner=owner
-            self.process=subprocess.Popen([str(ROOT/'.venv/bin/python'),'-m','ori.coaching.live_coach',
-                str(base/'playback.json'),str(base/'commands.json'),origin],
-                stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True,cwd=ROOT,
-                env={**os.environ,'PYTHONPATH':str(ROOT/'src')})
+            logs=base/'live-logs'
+            logs.mkdir(parents=True,exist_ok=True)
+            self.log_path=logs/f'{uuid.uuid4().hex}.log'
+            with self.log_path.open('a') as errors:
+                self.process=subprocess.Popen([str(ROOT/'.venv/bin/python'),'-u','-m','ori.coaching.live_coach',
+                    str(base/'playback.json'),str(base/'commands.json'),origin],
+                    stdout=subprocess.PIPE,stderr=errors,text=True,cwd=ROOT,
+                    env={**os.environ,'PYTHONPATH':str(ROOT/'src')})
             with selectors.DefaultSelector() as selector:
                 selector.register(self.process.stdout,selectors.EVENT_READ)
-                if not selector.select(15):self.close();raise RuntimeError('Live coach could not start.')
+                if not selector.select(15):self.close();raise RuntimeError(f'Live coach could not start. Diagnostics: {self.log_path}')
                 line=self.process.stdout.readline()
-            if not line:self.close();raise RuntimeError('Install the coaching runtime to start Gemini Live.')
+            if not line:self.close();raise RuntimeError(f'Live coach exited during startup. Diagnostics: {self.log_path}')
             info=json.loads(line)
             return {'url':f"ws://127.0.0.1:{info['port']}/{info['token']}"}
 
