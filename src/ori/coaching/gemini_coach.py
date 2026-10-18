@@ -4,6 +4,7 @@ import io
 import json
 import math
 import os
+from .lesson_actions import lesson_action
 
 
 def decode_verdict(text):
@@ -98,7 +99,7 @@ class GeminiCoach:
         except Exception:
             # A failed or unavailable depth/mask model must never block the camera judge.
             perception={}
-        action=commands[step-1] if step else {'name':'Start with a flat square sheet'}
+        action=lesson_action(commands[step-1]) if step else {'name':'Start with a flat square sheet'}
         parts=[types.Part.from_text(text=PROMPT),
                types.Part.from_text(text='Selected stage '+str(step)+'; action data: '+json.dumps(action)),
                types.Part.from_text(text='CURRENT CAMERA — primary evidence')]
@@ -133,7 +134,7 @@ async def snapshot_check(client,playback,commands,step,jpeg,refs=None):
     """Independent, cancellable raw-camera check; no NN, depth, or live history."""
     import asyncio
     from google.genai import types
-    action=commands[step-1] if step else {'name':'Start with a flat square sheet'}
+    action=lesson_action(commands[step-1]) if step else {'name':'Start with a flat square sheet'}
     parts=[types.Part.from_text(text="""Verify this exact paper-folding stage using a contrastive visual comparison.
 The final image labeled CURRENT CAMERA is the ONLY actual camera evidence; all earlier images are simulation references.
 First inspect the actual camera: is there paper, what is its silhouette, and which flap/crease is actually visible?

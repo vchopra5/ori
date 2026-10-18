@@ -34,6 +34,15 @@ class GeminiCoachTests(unittest.TestCase):
         self.assertEqual(sum(bool(p.inline_data) for p in contents),9)
         self.assertEqual(json.dumps(self.playback),before)
 
+    def test_rehearsal_title_is_neutralized_for_snapshot_judge(self):
+        command = {**self.command, 'name': 'Oh no, the ear points inward — correct the right ear crease'}
+        GeminiCoach(self.client,self.local).compare(self.playback,[command],1,self.image)
+        text = '\n'.join(p.text for p in self.client.models.generate_content.call_args.kwargs['contents'] if p.text)
+        self.assertNotIn(command['name'], text)
+        self.assertIn('Fold the right ear', text)
+        self.assertIn('angle_degrees', text)
+        self.assertTrue(command['name'].startswith('Oh no'))
+
     def test_missing_or_failed_depth_never_blocks_camera_match(self):
         self.local.compare.side_effect=RuntimeError('No local model')
         result=GeminiCoach(self.client,self.local).compare(self.playback,[self.command],1,self.image)
@@ -71,7 +80,11 @@ class AsyncSnapshotTests(unittest.IsolatedAsyncioTestCase):
             instruction='Gently reopen the right ear and refold it so its tip points up and away from the face.')
         generate=AsyncMock(return_value=SimpleNamespace(text=json.dumps(diagnosis)))
         client=SimpleNamespace(aio=SimpleNamespace(models=SimpleNamespace(generate_content=generate)))
-        result=await snapshot_check(client,{},[{'name':'Form the right ear'}],1,b'camera',[])
+        result=await snapshot_check(client,{},[{'name':'Oh no, the ear points inward — correct the right ear crease'}],1,b'camera',[])
+        sent = '\n'.join(p.text for p in generate.call_args.kwargs['contents'] if p.text)
+        self.assertNotIn('Oh no', sent)
+        self.assertIn('Fold the right ear', sent)
+        self.assertNotIn('correct the right ear crease', sent)
         self.assertEqual(result,diagnosis)
 
     async def test_raw_snapshot_and_trusted_reference_reach_independent_judge(self):

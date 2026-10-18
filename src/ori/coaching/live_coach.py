@@ -1,6 +1,7 @@
 """In-memory Gemini Live relay. One authenticated loopback client per process."""
 import asyncio
 import base64
+from .lesson_actions import lesson_action
 import json
 import logging
 import os
@@ -261,7 +262,7 @@ def visual_feedback(result,evidence):
 
 
 def stage_instruction(step,epoch,commands):
-    total=len(commands);action=commands[step-1] if step else {'name':'Start with a flat square sheet'}
+    total=len(commands);action=lesson_action(commands[step-1]) if step else {'name':'Start with a flat square sheet'}
     return (f'DISPLAY CONFIRMED: stage={step}, epoch={epoch}, total_folds={total}, is_final={step==total}. '
             + ('This is the starting sheet, not a fold. ' if step==0 else f'The demo now shows fold {step} of {total}. ')
             +('This is a whole-sheet reorientation, NOT a new fold. Tell them to turn the entire model together without bending it or making a crease. ' if action.get('type')=='reorient' else '')

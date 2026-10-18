@@ -1,4 +1,5 @@
 """Local studio, saved artifacts, and bounded live video jobs."""
+from .lesson_actions import lesson_action
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -98,7 +99,7 @@ def _library():
         items.append(dict(id=folder, title=title, kind='paper', engine=engine,
                           legacy_id='trial-'+base.parent.name if folder.startswith('trial-') else None,
                           replay_url=f'/api/paper/{folder}',
-                          commands=commands.get('commands', []) if isinstance(commands, dict) else commands,
+                          commands=[lesson_action(c) for c in (commands.get('commands', []) if isinstance(commands, dict) else commands)],
                           report={**report, **metrics, 'ok': valid}, report_url=f'{relative}/{report_name}',
                           audit=read_json(base / 'feedback-audit.json', {}),
                           source_url=report.get('video_url'), thumbnail=next((f'{relative}/{name}' for name in ('final.png','fox.png','layer-selection.png') if (base/name).exists()), None)))
@@ -358,6 +359,8 @@ class Handler(SimpleHTTPRequestHandler):
             if value is None:
                 self.send_error(404)
                 return
+            if len(pieces) == 1 and isinstance(value.get('commands'), list):
+                value = {**value, 'commands': [lesson_action(c) for c in value['commands']]}
             self.json_response(value)
             return
         if path in {'/', COACHING.rstrip('/')}:
